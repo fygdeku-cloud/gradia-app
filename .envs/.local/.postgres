@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=gradia
+POSTGRES_USER=xEtEUvhdrsCUHHpMWLKYjbpfNJShzoEw
+POSTGRES_PASSWORD=OLQfq7TD6cuNha0l1hkdoAqBG5JvqXJsSZ0v9p7iYSCv83YIIqSujgTeNQvfZD14
