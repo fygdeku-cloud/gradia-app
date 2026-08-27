@@ -7,48 +7,60 @@ from gradia.core.models import BaseModel
 from django.conf import settings
 from django.db import models
 from gradia.users.validator import validate_phone_number
+from django.utils.translation import gettext_lazy as _
 
 
-class User(AbstractUser):
+
+class User(AbstractUser, BaseModel):
     # Champs necessaires pour nos users
-    email = models.EmailField(unique=True)
-    last_name = None
-    is_student = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
-    email_verified = models.BooleanField(default=False)
+    email = models.EmailField(_("Email"), unique=True)
+    first_name = None
+    Last_name = None
+    name = models.CharField(_("Name"), max_length=255, blank=True)
+    is_student = models.BooleanField(_("Is Student"), default=True)
+    is_admin = models.BooleanField(_("Is Admin"), default=False)
+    email_verified = models.BooleanField(_("Email Verified"), default=False)
     
     # L'email devient l'identifiant necessaire pour notre authentification
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     objects = UserManager()
 
+    class Meta:
+            verbose_name = _("User")
+            verbose_name_plural = _("Users")
+    
     def __str__(self):
         return self.email
     
 
 class StudentProfile(BaseModel):
     # Champs requis pour le profil d'un etudiant
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="student_profile")
-    phone_number = models.CharField(max_length=20, blank=True, validators=[validate_phone_number])
-    school = models.CharField(max_length=255, blank=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, _("User"), on_delete=models.CASCADE, related_name="student_profile")
+    phone_number = models.CharField(_("Phone Number"), max_length=20, blank=True, validators=[validate_phone_number])
+    school = models.CharField(_("School"), max_length=255, blank=True)
 
+    class Meta:
+            verbose_name = _("Student Profile")
+            verbose_name_plural = _("Student Profiles")
+    # Representation en string du profil de l'etudiant
     def __str__(self):
         return f"Student Profile -{self.user.email}"
 
 
 class EmailVerification(BaseModel):
     # Champs de verification de l'email
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="email_verification")
-    code_hash = models.CharField(max_length=128)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, _("User"), on_delete=models.CASCADE, related_name="email_verification")
+    code_hash = models.CharField(_("Verification Code"), max_length=128)
     expires_at = models.DateTimeField()
-    verified_at = models.DateTimeField(null=True, blank=True)
-    attempts = models.PositiveSmallIntegerField(default=0)
+    verified_at = models.DateTimeField(_("Verified At"), null=True, blank=True)
+    attempts = models.PositiveSmallIntegerField(_("Attempts"), default=0)
     sent_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Email verification"
-        verbose_name_plural = "Email verifications"
-
+            verbose_name = _("Email verification")
+            verbose_name_plural = _("Email verifications")
+    
     def __str__(self):
         return f"Email verification - {self.user.email}"
 
