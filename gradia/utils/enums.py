@@ -68,3 +68,10 @@ ACTION_CHOICES = [
     ),
 ]
 
+# SPPORT ENUMS
+
+class Priority(models.TextChoices):
+        LOW = "low", _("Faible")
+        MEDIUM = "medium", _("Moyenne")
+        HIGH = "high", _("Élevée")
+        URGENT = "urgent", _("Urgente")

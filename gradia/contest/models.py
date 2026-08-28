@@ -46,7 +46,7 @@ class Contest(BaseModel, TitleDescriptionModel):
         verbose_name = _("Concours")
         verbose_name_plural = _("Concours")
         constraints = [
-            models.UniqueConstraint(fields=["establishment", "name"], name="unique_contest_per_establishment")
+            models.UniqueConstraint(fields=["establishment", "title"], name="unique_contest_per_establishment")
         ]
 
     def __str__(self):
@@ -55,7 +55,7 @@ class Contest(BaseModel, TitleDescriptionModel):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(
-                f"{self.establishment.name}-{self.title}"
+                f"{self.establishment.title}-{self.title}"
             )
 
         super().save(*args, **kwargs)

@@ -28,10 +28,10 @@ def document_correction_upload_path(instance, filename):
 
 
 class Document(BaseModel, TitleDescriptionModel):
-    subject_file = models.FileField(upload_to=document_subject_upload_path)
-    correction_file = models.FileField(upload_to=document_correction_upload_path)
+    subject_file = models.FileField( _("Subject File"), upload_to=document_subject_upload_path)
+    correction_file = models.FileField( _("Correction File"), upload_to=document_correction_upload_path)
     price = models.PositiveIntegerField(default=0)
-    subject = models.CharField(max_length=255, blank=True)
+    context = models.CharField( _("Subject"), max_length=255, blank=True)
     contest_session = models.ForeignKey("contest.ContestSession", on_delete=models.CASCADE, related_name="documents")
    
     class Meta:
@@ -50,9 +50,9 @@ class Document(BaseModel, TitleDescriptionModel):
 
 
 class DocumentAccessLog(BaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="document_access_logs", null=True, blank=True)
-    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name="access_logs")
-    action = models.CharField(max_length=50, choices=ACTION_CHOICES)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name = _("User"), on_delete=models.CASCADE, related_name="document_access_logs", null=True, blank=True)
+    document = models.ForeignKey(Document, verbose_name = _("Document"), on_delete=models.CASCADE, related_name="access_logs")
+    action = models.CharField(_("Action"), max_length=50, choices=ACTION_CHOICES)
     accessed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

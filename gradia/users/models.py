@@ -15,7 +15,7 @@ class User(AbstractUser, BaseModel):
     # Champs necessaires pour nos users
     email = models.EmailField(_("Email"), unique=True)
     first_name = None
-    Last_name = None
+    last_name = None
     name = models.CharField(_("Name"), max_length=255, blank=True)
     is_student = models.BooleanField(_("Is Student"), default=True)
     is_admin = models.BooleanField(_("Is Admin"), default=False)
@@ -36,7 +36,7 @@ class User(AbstractUser, BaseModel):
 
 class StudentProfile(BaseModel):
     # Champs requis pour le profil d'un etudiant
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, _("User"), on_delete=models.CASCADE, related_name="student_profile")
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name = _("User"), on_delete=models.CASCADE, related_name="student_profile")
     phone_number = models.CharField(_("Phone Number"), max_length=20, blank=True, validators=[validate_phone_number])
     school = models.CharField(_("School"), max_length=255, blank=True)
 
@@ -50,7 +50,7 @@ class StudentProfile(BaseModel):
 
 class EmailVerification(BaseModel):
     # Champs de verification de l'email
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, _("User"), on_delete=models.CASCADE, related_name="email_verification")
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name = _("User"), on_delete=models.CASCADE, related_name="email_verification")
     code_hash = models.CharField(_("Verification Code"), max_length=128)
     expires_at = models.DateTimeField()
     verified_at = models.DateTimeField(_("Verified At"), null=True, blank=True)

@@ -36,11 +36,15 @@ class OrderItem(BaseModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     document = models.ForeignKey( "document.Document", on_delete=models.PROTECT, related_name="order_items")
     unit_price = MoneyField(
+        max_digits=12,
+        decimal_places=2,
         verbose_name=_("Unit price"),
         help_text=_("Original price per unit (before discount), computed from catalog at order time."),
     )
     unit_discount = MoneyField(
         default=0,
+        max_digits=12,
+        decimal_places=2,
         verbose_name=_("Unit discount"),
         help_text=_(
             "Discount per unit. For a product: the product's active discount at order time. "
@@ -52,24 +56,30 @@ class OrderItem(BaseModel):
         verbose_name=_("Quantity"),
     )
     line_subtotal = MoneyField(
+        max_digits=12,
+        decimal_places=2,
         default=0,
         verbose_name=_("Line subtotal"),
         help_text=_("Subtotal for this line before discount: unit_price x quantity."),
     )
     line_discount = MoneyField(
         default=0,
+        max_digits=12,
+        decimal_places=2,
         verbose_name=_("Line discount"),
         help_text=_("Total discount for this line: unit_discount x quantity."),
     )
     line_total = MoneyField(
+        max_digits=12,
+        decimal_places=2,
         verbose_name=_("Line total"),
         help_text=_("Total for this line after discount: line_subtotal - line_discount."),
     )
      
     class Meta:
-        ordering = ["id_order_item"]
-        verbose_name = "Article de commande"
-        verbose_name_plural = "Articles de commande"
+        ordering = ["-created_at"]
+        verbose_name = _("Article de commande")
+        verbose_name_plural = _("Articles de commande")
 
     def __str__(self):
         return f"{self.document} - {self.order.order_number}"
