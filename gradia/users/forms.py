@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import forms as admin_forms
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate
+from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -66,10 +67,20 @@ class UserSignupForm(forms.ModelForm):
                 _("The two passwords do not match.")
             )
 
+        if password1:
+            try:
+                validate_password(password1)
+            except ValidationError as e:
+                self.add_error("password1", e)
+
         return cleaned_data
 
     def save(self, commit=True):
         user = super().save(commit=False)
+
+        user.username = User.objects._generate_unique_username(
+            self.cleaned_data["email"]
+        )
 
         user.set_password(
             self.cleaned_data["password1"]
@@ -85,10 +96,10 @@ class UserSignupForm(forms.ModelForm):
         return user
 
 
-class UserLoginForm(AuthenticationForm):
+class UserLoginForm(forms.Form):
     """Formulaire de connexion avec l'adresse email."""
 
-    username = forms.EmailField(
+    email = forms.EmailField(
         label=_("Email"),
         widget=forms.EmailInput(
             attrs={
@@ -115,9 +126,35 @@ class UserLoginForm(AuthenticationForm):
         ),
     }
 
+    user = None
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        password = cleaned_data.get("password")
+
+        if email and password:
+            self.user = authenticate(email=email, password=password)
+            if self.user is None:
+                raise ValidationError(
+                    self.error_messages["invalid_login"],
+                    code="invalid_login",
+                )
+            if not self.user.is_active:
+                raise ValidationError(
+                    self.error_messages["inactive"],
+                    code="inactive",
+                )
+        return cleaned_data
+
+    def get_user(self):
+        return self.user
+
 
 class EmailVerificationForm(forms.Form):
-    """Formulaire de vérification d'une adresse email."""
+    """Formulaire de vérification d'une adresse email avec token."""
+
+    token = forms.CharField(widget=forms.HiddenInput, required=False)
 
     code = forms.CharField(
         label=_("Verification code"),
@@ -179,6 +216,8 @@ class PasswordResetRequestForm(forms.Form):
 class SetNewPasswordForm(forms.Form):
     """Formulaire permettant de définir un nouveau mot de passe."""
 
+    token = forms.CharField(widget=forms.HiddenInput, required=False)
+
     password1 = forms.CharField(
         label=_("New password"),
         widget=forms.PasswordInput(
@@ -207,6 +246,12 @@ class SetNewPasswordForm(forms.Form):
             raise ValidationError(
                 _("The two passwords do not match.")
             )
+
+        if password1:
+            try:
+                validate_password(password1)
+            except ValidationError as e:
+                self.add_error("password1", e)
 
         return cleaned_data
 

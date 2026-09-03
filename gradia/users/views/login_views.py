@@ -1,131 +1,64 @@
 from __future__ import annotations
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.views import View
+from django.views.generic import FormView
 
 from ..forms import UserLoginForm
-from utils.security import LoginThrottle
+from ..mixins import RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin
+from ..services import OtpService, OtpEmailService, OtpRateLimitError
+from gradia.utils.enums import OtpPurpose
 
 
-class LoginView(View):
-    """Connexion d'un utilisateur avec son adresse email."""
+class LoginView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, FormView):
+    """
+    Connexion par email + mot de passe.
+
+    - Utilisateur vérifié : authentification directe puis redirection
+      `?next=` / `LOGIN_REDIRECT_URL` (adaptation de SigninView).
+    - Utilisateur non vérifié : création d'un OTP LOGIN puis redirection
+      vers la page de vérification OTP (`users:verify_email`).
+    """
 
     template_name = "users/login.html"
     form_class = UserLoginForm
 
-    def get(self, request):
-        if request.user.is_authenticated:
-            return redirect("users:profile")
+    def get_success_url(self):
+        next_url = self.request.GET.get("next") or self.request.POST.get("next")
+        return next_url or reverse(settings.LOGIN_REDIRECT_URL)
 
-        form = self.form_class(request=request)
+    def _verification_url(self, token):
+        """
+        URL Gradia de vérification OTP, équivalente au `users:verify_otp`
+        de la référence (transport du purpose par query string).
+        """
+        return f"{reverse('users:verify_email')}?purpose={OtpPurpose.LOGIN}&token={token}"
 
-        return render(
-            request,
-            self.template_name,
-            {"form": form},
-        )
-
-    def post(self, request):
-        if request.user.is_authenticated:
-            return redirect("users:profile")
-
-        form = self.form_class(
-            request=request,
-            data=request.POST,
-        )
-
-        identifier = request.POST.get(
-            "username",
-            "",
-        ).strip().lower()
-
-        if identifier and LoginThrottle.is_locked(
-            identifier
-        ):
-            remaining = (
-                LoginThrottle.remaining_lockout_seconds(
-                    identifier
-                )
-            )
-
-            minutes = max(
-                remaining // 60,
-                1,
-            )
-
-            messages.error(
-                request,
-                _(
-                    "Too many failed login attempts. "
-                    "Please try again in %(minutes)s minute(s)."
-                )
-                % {"minutes": minutes},
-            )
-
-            return render(
-                request,
-                self.template_name,
-                {"form": form},
-                status=429,
-            )
-
-        if not form.is_valid():
-            if identifier:
-                LoginThrottle.register_failure(
-                    identifier
-                )
-
-            return render(
-                request,
-                self.template_name,
-                {"form": form},
-                status=400,
-            )
-
+    def form_valid(self, form):
         user = form.get_user()
-
-        if not user.is_active:
-            messages.error(
-                request,
-                _("This account is inactive."),
-            )
-
-            return render(
-                request,
-                self.template_name,
-                {"form": form},
-                status=403,
-            )
-
         if not user.email_verified:
-            request.session["verification_email"] = (
-                user.email
-            )
+            try:
+                otp, token = OtpService.create(user, OtpPurpose.LOGIN)
+                OtpEmailService.send_otp(
+                    user, otp, template="emails/users/email_verification.html"
+                )
+            except OtpRateLimitError as error:
+                messages.warning(self.request, error)
+                pending_token = self.request.session.get("pending_login_token", "")
+                return redirect(self._verification_url(pending_token))
 
-            messages.warning(
-                request,
-                _(
-                    "Please verify your email address "
-                    "before logging in."
-                ),
-            )
+            self.request.session["pending_login_token"] = token
+            messages.info(self.request, _("Un code de vérification vous a été envoyé."))
+            return redirect(self._verification_url(token))
 
-            return redirect(
-                "users:verify_email"
-            )
+        login(self.request, user)
+        messages.success(self.request, _("Connexion réussie."))
+        return super().form_valid(form)
 
-        LoginThrottle.reset(
-            identifier
-        )
-
-        login(
-            request,
-            user,
-        )
-
-        return redirect(
-            "users:profile"
-        )
+    def form_invalid(self, form):
+        messages.error(self.request, _("Veuillez corriger les informations de connexion."))
+        return super().form_invalid(form)

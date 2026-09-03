@@ -4,6 +4,7 @@ from .views.login_views import LoginView
 from .views.logout_views import LogoutView
 from .views.password_views import (
     PasswordResetRequestView,
+    PasswordResetOtpView,
     PasswordResetConfirmView,
 )
 from .views.profil_views import ProfileView
@@ -59,6 +60,11 @@ urlpatterns = [
         "password-reset/",
         PasswordResetRequestView.as_view(),
         name="password_reset",
+    ),
+    path(
+        "password-reset/otp/",
+        PasswordResetOtpView.as_view(),
+        name="password_reset_otp",
     ),
     path(
         "password-reset/confirm/",

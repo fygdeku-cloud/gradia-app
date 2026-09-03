@@ -6,8 +6,8 @@ from gradia.users.models import User
 class UserSerializer(serializers.ModelSerializer[User]):
     class Meta:
         model = User
-        fields = ["username", "name", "url"]
+        fields = ["pk", "email", "name", "is_student", "is_admin", "email_verified"]
 
         extra_kwargs = {
-            "url": {"view_name": "api:user-detail", "lookup_field": "username"},
+            "pk": {"read_only": True},
         }

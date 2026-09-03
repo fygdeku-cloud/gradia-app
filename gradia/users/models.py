@@ -1,13 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from gradia.users.managers import UserManager
-from datetime import timedelta
 from django.contrib.auth.hashers import check_password, make_password
 from django.utils import timezone
 from gradia.core.models import BaseModel
 from django.conf import settings
 from django.db import models
 from gradia.users.validator import validate_phone_number
+from gradia.utils.enums import OtpPurpose
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.hashers import check_password, make_password
 
 
 
@@ -48,71 +49,90 @@ class StudentProfile(BaseModel):
         return f"Student Profile -{self.user.email}"
 
 
-class EmailVerification(BaseModel):
-    # Champs de verification de l'email
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name = _("User"), on_delete=models.CASCADE, related_name="email_verification")
-    code_hash = models.CharField(_("Verification Code"), max_length=128)
-    expires_at = models.DateTimeField()
-    verified_at = models.DateTimeField(_("Verified At"), null=True, blank=True)
-    attempts = models.PositiveSmallIntegerField(_("Attempts"), default=0)
-    sent_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-            verbose_name = _("Email verification")
-            verbose_name_plural = _("Email verifications")
+class Otp(BaseModel):
+    """
+    OTP générique utilisé pour les opérations sensibles
+    liées à l'authentification.
+    """
     
-    def __str__(self):
-        return f"Email verification - {self.user.email}"
+    DEFAULT_MAX_ATTEMPTS = 5
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="otps")
+    purpose = models.CharField(max_length=30, choices=OtpPurpose.choices)
+    code_hash = models.CharField(max_length=255)
+    expiration_at = models.DateTimeField()
+    attempts = models.PositiveIntegerField(default=0)
+    is_used = models.BooleanField(default=False)
+    used_at = models.DateTimeField(null=True, blank=True)
+    class Meta:
+        ordering = ["-created_at"]
 
-    @property
-    def is_verified(self):
-        return self.verified_at is not None
+        indexes = [
+            models.Index(
+                fields=["user", "purpose", "is_used"],
+            ),
+            models.Index(
+                fields=["expiration_at"],
+            ),
+        ]
+
+    def __str__(self):
+        return f"OTP {self.user.email} - {self.purpose}"
 
     @property
     def is_expired(self):
-        return timezone.now() >= self.expires_at
+        return timezone.now() >= self.expiration_at
 
     @property
-    def is_valid(self):
-        return not self.is_verified and not self.is_expired
+    def can_attempt(self):
+        return (
+            not self.is_used
+            and not self.is_expired
+            and self.attempts < self.DEFAULT_MAX_ATTEMPTS
+        )
 
-    # Chargement du code
-    def set_code(self, code, expiration_minutes=10):
+    def set_code(self, code: str):
+        """
+        Stocke uniquement le hash du code OTP.
+        Le code en clair n'est jamais enregistré en base.
+        """
         self.code_hash = make_password(code)
-        self.expires_at = timezone.now() + timedelta(minutes=expiration_minutes)
-        self.verified_at = None
-        self.attempts = 0
-        self.sent_at = timezone.now()
 
-    # Verification du code 
-    def verify_code(self, code, max_attempts=5):
-        if self.is_verified:
+    def is_valid_code(self, code: str) -> bool:
+        """
+        Vérifie le code OTP fourni contre son hash.
+        """
+        if not self.can_attempt:
             return False
 
-        if self.is_expired:
-            return False
+        return check_password(
+            code,
+            self.code_hash,
+        )
 
-        if self.attempts >= max_attempts:
-            return False
-
+    def increment_attempts(self):
         self.attempts += 1
-        
-        # Verification du password
-        if not check_password(code, self.code_hash):
-            self.save(
-                update_fields=[
-                    "attempts",
-                    "updated_at",
-                ]
-            )
-            return False
-        self.verified_at = timezone.now()
+        self.save(
+            update_fields=["attempts"],
+        )
+
+    def mark_verified(self):
+        self.is_used = True
+        self.used_at = timezone.now()
+
         self.save(
             update_fields=[
-                "attempts",
-                "verified_at",
-                "updated_at",
-            ]
+                "is_used",
+                "used_at",
+            ],
         )
-        return True
-    
+
+    def invalidate(self):
+        self.is_used = True
+        self.used_at = timezone.now()
+
+        self.save(
+            update_fields=[
+                "is_used",
+                "used_at",
+            ],
+        )

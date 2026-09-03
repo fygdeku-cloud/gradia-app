@@ -20,14 +20,3 @@ class LogoutView(View):
         )
 
         return redirect("users:login")
-
-    def get(self, request):
-        logout(request)
-
-        messages.success(
-            request,
-            _("You have been logged out successfully."),
-        )
-
-        return redirect("users:login")
-

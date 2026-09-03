@@ -1,106 +1,107 @@
 from __future__ import annotations
 
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.views import View
+from django.views.generic import FormView
 
 from ..forms import (
     PasswordResetRequestForm,
     SetNewPasswordForm,
+    EmailVerificationForm,
 )
 from ..models import User
+from ..services import OtpService, OtpEmailService, OtpVerifyService, PasswordResetTokenService
+from ..services import OtpVerificationError, OtpRateLimitError
+from gradia.utils.enums import OtpPurpose
 
 
-class PasswordResetRequestView(View):
-    """
-    Demande de réinitialisation du mot de passe.
-
-    La logique complète de réinitialisation sera ajoutée
-    lorsque le mécanisme de token/OTP correspondant sera défini.
-    """
+class PasswordResetRequestView(FormView):
+    """Demande de réinitialisation du mot de passe."""
 
     template_name = "users/password_reset.html"
     form_class = PasswordResetRequestForm
 
-    def get(self, request):
-        form = self.form_class()
-
-        return render(
-            request,
-            self.template_name,
-            {"form": form},
-        )
-
-    def post(self, request):
-        form = self.form_class(request.POST)
-
-        if not form.is_valid():
-            return render(
-                request,
-                self.template_name,
-                {"form": form},
-                status=400,
-            )
-
+    def form_valid(self, form):
         email = form.cleaned_data["email"]
-
-        user = User.objects.filter(
-            email__iexact=email,
-            is_active=True,
-        ).first()
+        user = User.objects.filter(email__iexact=email, is_active=True).first()
 
         if user:
-            # Le mécanisme d'envoi sera branché ici
-            # après création du système de reset.
-            pass
+            try:
+                otp, token = OtpService.create(user=user, purpose=OtpPurpose.PASSWORD_RESET)
+                OtpEmailService.send_otp(user=user, otp=otp, template="emails/users/password_reset_otp.html")
+                messages.info(self.request, _("Un code de réinitialisation vous a été envoyé."))
+                url = reverse("users:password_reset_otp")
+                return redirect(f"{url}?token={token}")
+            except OtpRateLimitError:
+                pass
+            except Exception:
+                pass
 
         messages.success(
-            request,
+            self.request,
             _(
                 "If an account exists with this email, "
                 "you will receive instructions to reset your password."
             ),
         )
-
-        return redirect(
-            "users:login"
-        )
+        return redirect("users:login")
 
 
-class PasswordResetConfirmView(View):
+class PasswordResetOtpView(FormView):
+    """Vérification de l'OTP pour réinitialiser le mot de passe."""
+    template_name = "users/verify_password_reset.html"
+    form_class = EmailVerificationForm
+
+    def get_initial(self):
+        return {"token": self.request.GET.get("token")}
+
+    def form_valid(self, form):
+        token = form.cleaned_data.get("token")
+        code = form.cleaned_data.get("code")
+
+        try:
+            otp = OtpVerifyService.verify(token=token, code=code, purpose=OtpPurpose.PASSWORD_RESET)
+
+            # Authorization successful, create a short-lived token for password change
+            reset_token = PasswordResetTokenService.generate(otp.user)
+
+            messages.success(self.request, _("OTP verified. You can now reset your password."))
+            url = reverse("users:password_reset_confirm")
+            return redirect(f"{url}?token={reset_token}")
+
+        except OtpVerificationError as e:
+            messages.error(self.request, str(e))
+            return self.form_invalid(form)
+
+
+class PasswordResetConfirmView(FormView):
     """Confirmation du nouveau mot de passe."""
 
     template_name = "users/password_reset_confirm.html"
     form_class = SetNewPasswordForm
 
-    def get(self, request):
-        form = self.form_class()
+    def dispatch(self, request, *args, **kwargs):
+        self.token = request.GET.get("token") or request.POST.get("token")
+        if not self.token or not PasswordResetTokenService.get_user_id(self.token):
+            messages.error(request, _("The password reset link is invalid or has expired."))
+            return redirect("users:password_reset")
+        return super().dispatch(request, *args, **kwargs)
 
-        return render(
-            request,
-            self.template_name,
-            {"form": form},
-        )
+    def get_initial(self):
+        return {"token": self.token}
 
-    def post(self, request):
-        form = self.form_class(request.POST)
+    def form_valid(self, form):
+        user_id = PasswordResetTokenService.get_user_id(form.cleaned_data["token"])
+        user = User.objects.get(pk=user_id)
+        user.set_password(form.cleaned_data["password1"])
+        # La réinitialisation confirme la possession de l'adresse email
+        # (même comportement que la référence : is_verified devient True).
+        user.email_verified = True
+        user.save(update_fields=["password", "email_verified"])
 
-        if not form.is_valid():
-            return render(
-                request,
-                self.template_name,
-                {"form": form},
-                status=400,
-            )
+        PasswordResetTokenService.delete(form.cleaned_data["token"])
 
-        messages.info(
-            request,
-            _(
-                "The password reset mechanism is not configured yet."
-            ),
-        )
-
-        return redirect(
-            "users:login"
-        )
+        messages.success(self.request, _("Your password has been successfully reset. You can now login."))
+        return redirect("users:login")

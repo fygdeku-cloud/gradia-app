@@ -1,109 +1,53 @@
 from __future__ import annotations
 
-import secrets
-
 from django.contrib import messages
-from django.shortcuts import redirect, render
-from django.utils.translation import gettext_lazy as _
-from django.views import View
+from django.db import transaction, IntegrityError
+from django.shortcuts import redirect
+from django.utils.translation import get_language_from_request, gettext_lazy as _
+from django.views.generic import FormView
 
 from ..forms import UserSignupForm
-from ..models import EmailVerification, StudentProfile
-from utils.email import EmailUtil
-from utils.otp import OtpService
+from ..models import StudentProfile, User
+from ..mixins import RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin
+from ..services import OtpService, OtpEmailService, OtpRateLimitError
+from gradia.utils.enums import OtpPurpose
 
-
-class RegisterView(View):
-    """Inscription d'un nouvel étudiant."""
-
+class RegisterView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, FormView):
     template_name = "users/register.html"
     form_class = UserSignupForm
 
-    def get(self, request):
-        if request.user.is_authenticated:
-            return redirect("users:profile")
+    def form_valid(self, form):
+        try:
+            with transaction.atomic():
+                user = form.save()
+                StudentProfile.objects.create(user=user)
+                otp, token = OtpService.create(user=user, purpose=OtpPurpose.SIGNUP)
+                OtpEmailService.send_otp(user=user, otp=otp, template="emails/users/email_verification.html")
+        except IntegrityError:
+            email = form.cleaned_data.get("email")
+            if email and User.objects.filter(email__iexact=email).exists():
+                messages.error(
+                    self.request,
+                    _("Un compte existe déjà avec cette adresse e-mail."),
+                )
+            else:
+                messages.error(
+                    self.request,
+                    _("Une erreur est survenue lors de la création du compte."),
+                )
+            return self.form_invalid(form)
+        except OtpRateLimitError as error:
+            messages.warning(self.request, error)
+            return self.form_invalid(form)
+        except Exception:
+            messages.error(self.request, _("Une erreur est survenue lors de l'inscription."))
+            return self.form_invalid(form)
 
-        form = self.form_class()
+        self.request.session["pending_signup_token"] = token
+        messages.success(self.request, _("Votre compte a été créé. Entrez le code reçu par e-mail pour l'activer."))
+        from django.urls import reverse
+        return redirect(reverse("users:verify_email") + f"?token={token}")
 
-        return render(
-            request,
-            self.template_name,
-            {"form": form},
-        )
-
-    def post(self, request):
-        if request.user.is_authenticated:
-            return redirect("users:profile")
-
-        form = self.form_class(request.POST)
-
-        if not form.is_valid():
-            return render(
-                request,
-                self.template_name,
-                {"form": form},
-            )
-
-        user = form.save()
-
-        StudentProfile.objects.create(
-            user=user,
-        )
-
-        code = self._generate_verification_code()
-
-        verification, _ = (
-            EmailVerification.objects.get_or_create(
-                user=user,
-            )
-        )
-
-        verification.set_code(code)
-        verification.save()
-
-        email_sent = EmailUtil.send_email_with_template(
-            template="emails/users/email_verification.html",
-            context={
-                "user": user,
-                "code": code,
-            },
-            receivers=[user.email],
-            subject=_("Verify your email address"),
-        )
-
-        if not email_sent:
-            verification.invalidate()
-
-            messages.warning(
-                request,
-                _(
-                    "Your account was created, "
-                    "but we could not send the verification email."
-                ),
-            )
-
-            return redirect("users:login")
-
-        OtpService.start_cooldown(
-            user_id=user.pk,
-            purpose="email_verification",
-            seconds=60,
-        )
-
-        request.session["verification_email"] = user.email
-
-        messages.success(
-            request,
-            _(
-                "Your account has been created. "
-                "A verification code has been sent to your email."
-            ),
-        )
-
-        return redirect("users:verify_email")
-
-    @staticmethod
-    def _generate_verification_code() -> str:
-        """Génère un code OTP numérique à 6 chiffres."""
-        return f"{secrets.randbelow(1_000_000):06d}"
-
+    def form_invalid(self, form):
+        messages.error(self.request, _("Veuillez corriger les informations d'inscription."))
+        return super().form_invalid(form)

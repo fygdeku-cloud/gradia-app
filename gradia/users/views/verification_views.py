@@ -1,340 +1,115 @@
 from __future__ import annotations
 
-import secrets
-
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.contrib.auth import login
+from django.db import transaction
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views import View
+from django.views.generic import FormView
 
-from ..forms import (
-    EmailVerificationForm,
-    ResendVerificationForm
+from ..forms import EmailVerificationForm
+from ..mixins import RedirectToNextOrReferrerMixin
+from ..services import (
+    OtpEmailService,
+    OtpRateLimitError,
+    OtpService,
+    OtpVerificationError,
+    OtpVerifyService,
 )
-from ..models import EmailVerification, User
-from utils.email import EmailUtil
-from utils.otp import OtpService
+from gradia.utils.enums import OtpPurpose
 
 
+class EmailVerificationView(RedirectToNextOrReferrerMixin, FormView):
+    """
+    Vérification OTP pour les purposes signup et login.
 
-class EmailVerificationView(View):
-    """Vérification de l'adresse email avec un code OTP."""
+    Adaptation de VerifyOtpView de la référence :
+    - purpose/token lus depuis la query string ou le POST ;
+    - le purpose password_reset est routé vers PasswordResetOtpView ;
+    - après vérification, l'utilisateur est connecté puis redirigé
+      vers `?next=` / `LOGIN_REDIRECT_URL`.
+    """
 
     template_name = "users/verify_email.html"
     form_class = EmailVerificationForm
 
-    def get(self, request):
-        email = request.session.get(
-            "verification_email"
+    def dispatch(self, request, *args, **kwargs):
+        self.purpose = (
+            request.GET.get("purpose") or request.POST.get("purpose", OtpPurpose.SIGNUP)
         )
+        self.token = request.GET.get("token") or request.POST.get("token")
 
-        if not email:
-            messages.info(
-                request,
-                _("Please enter your email address."),
-            )
+        # Le purpose password_reset possède sa propre présentation
+        # (PasswordResetOtpView). On route ici plutôt que de dupliquer.
+        if self.purpose == OtpPurpose.PASSWORD_RESET:
+            url = reverse("users:password_reset_otp")
+            if self.token:
+                return redirect(f"{url}?token={self.token}")
+            return redirect(url)
 
-            return redirect(
-                "users:resend_verification"
-            )
+        if self.purpose not in {OtpPurpose.SIGNUP, OtpPurpose.LOGIN}:
+            messages.error(request, _("Cette vérification n'est pas disponible."))
+            return redirect("users:login")
 
-        form = self.form_class()
+        return super().dispatch(request, *args, **kwargs)
 
-        return render(
-            request,
-            self.template_name,
-            {
-                "form": form,
-                "email": email,
-            },
-        )
+    def get_initial(self):
+        return {"token": self.token}
 
-    def post(self, request):
-        email = request.session.get(
-            "verification_email"
-        )
-
-        if not email:
-            messages.error(
-                request,
-                _("Verification session not found."),
-            )
-
-            return redirect(
-                "users:resend_verification"
-            )
-
-        form = self.form_class(request.POST)
-
-        if not form.is_valid():
-            return render(
-                request,
-                self.template_name,
-                {
-                    "form": form,
-                    "email": email,
-                },
-                status=400,
-            )
+    def form_valid(self, form):
+        token = form.cleaned_data.get("token") or self.token
+        code = form.cleaned_data.get("code")
 
         try:
-            user = User.objects.get(
-                email__iexact=email,
-            )
-        except User.DoesNotExist:
-            messages.error(
-                request,
-                _("Unable to find this account."),
-            )
+            otp = OtpVerifyService.verify(token=token, code=code, purpose=self.purpose)
+        except OtpVerificationError as error:
+            messages.error(self.request, str(error))
+            return self.form_invalid(form)
 
-            return redirect(
-                "users:register"
-            )
+        messages.success(self.request, _("Votre compte est maintenant vérifié."))
+        # Comme dans la référence VerifyOtpView, vérifier un OTP signup/login
+        # connecte directement l'utilisateur (redirection next / profile).
+        login(self.request, otp.user)
+        if self.purpose == OtpPurpose.SIGNUP:
+            return redirect("users:profile")
+        return redirect(self.get_success_url())
 
-        verification = getattr(
-            user,
-            "email_verification",
-            None,
-        )
-
-        if verification is None:
-            messages.error(
-                request,
-                _("No verification code is available."),
-            )
-
-            return redirect(
-                "users:resend_verification"
-            )
-
-        if verification.is_verified:
-            messages.info(
-                request,
-                _("Your email address is already verified."),
-            )
-
-            return redirect(
-                "users:login"
-            )
-
-        if verification.is_expired:
-            messages.error(
-                request,
-                _("This verification code has expired."),
-            )
-
-            return redirect(
-                "users:resend_verification"
-            )
-
-        if verification.is_max_attempts_reached:
-            messages.error(
-                request,
-                _("Maximum verification attempts reached."),
-            )
-
-            return redirect(
-                "users:resend_verification"
-            )
-
-        is_valid = verification.verify_code(
-            form.cleaned_data["code"]
-        )
-
-        if not is_valid:
-            remaining_attempts = max(
-                verification.DEFAULT_MAX_ATTEMPTS
-                - verification.attempts,
-                0,
-            )
-
-            if remaining_attempts:
-                messages.error(
-                    request,
-                    _(
-                        "Invalid verification code. "
-                        "%(attempts)s attempt(s) remaining."
-                    )
-                    % {
-                        "attempts": remaining_attempts,
-                    },
-                )
-            else:
-                messages.error(
-                    request,
-                    _("Maximum verification attempts reached."),
-                )
-
-            return render(
-                request,
-                self.template_name,
-                {
-                    "form": form,
-                    "email": email,
-                },
-                status=400,
-            )
-
-        OtpService.clear_cooldown(
-            user_id=user.pk,
-            purpose="email_verification",
-        )
-
-        request.session.pop(
-            "verification_email",
-            None,
-        )
-
-        messages.success(
-            request,
-            _(
-                "Your email address has been verified successfully."
-            ),
-        )
-
-        return redirect(
-            "users:login"
-        )
+    def form_invalid(self, form):
+        messages.error(self.request, _("Veuillez vérifier le code saisi."))
+        return super().form_invalid(form)
 
 
-class ResendVerificationView(View):
-    """Renvoie un nouveau code de vérification."""
+class ResendVerificationView(RedirectToNextOrReferrerMixin, View):
+    """
+    Renvoi d'un nouveau code OTP (équivalent de ResendOtpView).
+    Uniquement en POST ; le template email est choisi selon le purpose.
+    """
 
-    template_name = "users/resend_verification.html"
-    form_class = ResendVerificationForm
+    http_method_names = ["post"]
 
-    def get(self, request):
-        form = self.form_class()
-
-        return render(
-            request,
-            self.template_name,
-            {"form": form},
-        )
-
-    def post(self, request):
-        form = self.form_class(request.POST)
-
-        if not form.is_valid():
-            return render(
-                request,
-                self.template_name,
-                {"form": form},
-                status=400,
-            )
-
-        email = form.cleaned_data["email"]
+    def post(self, request, *args, **kwargs):
+        purpose = request.POST.get("purpose", OtpPurpose.SIGNUP)
+        token = request.POST.get("token")
 
         try:
-            user = User.objects.get(
-                email__iexact=email,
-            )
-        except User.DoesNotExist:
-            # Ne révèle pas si l'adresse existe.
-            messages.success(
-                request,
-                _(
-                    "If an account exists with this email, "
-                    "a verification code will be sent."
-                ),
-            )
-
-            return redirect(
-                "users:login"
-            )
-
-        if user.email_verified:
-            messages.info(
-                request,
-                _("This email address is already verified."),
-            )
-
-            return redirect(
-                "users:login"
-            )
-
-        if OtpService.is_on_cooldown(
-            user.pk,
-            "email_verification",
-        ):
-            remaining = (
-                OtpService.remaining_cooldown_seconds(
-                    user.pk,
-                    "email_verification",
+            with transaction.atomic():
+                otp = OtpVerifyService._resolve_otp(token, purpose)
+                new_otp, new_token = OtpService.create(otp.user, purpose)
+                template = (
+                    "emails/users/password_reset_otp.html"
+                    if purpose == OtpPurpose.PASSWORD_RESET
+                    else "emails/users/email_verification.html"
                 )
-            )
-
-            messages.warning(
-                request,
-                _(
-                    "Please wait %(seconds)s second(s) "
-                    "before requesting another code."
-                )
-                % {
-                    "seconds": remaining,
-                },
-            )
-
-            request.session[
-                "verification_email"
-            ] = user.email
-
+                OtpEmailService.send_otp(otp.user, new_otp, template=template)
+        except (OtpVerificationError, OtpRateLimitError, ValueError) as error:
+            messages.error(request, error)
             return redirect(
-                "users:verify_email"
+                f"{reverse('users:verify_email')}?token={token}&purpose={purpose}"
             )
 
-        verification, _ = (
-            EmailVerification.objects.get_or_create(
-                user=user,
-            )
-        )
-
-        code = (
-            f"{secrets.randbelow(1_000_000):06d}"
-        )
-
-        verification.set_code(code)
-        verification.save()
-
-        email_sent = EmailUtil.send_email_with_template(
-            template="emails/users/email_verification.html",
-            context={
-                "user": user,
-                "code": code,
-            },
-            receivers=[user.email],
-            subject=_("Your new email verification code"),
-        )
-
-        if not email_sent:
-            messages.error(
-                request,
-                _(
-                    "We could not send the verification email. "
-                    "Please try again later."
-                ),
-            )
-
-            return redirect(
-                "users:resend_verification"
-            )
-
-        OtpService.start_cooldown(
-            user_id=user.pk,
-            purpose="email_verification",
-            seconds=60,
-        )
-
-        request.session[
-            "verification_email"
-        ] = user.email
-
-        messages.success(
-            request,
-            _("A new verification code has been sent."),
-        )
-
+        messages.success(request, _("Un nouveau code vous a été envoyé."))
         return redirect(
-            "users:verify_email"
+            f"{reverse('users:verify_email')}?token={new_token}&purpose={purpose}"
         )
-
