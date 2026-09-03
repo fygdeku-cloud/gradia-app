@@ -10,8 +10,14 @@ from drf_spectacular.views import SpectacularAPIView
 from drf_spectacular.views import SpectacularSwaggerView
 from rest_framework.authtoken.views import obtain_auth_token
 
+from gradia.core.views import HomeView
+
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    path(
+        "",
+        HomeView.as_view(),
+        name="home",
+    ),
     path(
         "about/",
         TemplateView.as_view(template_name="pages/about.html"),
@@ -21,7 +27,10 @@ urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
     path("users/", include("gradia.users.urls", namespace="users")),
-    path("accounts/", include("allauth.urls")),
+    # Contests catalogue
+    path("contest/", include("gradia.contest.urls", namespace="contest")),
+    # Documents catalogue (sujets et corrigés des concours
+    path("documents/", include("gradia.document.urls", namespace="document")),
     # Your stuff: custom urls includes go here
     # ...
     # Media files

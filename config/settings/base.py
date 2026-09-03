@@ -56,7 +56,7 @@ else:
             "NAME": env.str("POSTGRES_DB"),
             "USER": env.str("POSTGRES_USER"),
             "PASSWORD": env.str("POSTGRES_PASSWORD"),
-            "HOST": env.str("POSTGRES_HOST", default="postgres"),
+            "HOST": env.str("POSTGRES_HOST", default="localhost"),
             "PORT": env.str("POSTGRES_PORT", default="5432"),
         },
     }
@@ -88,10 +88,6 @@ DJANGO_APPS = [
 THIRD_PARTY_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
-    "allauth",
-    "allauth.account",
-    "allauth.mfa",
-    "allauth.socialaccount",
     "django_celery_beat",
     "rest_framework",
     "rest_framework.authtoken",
@@ -101,7 +97,14 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "gradia.users",
-    # Your stuff: custom apps go here
+    "gradia.cart",
+    "gradia.contest",
+    "gradia.core",
+    "gradia.document",
+    "gradia.order",
+    "gradia.payment",
+    "gradia.support",
+    "gradia.utils",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -116,14 +119,14 @@ MIGRATION_MODULES = {"sites": "gradia.contrib.sites.migrations"}
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
+DEFAULT_CURRENCY = "XAF"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "users:redirect"
+LOGIN_REDIRECT_URL = "users:profile"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
-LOGIN_URL = "account_login"
+LOGIN_URL = "users:login"
 
 # PASSWORDS
 # ------------------------------------------------------------------------------
@@ -159,7 +162,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
 ]
 
 # STATIC
@@ -183,6 +185,21 @@ MEDIA_ROOT = str(APPS_DIR / "media")
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "/media/"
 
+# S3 STORAGE
+# ------------------------------------------------------------------------------
+USE_S3_STORAGE = env.bool("USE_S3_STORAGE", default=False)
+AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
+AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", default="")
+AWS_STORAGE_BUCKET_NAME = env.str("AWS_STORAGE_BUCKET_NAME", default="")
+AWS_S3_REGION_NAME = env.str("AWS_S3_REGION_NAME", default="")
+AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", default=None)
+
+# Répertoire de stockage des fichiers protégés (sujets/corrigés des documents).
+# Il est volontairement situé HORS de MEDIA_ROOT : aucun serveur web ni la vue
+# de développement `static()` ne le sert. L'accès se fait uniquement via les
+# vues contrôlées du module `document`.
+PROTECTED_MEDIA_ROOT = str(BASE_DIR / "protected_media")
+
 # TEMPLATES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#templates
@@ -205,7 +222,6 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "gradia.users.context_processors.allauth_settings",
             ],
         },
     },
@@ -280,6 +296,35 @@ LOGGING = {
 REDIS_URL = env("REDIS_URL", default="redis://redis:6379/0")
 REDIS_SSL = REDIS_URL.startswith("rediss://")
 
+# CACHE
+# ------------------------------------------------------------------------------
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "gradia-default-cache",
+    },
+    "security": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "gradia-security-cache",
+    },
+    "otp": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "gradia-otp-cache",
+    },
+}
+OTP_LENGTH = 6
+
+OTP_VALID_MINUTES = 10
+
+OTP_EXPIRATION_SECONDS = 600
+
+OTP_MAX_ATTEMPTS = 5
+
+OTP_COOLDOWN_SECONDS = 60
+
+OTP_TOKEN_MAX_AGE_SECONDS = 600
+
+RESET_TOKEN_TIMEOUT = 15
 # Celery
 # ------------------------------------------------------------------------------
 if USE_TZ:
@@ -320,23 +365,6 @@ CELERY_WORKER_SEND_TASK_EVENTS = True
 CELERY_TASK_SEND_SENT_EVENT = True
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#worker-hijack-root-logger
 CELERY_WORKER_HIJACK_ROOT_LOGGER = False
-# django-allauth
-# ------------------------------------------------------------------------------
-ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_LOGIN_METHODS = {"username"}
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-# https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_ADAPTER = "gradia.users.adapters.AccountAdapter"
-# https://docs.allauth.org/en/latest/account/forms.html
-ACCOUNT_FORMS = {"signup": "gradia.users.forms.UserSignupForm"}
-# https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_ADAPTER = "gradia.users.adapters.SocialAccountAdapter"
-# https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_FORMS = {"signup": "gradia.users.forms.UserSocialSignupForm"}
 
 # django-rest-framework
 # -------------------------------------------------------------------------------
