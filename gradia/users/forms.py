@@ -134,7 +134,7 @@ class UserLoginForm(forms.Form):
         password = cleaned_data.get("password")
 
         if email and password:
-            self.user = authenticate(email=email, password=password)
+            self.user = authenticate(username=email, password=password)
             if self.user is None:
                 raise ValidationError(
                     self.error_messages["invalid_login"],
