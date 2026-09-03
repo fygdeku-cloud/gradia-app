@@ -75,3 +75,10 @@ class Priority(models.TextChoices):
         MEDIUM = "medium", _("Moyenne")
         HIGH = "high", _("Élevée")
         URGENT = "urgent", _("Urgente")
+
+# OTP
+
+class OtpPurpose(models.TextChoices):
+    SIGNUP = "signup", _("Signup")
+    LOGIN = "login", _("Login")
+    PASSWORD_RESET = "password_reset", _("Password reset")

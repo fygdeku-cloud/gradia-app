@@ -1,14 +1,17 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
-from gradia.core.models import BaseModel, TitleDescriptionModel
 from django.utils.translation import gettext_lazy as _
+
+from gradia.core.models import BaseModel, TitleDescriptionModel
+from gradia.utils.slug import DbFunctions
 
 
 class Establishment(BaseModel, TitleDescriptionModel):
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255, blank=True)
-    
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+
     class Meta:
         ordering = ["title"]
         verbose_name = _("Établissement")
@@ -17,12 +20,28 @@ class Establishment(BaseModel, TitleDescriptionModel):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = DbFunctions.generate_unique_slug(
+                self,
+                self.title,
+            )
+
+        super().save(*args, **kwargs)
+
     def get_contests(self):
         return self.contests.all()
-        
-       
+
+    def get_absolute_url(self):
+        return reverse(
+            "contest:establishment_detail",
+            kwargs={"slug": self.slug},
+        )
+
+
 class ContestCategory(BaseModel, TitleDescriptionModel):
-  
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+
     class Meta:
         ordering = ["title"]
         verbose_name = _("Catégorie de concours")
@@ -31,8 +50,23 @@ class ContestCategory(BaseModel, TitleDescriptionModel):
     def __str__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = DbFunctions.generate_unique_slug(
+                self,
+                self.title,
+            )
+
+        super().save(*args, **kwargs)
+
     def get_contests(self):
-        return self.contests.all()    
+        return self.contests.all()
+
+    def get_absolute_url(self):
+        return reverse(
+            "contest:category_detail",
+            kwargs={"slug": self.slug},
+        )
 
 
 class Contest(BaseModel, TitleDescriptionModel):
@@ -54,8 +88,9 @@ class Contest(BaseModel, TitleDescriptionModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(
-                f"{self.establishment.title}-{self.title}"
+            self.slug = DbFunctions.generate_unique_slug(
+                self,
+                f"{self.establishment.title}-{self.title}",
             )
 
         super().save(*args, **kwargs)
@@ -68,25 +103,52 @@ class Contest(BaseModel, TitleDescriptionModel):
             "contest:detail",
             kwargs={"slug": self.slug},
         )
- 
-        
+
+
 class ContestSession(BaseModel, TitleDescriptionModel):
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE, related_name="sessions")
     year = models.PositiveIntegerField()
-    registration_start_date = models.DateField( null=True, blank=True)
-    registration_end_date = models.DateField( null=True, blank=True)
-    exam_date = models.DateField( null=True, blank=True)
-    
+    registration_start_date = models.DateField(null=True, blank=True)
+    registration_end_date = models.DateField(null=True, blank=True)
+    exam_date = models.DateField(null=True, blank=True)
+
     class Meta:
         ordering = ["-year"]
-        verbose_name = "Session de concours"
-        verbose_name_plural = "Sessions de concours"
+        verbose_name = _("Session de concours")
+        verbose_name_plural = _("Sessions de concours")
         constraints = [
-            models.UniqueConstraint( fields=["contest", "year"], name="unique_contest_session_year")
+            models.UniqueConstraint(fields=["contest", "year"], name="unique_contest_session_year"),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(registration_end_date__isnull=True)
+                    | models.Q(registration_start_date__isnull=True)
+                    | models.Q(registration_end_date__gte=models.F("registration_start_date"))
+                ),
+                name="session_registration_dates_ordering",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    models.Q(exam_date__isnull=True)
+                    | models.Q(registration_end_date__isnull=True)
+                    | models.Q(exam_date__gte=models.F("registration_end_date"))
+                ),
+                name="session_exam_after_registration",
+            ),
         ]
 
     def __str__(self):
         return f"{self.contest.title} - Session {self.title}"
+
+    def clean(self):
+        from gradia.contest.validators import validate_session_dates
+
+        validate_session_dates(
+            self.registration_start_date,
+            self.registration_end_date,
+            self.exam_date,
+        )
+
+        super().clean()
 
     def get_documents(self):
         return self.documents.all()
@@ -98,4 +160,4 @@ class ContestSession(BaseModel, TitleDescriptionModel):
                 "contest_slug": self.contest.slug,
                 "year": self.year,
             },
-        )        
+        )
