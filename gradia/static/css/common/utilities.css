@@ -1,0 +1,40 @@
+/* ============================================================
+   Gradia — Utilitaires typographiques (hiérarchie visuelle)
+   THÈME SOMBRE.
+   ============================================================ */
+
+.gradia-page-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--gradia-text);
+}
+
+@media (min-width: 640px) {
+  .gradia-page-title {
+    font-size: 1.875rem;
+  }
+}
+
+.gradia-section-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--gradia-text);
+}
+
+@media (min-width: 640px) {
+  .gradia-section-title {
+    font-size: 1.875rem;
+  }
+}
+
+.gradia-card-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--gradia-text);
+}
+
+.gradia-muted {
+  color: var(--gradia-text-muted);
+}

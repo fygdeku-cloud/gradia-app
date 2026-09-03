@@ -1,0 +1,9 @@
+/* ============================================================
+   Gradia — Styles spécifiques au dashboard (côté connecté)
+   Les styles de navigation latérale vivent dans sidebar.css,
+   ceux des composants dans components.css.
+   ============================================================ */
+
+.dashboard-main {
+  transition: padding-left 0.25s ease;
+}

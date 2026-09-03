@@ -1,0 +1,252 @@
+/* Gradia Home: a bright editorial composition with a focused blue signal. */
+
+.gradia-home-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 84% 16%, rgba(50, 199, 190, 0.14), transparent 24rem),
+    linear-gradient(135deg, #f4f8ff 0%, #ffffff 54%, #effcf9 100%);
+}
+
+.gradia-home-hero::before {
+  position: absolute;
+  top: -14rem;
+  right: -8rem;
+  width: 32rem;
+  height: 32rem;
+  border: 1px solid rgba(37, 99, 235, 0.11);
+  border-radius: 50%;
+  content: "";
+}
+
+.gradia-home-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: min(100% - 2rem, var(--container-width));
+  min-height: 39rem;
+  margin-inline: auto;
+  grid-template-columns: minmax(0, 0.92fr) minmax(24rem, 1.08fr);
+  align-items: center;
+  gap: clamp(2rem, 7vw, 7rem);
+  padding: 4.5rem 0 4rem;
+}
+
+.gradia-home-hero__copy {
+  position: relative;
+  z-index: 2;
+  max-width: 37rem;
+}
+
+.gradia-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 0.48rem 0.85rem;
+  color: var(--color-primary-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-sm);
+}
+
+.gradia-eyebrow__dot {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 50%;
+  background: var(--color-secondary);
+  box-shadow: 0 0 0 4px rgba(15, 159, 154, 0.12);
+}
+
+.gradia-home-hero h1 {
+  max-width: 36rem;
+  margin: 1.35rem 0 0;
+  color: #102454;
+  font-size: clamp(2.75rem, 5vw, 5.25rem);
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.99;
+}
+
+.gradia-home-hero__intro {
+  max-width: 32rem;
+  margin: 1.55rem 0 0;
+  color: var(--gradia-text-secondary);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.gradia-home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.gradia-home-hero__actions .gradia-btn {
+  gap: 0.75rem;
+  min-height: 3rem;
+  padding-inline: 1.15rem;
+}
+
+.gradia-home-hero__trust {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 24rem;
+  margin-top: 2rem;
+  color: var(--gradia-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.gradia-avatar-stack {
+  display: flex;
+  flex: 0 0 auto;
+  padding-left: 0.35rem;
+}
+
+.gradia-avatar-stack span {
+  display: grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  margin-left: -0.35rem;
+  place-items: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 800;
+}
+
+.gradia-avatar-stack span:nth-child(2) { background: #27b8af; }
+.gradia-avatar-stack span:nth-child(3) { background: #dbeafe; color: var(--color-primary-dark); }
+
+.gradia-home-hero__visual {
+  position: relative;
+  min-height: 34rem;
+}
+
+.gradia-hero-media {
+  position: absolute;
+  top: 1rem;
+  right: 5%;
+  width: min(78%, 30rem);
+  height: 32rem;
+  overflow: hidden;
+  border: 0.8rem solid rgba(255, 255, 255, 0.78);
+  border-radius: 48% 48% 1.75rem 1.75rem;
+  background: #cfe0ed;
+  box-shadow: 0 2rem 4rem rgba(30, 64, 115, 0.18);
+  transform: rotate(2deg);
+}
+
+.gradia-hero-media::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, rgba(17, 51, 100, 0.02), rgba(20, 184, 166, 0.2));
+  content: "";
+  pointer-events: none;
+}
+
+.gradia-hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.9) contrast(1.04);
+  transition: transform 0.7s ease;
+}
+
+.gradia-home-hero__visual:hover .gradia-hero-media img { transform: scale(1.04); }
+
+.gradia-hero-orbit {
+  position: absolute;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 50%;
+  transform: rotate(-18deg);
+}
+
+.gradia-hero-orbit--one { right: -2%; top: 3%; width: 23rem; height: 23rem; }
+.gradia-hero-orbit--two { right: 15%; bottom: 0; width: 14rem; height: 14rem; border-color: rgba(15, 159, 154, 0.2); }
+
+.gradia-hero-float {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: max-content;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.94);
+  padding: 0.75rem 0.9rem;
+  color: var(--gradia-text-secondary);
+  font-size: 0.68rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
+}
+
+.gradia-hero-float strong { display: block; color: #102454; font-size: 0.9rem; }
+.gradia-hero-float--catalogue { top: 8rem; right: -1%; }
+.gradia-hero-float--sessions { right: 4%; bottom: 3rem; }
+.gradia-hero-float__icon { display: grid; width: 2rem; height: 2rem; border-radius: 0.65rem; background: #e8f0ff; color: var(--color-primary); place-items: center; font-size: 0.95rem; }
+.gradia-hero-float__icon--teal { background: #e3faf6; color: var(--color-secondary); }
+
+.gradia-hero-stamp {
+  position: absolute;
+  bottom: 7rem;
+  left: 2%;
+  display: grid;
+  width: 4.25rem;
+  height: 4.25rem;
+  place-content: center;
+  border: 1px dashed rgba(37, 99, 235, 0.4);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--color-primary);
+  text-align: center;
+  transform: rotate(-12deg);
+}
+
+.gradia-hero-stamp span { font-size: 1.25rem; font-weight: 900; line-height: 1; }
+.gradia-hero-stamp small { margin-top: 0.2rem; font-size: 0.48rem; font-weight: 800; text-transform: uppercase; }
+
+.gradia-home-section { position: relative; }
+.gradia-home-section__inner { width: min(100% - 2rem, var(--container-width)); margin-inline: auto; padding: 5.5rem 0; }
+.gradia-home-section__inner > .gradia-section-heading { margin-bottom: 2.4rem; }
+.gradia-section-heading h2 { margin-top: 0.7rem; color: #102454; font-size: clamp(1.85rem, 3vw, 2.7rem); font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; }
+.gradia-section-heading > p:last-child { max-width: 36rem; margin-top: 0.9rem; color: var(--gradia-text-secondary); line-height: 1.7; }
+.gradia-benefit-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+.gradia-benefit-card { min-height: 12.5rem; padding: 1.35rem !important; }
+.gradia-benefit-card h3 { color: #102454; }
+.gradia-benefit-card p { color: var(--gradia-text-secondary); line-height: 1.6; }
+
+@media (max-width: 900px) {
+  .gradia-home-hero__inner { grid-template-columns: 1fr; gap: 1rem; padding-top: 3.5rem; }
+  .gradia-home-hero__copy { max-width: 42rem; }
+  .gradia-home-hero__visual { min-height: 31rem; }
+  .gradia-benefit-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .gradia-home-hero__inner { width: min(100% - 1.5rem, var(--container-width)); min-height: auto; padding: 3rem 0 2rem; }
+  .gradia-home-hero h1 { font-size: clamp(2.6rem, 13vw, 4rem); }
+  .gradia-home-hero__intro { font-size: 0.92rem; }
+  .gradia-home-hero__actions { align-items: stretch; flex-direction: column; }
+  .gradia-home-hero__actions .gradia-btn { width: 100%; }
+  .gradia-home-hero__visual { min-height: 24rem; }
+  .gradia-hero-media { right: 5%; width: 78%; height: 23rem; border-width: 0.55rem; }
+  .gradia-hero-orbit--one { width: 16rem; height: 16rem; }
+  .gradia-hero-orbit--two { width: 9rem; height: 9rem; }
+  .gradia-hero-float { padding: 0.6rem 0.7rem; font-size: 0.6rem; }
+  .gradia-hero-float--catalogue { top: 5rem; right: 0; }
+  .gradia-hero-float--sessions { right: 0; bottom: 0.5rem; }
+  .gradia-hero-stamp { bottom: 4rem; left: 0; width: 3.5rem; height: 3.5rem; }
+  .gradia-home-section__inner { width: min(100% - 1.5rem, var(--container-width)); padding: 3.5rem 0; }
+  .gradia-benefit-grid { grid-template-columns: 1fr; }
+}

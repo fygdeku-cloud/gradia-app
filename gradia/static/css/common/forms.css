@@ -1,0 +1,77 @@
+/* ============================================================
+  Gradia — Champs de formulaire (rendu cohérent, THÈME CLAIR)
+   Les widgets de formulaires Django ne portent pas de classes
+   Tailwind : ce fichier stylise les champs rendus par
+   common/form_field.html sans modifier les forms du backend.
+   ============================================================ */
+
+.gradia-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gradia-text);
+}
+
+.gradia-field input[type="text"],
+.gradia-field input[type="email"],
+.gradia-field input[type="password"],
+.gradia-field input[type="tel"],
+.gradia-field input[type="number"],
+.gradia-field textarea,
+.gradia-field select {
+  display: block;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--gradia-border);
+  background-color: var(--gradia-bg-soft);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--gradia-text);
+  box-shadow: inset 0 1px 2px rgba(18, 35, 63, 0.05);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.gradia-field input::placeholder,
+.gradia-field textarea::placeholder {
+  color: var(--gradia-text-muted);
+}
+
+.gradia-field input:focus,
+.gradia-field textarea:focus,
+.gradia-field select:focus {
+  outline: none;
+  border-color: var(--gradia-accent);
+  box-shadow: 0 0 0 3px rgba(47, 107, 255, 0.28);
+}
+
+.gradia-field.has-error input,
+.gradia-field.has-error textarea,
+.gradia-field.has-error select {
+  border-color: var(--gradia-danger);
+}
+
+.gradia-field.has-error input:focus,
+.gradia-field.has-error textarea:focus,
+.gradia-field.has-error select:focus {
+  box-shadow: 0 0 0 3px rgba(194, 65, 90, 0.16);
+  border-color: var(--gradia-danger);
+}
+
+.gradia-field .help-text {
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--gradia-text-muted);
+}
+
+.gradia-field ul[role="alert"] {
+  margin-top: 0.375rem;
+  list-style: none;
+  padding: 0;
+}
+
+.gradia-field ul[role="alert"] li {
+  font-size: 0.8125rem;
+  color: var(--gradia-danger);
+}
