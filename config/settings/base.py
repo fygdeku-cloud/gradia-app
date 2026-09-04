@@ -182,17 +182,26 @@ STATICFILES_FINDERS = [
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = str(APPS_DIR / "media")
-# https://docs.djangoproject.com/en/dev/ref/settings/#media-url
+# https://docs.djangoproject.com/en/dev/ref/nom_de_ton_bucketsettings/#media-url
 MEDIA_URL = "/media/"
 
-# S3 STORAGE
+# CLOUDFLARE R2 STORAGE
 # ------------------------------------------------------------------------------
 USE_S3_STORAGE = env.bool("USE_S3_STORAGE", default=False)
+
 AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
 AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", default="")
 AWS_STORAGE_BUCKET_NAME = env.str("AWS_STORAGE_BUCKET_NAME", default="")
-AWS_S3_REGION_NAME = env.str("AWS_S3_REGION_NAME", default="")
-AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", default=None)
+
+# Cloudflare R2 utilise la région "auto".
+AWS_S3_REGION_NAME = env.str("AWS_S3_REGION_NAME", default="auto")
+
+# Endpoint S3 compatible de Cloudflare R2.
+AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", default="")
+
+# R2 utilise la signature AWS Signature Version 4.
+AWS_S3_SIGNATURE_VERSION = "s3v4"
+
 
 # Répertoire de stockage des fichiers protégés (sujets/corrigés des documents).
 # Il est volontairement situé HORS de MEDIA_ROOT : aucun serveur web ni la vue
