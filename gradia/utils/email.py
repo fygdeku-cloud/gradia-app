@@ -137,38 +137,31 @@ class EmailUtil:
             )
             return True
 
-        try:
-            email = EmailMultiAlternatives(
-                subject=subject,
-                body=text_content or "",
-                from_email=sender,
-                to=to,
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content or "",
+            from_email=sender,
+            to=to,
+        )
+
+        if html_content:
+            email.attach_alternative(
+                html_content,
+                "text/html",
             )
 
-            if html_content:
-                email.attach_alternative(
-                    html_content,
-                    "text/html",
+        if file_path:
+            path = Path(file_path)
+
+            if path.exists():
+                email.attach_file(path)
+            else:
+                logger.warning(
+                    "Pièce jointe introuvable : %s",
+                    file_path,
                 )
 
-            if file_path:
-                path = Path(file_path)
-
-                if path.exists():
-                    email.attach_file(path)
-                else:
-                    logger.warning(
-                        "Pièce jointe introuvable : %s",
-                        file_path,
-                    )
-
-            email.send()
-
-        except Exception:
-            logger.exception(
-                "Erreur lors de l'envoi de l'email."
-            )
-            return False
+        email.send(fail_silently=False)
 
         return True
 
@@ -182,24 +175,17 @@ class EmailUtil:
     ) -> bool:
         """Rend un template puis envoie l'email."""
 
-        context = EmailUtil._add_site_context(
-            context
-        )
+        context = EmailUtil._add_site_context(context)
 
         if language:
-            resolved_subject = (
-                EmailUtil._translate_subject(
-                    subject,
-                    language,
-                )
+            resolved_subject = EmailUtil._translate_subject(
+                subject,
+                language,
             )
         else:
-            resolved_subject = (
-                EmailUtil._resolve_subject(subject)
-            )
+            resolved_subject = EmailUtil._resolve_subject(subject)
 
         context["subject"] = resolved_subject
-
         current_language = translation.get_language()
 
         try:
@@ -210,18 +196,10 @@ class EmailUtil:
                 template_name=template,
                 context=context,
             )
-
-        except Exception:
-            logger.exception(
-                "Erreur lors du rendu du template email : %s",
-                template,
-            )
-            return False
-
         finally:
             if current_language:
                 translation.activate(
-                    current_language
+                    current_language,
                 )
             else:
                 translation.deactivate()

@@ -82,3 +82,22 @@ class OtpPurpose(models.TextChoices):
     SIGNUP = "signup", _("Signup")
     LOGIN = "login", _("Login")
     PASSWORD_RESET = "password_reset", _("Password reset")
+
+#DOCUMENTS
+
+
+MAX_DOCUMENT_SIZE = 25 * 1024 * 1024
+ALLOWED_EXTENSIONS = {".pdf", ".doc", ".docx"}
+ALLOWED_CONTENT_TYPES = {
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/octet-stream",
+}
+
+# Signatures (octets magiques) des formats réellement autorisés.
+# Une extension ou un MIME déclaré ne suffit jamais : on vérifie le contenu.
+_MAGIC_SIGNATURES = {
+    b"%PDF-": "PDF",
+    b"PK\x03\x04": "DOCX/DOC (Zip archive)",
+}
