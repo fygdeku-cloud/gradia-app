@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from django.contrib import messages
+from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -12,8 +13,14 @@ from ..forms import (
     EmailVerificationForm,
 )
 from ..models import User
-from ..services import OtpService, OtpEmailService, OtpVerifyService, PasswordResetTokenService
-from ..services import OtpVerificationError, OtpRateLimitError
+from ..services import (
+    OtpEmailService,
+    OtpRateLimitError,
+    OtpService,
+    OtpVerificationError,
+    OtpVerifyService,
+    PasswordResetTokenService,
+)
 from gradia.utils.enums import OtpPurpose
 
 
@@ -29,15 +36,27 @@ class PasswordResetRequestView(FormView):
 
         if user:
             try:
-                otp, token = OtpService.create(user=user, purpose=OtpPurpose.PASSWORD_RESET)
-                OtpEmailService.send_otp(user=user, otp=otp, template="emails/users/password_reset_otp.html")
+                with transaction.atomic():
+                    otp, token = OtpService.create(
+                        user=user,
+                        purpose=OtpPurpose.PASSWORD_RESET,
+                    )
+                    OtpEmailService.send_otp(
+                        user=user,
+                        otp=otp,
+                        template="emails/users/password_reset_otp.html",
+                    )
                 messages.info(self.request, _("Un code de réinitialisation vous a été envoyé."))
                 url = reverse("users:password_reset_otp")
                 return redirect(f"{url}?token={token}")
             except OtpRateLimitError:
-                pass
-            except Exception:
-                pass
+                messages.info(
+                    self.request,
+                    _(
+                        "Si un compte existe avec cette adresse, "
+                        "vous recevrez les instructions nécessaires."
+                    ),
+                )
 
         messages.success(
             self.request,

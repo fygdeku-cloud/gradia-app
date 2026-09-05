@@ -3,16 +3,21 @@ from __future__ import annotations
 from django.contrib import messages
 from django.db import transaction, IntegrityError
 from django.shortcuts import redirect
-from django.utils.translation import get_language_from_request, gettext_lazy as _
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 
 from ..forms import UserSignupForm
 from ..models import StudentProfile, User
 from ..mixins import RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin
-from ..services import OtpService, OtpEmailService, OtpRateLimitError
+from ..services import OtpEmailService, OtpRateLimitError, OtpService
 from gradia.utils.enums import OtpPurpose
 
-class RegisterView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, FormView):
+class RegisterView(
+    RedirectAuthenticatedUserMixin,
+    RedirectToNextOrReferrerMixin,
+    FormView,
+):
     template_name = "users/register.html"
     form_class = UserSignupForm
 
@@ -39,13 +44,8 @@ class RegisterView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin
         except OtpRateLimitError as error:
             messages.warning(self.request, error)
             return self.form_invalid(form)
-        except Exception:
-            messages.error(self.request, _("Une erreur est survenue lors de l'inscription."))
-            return self.form_invalid(form)
-
         self.request.session["pending_signup_token"] = token
         messages.success(self.request, _("Votre compte a été créé. Entrez le code reçu par e-mail pour l'activer."))
-        from django.urls import reverse
         return redirect(reverse("users:verify_email") + f"?token={token}")
 
     def form_invalid(self, form):

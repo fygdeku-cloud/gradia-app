@@ -43,6 +43,7 @@ class LoginView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, F
         if not user.email_verified:
             try:
                 otp, token = OtpService.create(user, OtpPurpose.LOGIN)
+                self.request.session["pending_login_token"] = token
                 OtpEmailService.send_otp(
                     user, otp, template="emails/users/email_verification.html"
                 )
@@ -51,7 +52,6 @@ class LoginView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, F
                 pending_token = self.request.session.get("pending_login_token", "")
                 return redirect(self._verification_url(pending_token))
 
-            self.request.session["pending_login_token"] = token
             messages.info(self.request, _("Un code de vérification vous a été envoyé."))
             return redirect(self._verification_url(token))
 

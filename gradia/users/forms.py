@@ -128,6 +128,9 @@ class UserLoginForm(forms.Form):
 
     user = None
 
+    def clean_email(self):
+        return self.cleaned_data["email"].strip().lower()
+
     def clean(self):
         cleaned_data = super().clean()
         email = cleaned_data.get("email")

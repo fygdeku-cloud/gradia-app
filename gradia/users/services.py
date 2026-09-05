@@ -55,7 +55,9 @@ class OtpService:
             )
             otp.set_code(raw_code)
             otp.save(update_fields=["code_hash"])
-            OtpUtils.start_cooldown(user.pk, purpose)
+            transaction.on_commit(
+                lambda: OtpUtils.start_cooldown(user.pk, purpose),
+            )
 
         otp._raw_code = raw_code
         token = OtpUtils.create_token(otp.pk, user.pk, purpose)
@@ -110,6 +112,8 @@ class OtpVerifyService:
 
     @staticmethod
     def verify(token: str, code: str, purpose: str) -> Otp:
+        verification_error = None
+
         with transaction.atomic():
             otp = OtpVerifyService._resolve_otp(token, purpose)
             if otp.is_used or otp.is_expired:
@@ -119,16 +123,22 @@ class OtpVerifyService:
 
             if not otp.is_valid_code(code):
                 otp.increment_attempts()
-                raise OtpVerificationError(_("Le code saisi est incorrect."))
+                verification_error = OtpVerificationError(
+                    _("Le code saisi est incorrect.")
+                )
+            else:
+                otp.mark_verified()
+                OtpUtils.clear_cooldown(otp.user_id, purpose)
+                # La vérification d'un OTP signup ou login confirme l'adresse email
+                # (même comportement que la référence : signup + login marquent is_verified).
+                if purpose in {OtpPurpose.SIGNUP, OtpPurpose.LOGIN}:
+                    otp.user.email_verified = True
+                    otp.user.save(update_fields=["email_verified"])
 
-            otp.mark_verified()
-            OtpUtils.clear_cooldown(otp.user_id, purpose)
-            # La vérification d'un OTP signup ou login confirme l'adresse email
-            # (même comportement que la référence : signup + login marquent is_verified).
-            if purpose in {OtpPurpose.SIGNUP, OtpPurpose.LOGIN}:
-                otp.user.email_verified = True
-                otp.user.save(update_fields=["email_verified"])
-            return otp
+        if verification_error:
+            raise verification_error
+
+        return otp
 
 
 class PasswordResetTokenService:

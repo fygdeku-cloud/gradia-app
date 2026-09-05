@@ -17,7 +17,7 @@ class UserManager(DjangoUserManager):
         if not email:
             raise ValueError("The email address is required.")
 
-        email = self.normalize_email(email)
+        email = self.normalize_email(email).strip().lower()
         extra_fields.setdefault("username", self._generate_unique_username(email))
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
