@@ -1,0 +1,42 @@
+{% load static i18n %}
+{# Tableau d'activité (données absentes → état vide élégant). #}
+{# Usage : {% include "dashboard/components/activity_table.html" with table_columns=_('Utilisateur') rows=activity_rows %} #}
+{# rows est une liste de dicts attendue d'une future view/service. #}
+<div class="overflow-x-auto">
+  <table class="gradia-table">
+    {% if activity_columns %}
+      <thead>
+        <tr>
+          {% for column in activity_columns %}<th scope="col">{{ column }}</th>{% endfor %}
+          <th scope="col" class="sr-only">{% trans 'Détails' %}</th>
+        </tr>
+      </thead>
+    {% endif %}
+    <tbody>
+      {% if rows %}
+        {% for row in rows %}
+          <tr>
+            {% for value in row.values %}<td>{{ value }}</td>{% endfor %}
+            <td class="text-right">
+              <a href="#" class="text-sm font-medium text-brand-400 transition hover:text-brand-300">{% trans 'Voir' %}</a>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="99">
+            {% trans "Aucune activité disponible." as empty_title %}
+            {% trans "Les actions des utilisateurs apparaîtront ici." as empty_description %}
+            {% include "common/empty_state.html" with title=empty_title description=empty_description %}
+          </td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+{% if not rows %}
+  {% comment %}
+    TODO BACKEND : cette section nécessite des données d'activité
+    fournies par une future view/service.
+  {% endcomment %}
+{% endif %}

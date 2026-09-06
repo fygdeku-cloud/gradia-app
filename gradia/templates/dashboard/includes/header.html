@@ -1,0 +1,46 @@
+{% load static i18n %}
+{# En-tête du dashboard : hamburger mobile, titre contextuel, avatar/dropdown. #}
+<header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur-md sm:px-6">
+  <div class="flex items-center gap-3">
+    <button type="button" data-drawer-target="dashboard-drawer" data-drawer-show="dashboard-drawer"
+            class="rounded-lg p-2 text-slate-400 transition hover:bg-night-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 lg:hidden"
+            aria-controls="dashboard-drawer" aria-expanded="false">
+      <span class="sr-only">{% trans 'Ouvrir le menu' %}</span>
+      <svg class="h-6 w-6" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+    </button>
+    <div>
+      <p class="text-sm font-semibold text-slate-900">{{ page_title|default:"Gradia" }}</p>
+      <p class="hidden text-xs text-slate-500 sm:block">{{ request.user.email }}</p>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <button id="dashboard-user-menu-button" type="button"
+            data-dropdown-toggle="dashboard-user-dropdown" data-dropdown-placement="bottom-end"
+            class="flex items-center gap-2 rounded-full p-1 transition hover:bg-slate-50"
+            aria-haspopup="menu" aria-expanded="false">
+      <span class="sr-only">{% trans 'Ouvrir le menu utilisateur' %}</span>
+      {% include "common/avatar.html" with avatar_user=request.user avatar_size="h-9 w-9 text-xs" %}
+      <span class="hidden text-sm font-medium text-slate-700 md:inline">{{ request.user.name|default:request.user.email }}</span>
+    </button>
+  </div>
+</header>
+
+<div id="dashboard-user-dropdown" role="menu" aria-labelledby="dashboard-user-menu-button"
+    class="z-40 hidden w-64 divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-xl">
+  <div class="px-4 py-3">
+    <p class="truncate text-sm font-semibold text-slate-900">{{ request.user.name|default:request.user.email }}</p>
+    <p class="truncate text-sm text-slate-500">{{ request.user.email }}</p>
+  </div>
+  <ul class="py-1 text-sm text-slate-600" role="none">
+    <li role="none"><a href="{% url 'users:profile' %}" role="menuitem" class="block px-4 py-2 transition hover:bg-slate-50 hover:text-brand-700">{% trans 'Mon profil' %}</a></li>
+    <li role="none"><a href="{% url 'users:password_reset' %}" role="menuitem" class="block px-4 py-2 transition hover:bg-slate-50 hover:text-brand-700">{% trans 'Modifier mon mot de passe' %}</a></li>
+  </ul>
+  <div class="py-1">
+    <form method="post" action="{% url 'users:logout' %}">
+      {% csrf_token %}
+      <button type="submit" role="menuitem"
+              class="block w-full px-4 py-2 text-left text-sm text-red-600 transition hover:bg-red-50 hover:text-red-700">{% trans 'Déconnexion' %}</button>
+    </form>
+  </div>
+</div>

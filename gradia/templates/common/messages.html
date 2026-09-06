@@ -1,0 +1,54 @@
+{% load i18n %}
+{% if messages %}
+<div id="gradia-message-stack"
+     class="pointer-events-none fixed inset-x-0 top-24 z-50 flex flex-col items-center gap-3 px-4 sm:items-end sm:pr-6"
+     aria-live="polite">
+  {% for message in messages %}
+    {% if message.tags == 'success' %}
+      <div data-gradia-message="4500" role="status"
+           class="gradia-fade-in pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-emerald-200 bg-white px-4 py-3 text-emerald-800 shadow-lg">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+        <p class="flex-1 text-sm font-medium">{{ message }}</p>
+        <button type="button" data-gradia-message-close
+                class="shrink-0 rounded-lg p-1 text-emerald-400 transition hover:bg-emerald-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+                aria-label="{% trans 'Fermer le message' %}">
+          <svg class="h-4 w-4" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+      </div>
+    {% elif 'error' in message.tags %}
+      <div data-gradia-message="8000" role="alert"
+           class="gradia-fade-in pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-red-200 bg-white px-4 py-3 text-red-800 shadow-lg">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-red-400" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>
+        <p class="flex-1 text-sm font-medium">{{ message }}</p>
+        <button type="button" data-gradia-message-close
+                class="shrink-0 rounded-lg p-1 text-red-400 transition hover:bg-red-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                aria-label="{% trans 'Fermer le message' %}">
+          <svg class="h-4 w-4" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+      </div>
+    {% elif 'warning' in message.tags %}
+      <div data-gradia-message="8000" role="status"
+           class="gradia-fade-in pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-amber-200 bg-white px-4 py-3 text-amber-800 shadow-lg">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-amber-400" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.515 2.625H3.72c-1.344 0-2.188-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 00-.75.75v3.5a.75.75 0 001.5 0v-3.5A.75.75 0 0010 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+        <p class="flex-1 text-sm font-medium">{{ message }}</p>
+        <button type="button" data-gradia-message-close
+                class="shrink-0 rounded-lg p-1 text-amber-400 transition hover:bg-amber-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                aria-label="{% trans 'Fermer le message' %}">
+          <svg class="h-4 w-4" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+      </div>
+    {% else %}
+      <div data-gradia-message="6000" role="status"
+           class="gradia-fade-in pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border border-brand-200 bg-white px-4 py-3 text-brand-800 shadow-lg">
+        <svg class="mt-0.5 h-5 w-5 shrink-0 text-brand-400" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 8 8 0 0116 0zm-7-4a1 1 0 11-2 1 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.75.75 0 01.75.75v3.5a.75.75 0 049 3.5h.75a.75.75 0 000-1.5H10v-3a.75.75 0 00-.75-.75H9z" clip-rule="evenodd"/></svg>
+        <p class="flex-1 text-sm font-medium">{{ message }}</p>
+        <button type="button" data-gradia-message-close
+                class="shrink-0 rounded-lg p-1 text-brand-400 transition hover:bg-brand-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+                aria-label="{% trans 'Fermer le message' %}">
+          <svg class="h-4 w-4" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+        </button>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+{% endif %}

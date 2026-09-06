@@ -1,0 +1,21 @@
+{% extends "emails/base.html" %}
+{% load i18n %}
+
+{% block subject %}{% trans 'Bienvenue sur Gradia !' %}{% endblock subject %}
+
+{% block content %}
+<p>
+  {% blocktrans %}Votre compte a été créé avec succès. Votre adresse email est désormais vérifiée
+  et votre préparation peut commencer.{% endblocktrans %}
+</p>
+
+{% if user.is_student %}
+  <p>{% trans 'Nous sommes ravis de vous compter parmi nos étudiants.' %}</p>
+{% elif user.is_admin or user.is_superuser %}
+  <p>{% trans "Vous disposez de droits d'administration sur la plateforme." %}</p>
+{% endif %}
+
+<p style="color:#64748b; font-size:13px;">
+  {% blocktrans %}L'équipe Gradia reste à votre disposition pour toute question.{% endblocktrans %}
+</p>
+{% endblock content %}

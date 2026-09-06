@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans 'Accueil' %} · Gradia{% endblock title %}
+
+{% block extra_css %}
+  <link href="{% static 'css/home/home.css' %}" rel="stylesheet" />
+{% endblock extra_css %}
+
+{% block extra_js %}
+  <script defer src="{% static 'js/home/main.js' %}"></script>
+{% endblock extra_js %}
+
+{% block content %}
+  {% include "home/include/hero.html" %}
+  {% include "home/include/benefits.html" %}
+  {% include "home/include/contests.html" %}
+  {% include "home/include/sessions.html" %}
+  {% include "home/include/cta_final.html" %}
+{% endblock content %}

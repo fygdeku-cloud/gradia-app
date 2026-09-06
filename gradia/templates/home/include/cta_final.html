@@ -1,0 +1,21 @@
+{% load i18n %}
+<section class="border-t border-slate-100 bg-slate-50/70">
+  <div class="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8">
+    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+      {% trans 'Commencez votre préparation dès aujourd\'hui.' %}
+    </h2>
+    <p class="mx-auto mt-3 max-w-2xl text-lg text-slate-600">
+      {% blocktrans %}Créez votre compte gratuitement et explorez les concours disponibles.{% endblocktrans %}
+    </p>
+    <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <a href="{% url 'users:register' %}"
+         class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30">
+        {% trans 'Créer mon compte' %}
+      </a>
+      <a href="{% url 'users:login' %}"
+         class="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20">
+        {% trans "J'ai déjà un compte" %}
+      </a>
+    </div>
+  </div>
+</section>

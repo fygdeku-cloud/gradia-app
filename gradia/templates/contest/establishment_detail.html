@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ establishment.title }} · Gradia{% endblock title %}
+
+{% block extra_css %}
+  <link href="{% static 'css/contest/contest.css' %}" rel="stylesheet" />
+{% endblock extra_css %}
+
+{% block content %}
+<section class="gradia-hero-grid relative overflow-hidden border-b border-night-700 bg-night-900 py-14 text-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-400" aria-label="{% trans 'Fil d\u2019Ariane' %}">
+      <a href="{% url 'home' %}" class="transition hover:text-white">{% trans 'Accueil' %}</a>
+      <span aria-hidden="true">/</span>
+      <a href="{% url 'contest:list' %}" class="transition hover:text-white">{% trans 'Concours' %}</a>
+      <span aria-hidden="true">/</span>
+      <a href="{% url 'contest:establishment_list' %}" class="transition hover:text-white">{% trans 'Établissements' %}</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-white" aria-current="page">{{ establishment.title }}</span>
+    </nav>
+    <h1 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{{ establishment.title }}</h1>
+    {% if establishment.location %}
+      <p class="mt-2 text-sm text-slate-400">{{ establishment.location }}</p>
+    {% endif %}
+    {% if establishment.description %}
+      <p class="mt-3 max-w-3xl text-sm leading-relaxed text-slate-400">{{ establishment.description }}</p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+  <div class="flex items-center justify-between">
+    <h2 class="gradia-section-title">{% trans 'Concours de cet établissement' %}</h2>
+    {% if establishment.contest_count is not None %}
+      <span class="text-sm text-slate-500">
+        {% blocktranslate count total=establishment.contest_count trimmed %}
+          {{ total }} concours
+        {% plural %}
+          {{ total }} concours
+        {% endblocktranslate %}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if contests %}
+    <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {% for contest in contests %}
+        {% include "contest/include/contest_card.html" with contest=contest %}
+      {% endfor %}
+    </div>
+  {% else %}
+    {% include "common/empty_state.html" with title=_("Aucun concours") description=_("Les concours de cet établissement seront bientôt disponibles.") %}
+  {% endif %}
+</section>
+{% endblock content %}

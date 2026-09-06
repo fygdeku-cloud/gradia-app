@@ -1,0 +1,12 @@
+{% load static i18n %}
+{# Carte statistique (semantics+accessible). #}
+{# Usage : {% include "dashboard/components/stat_card.html" with stat_title=_('Étudiants inscrits') stat_value=_('Indisponible') stat_hint=_('À venir') %} #}
+<div class="gradia-stat-card">
+  <dl>
+    <dt>{{ stat_title }}</dt>
+    <dd>
+      <strong>{{ stat_value }}</strong>
+      {% if stat_hint %}<span>{{ stat_hint }}</span>{% endif %}
+    </dd>
+  </dl>
+</div>

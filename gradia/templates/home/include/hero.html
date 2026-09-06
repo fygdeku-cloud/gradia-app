@@ -1,0 +1,52 @@
+{% load static i18n %}
+<section class="gradia-home-hero">
+  <div class="gradia-home-hero__inner">
+    <div class="gradia-home-hero__copy">
+      <span class="gradia-eyebrow">
+        <span class="gradia-eyebrow__dot" aria-hidden="true"></span>
+        {% trans 'La réussite commence ici' %}
+      </span>
+      <h1>{% trans "Prépare-toi aujourd'hui, réussis demain." %}</h1>
+      <p class="gradia-home-hero__intro">
+        {% blocktrans %}La plateforme Gradia rassemble les concours, sessions, sujets et corrigés dont vous avez besoin pour réviser avec méthode.{% endblocktrans %}
+      </p>
+      <div class="gradia-home-hero__actions">
+        <a href="{% url 'users:register' %}" class="gradia-btn gradia-btn-primary">
+          {% trans 'Commencer maintenant' %}
+          <span aria-hidden="true">&#8594;</span>
+        </a>
+        <a href="{% url 'contest:list' %}" class="gradia-btn gradia-btn-ghost">
+          {% trans 'Explorer les concours' %}
+        </a>
+      </div>
+      <div class="gradia-home-hero__trust">
+        <span class="gradia-avatar-stack" aria-hidden="true">
+          <span>G</span><span>+</span><span>&#10003;</span>
+        </span>
+        <span>{% trans 'Des ressources structurées pour avancer sereinement.' %}</span>
+      </div>
+    </div>
+
+    <div class="gradia-home-hero__visual" aria-label="{% trans 'Étudiant consultant des ressources de préparation' %}">
+      <div class="gradia-hero-orbit gradia-hero-orbit--one" aria-hidden="true"></div>
+      <div class="gradia-hero-orbit gradia-hero-orbit--two" aria-hidden="true"></div>
+      <div class="gradia-hero-media">
+        <img src="{% static 'images/home/hero/student-study.jpg' %}"
+             alt="{% trans 'Étudiant en train de préparer un concours' %}"
+             loading="eager" />
+      </div>
+      <div class="gradia-hero-float gradia-hero-float--catalogue">
+        <span class="gradia-hero-float__icon" aria-hidden="true">&#9733;</span>
+        <span><strong>{{ home_contests|length }}</strong> {% trans 'concours disponibles' %}</span>
+      </div>
+      <div class="gradia-hero-float gradia-hero-float--sessions">
+        <span class="gradia-hero-float__icon gradia-hero-float__icon--teal" aria-hidden="true">&#10003;</span>
+        <span><strong>{{ home_sessions|length }}</strong> {% trans 'sessions à consulter' %}</span>
+      </div>
+      <div class="gradia-hero-stamp" aria-hidden="true">
+        <span>G</span>
+        <small>{% trans 'Étudier' %}</small>
+      </div>
+    </div>
+  </div>
+</section>

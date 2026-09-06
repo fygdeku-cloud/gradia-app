@@ -1,0 +1,61 @@
+{% load static i18n %}
+{# Carte d'identité du profil (avatar, nom, email, badges, informations). #}
+{# Usage : {% include "dashboard/components/profile_card.html" with card_user=user card_profile=profile %} #}
+<section class="gradia-panel overflow-hidden" aria-labelledby="profile-title">
+  <div class="h-24 bg-gradient-to-r from-brand-600 to-brand-800" aria-hidden="true"></div>
+  <div class="p-6">
+    <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+      {% include "common/avatar.html" with avatar_user=card_user avatar_size="h-20 w-20 text-2xl" %}
+      <div class="flex-1">
+        <h1 id="profile-title" class="text-2xl font-extrabold tracking-tight text-slate-900">{{ card_user.name|default:card_user.email }}</h1>
+        <p class="text-sm text-slate-400">{{ card_user.email }}</p>
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          {% if card_user.is_superuser %}
+            {% trans 'Superutilisateur' as role_label %}
+            {% include "common/badge.html" with badge_text=role_label badge_variant="purple" %}
+          {% elif card_user.is_admin %}
+            {% trans 'Administrateur' as role_label %}
+            {% include "common/badge.html" with badge_text=role_label badge_variant="purple" %}
+          {% elif card_user.is_staff %}
+            {% trans 'Équipe' as role_label %}
+            {% include "common/badge.html" with badge_text=role_label badge_variant="indigo" %}
+          {% elif card_user.is_student %}
+            {% trans 'Étudiant' as role_label %}
+            {% include "common/badge.html" with badge_text=role_label badge_variant="brand" %}
+          {% else %}
+            {% trans 'Utilisateur' as role_label %}
+            {% include "common/badge.html" with badge_text=role_label badge_variant="slate" %}
+          {% endif %}
+          {% if card_user.email_verified %}
+            {% trans 'Email vérifié' as verified_label %}
+            {% include "common/badge.html" with badge_text=verified_label badge_variant="emerald" badge_icon="check" %}
+          {% else %}
+            {% trans 'Email non vérifié' as verified_label %}
+            {% include "common/badge.html" with badge_text=verified_label badge_variant="amber" badge_icon="warning" %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <dl class="mt-6 grid grid-cols-1 gap-4 border-t border-slate-200 pt-5 sm:grid-cols-2">
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">{% trans 'Nom complet' %}</dt>
+        <dd class="mt-1 text-sm font-medium text-slate-700">{{ card_user.name|default:"—" }}</dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">{% trans 'Membre depuis' %}</dt>
+        <dd class="mt-1 text-sm font-medium text-slate-700">{{ card_user.date_joined|date:"DATE_FORMAT" }}</dd>
+      </div>
+      {% if card_profile %}
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">{% trans 'Téléphone' %}</dt>
+          <dd class="mt-1 text-sm font-medium text-slate-700">{{ card_profile.phone_number|default:"—" }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">{% trans 'Établissement' %}</dt>
+          <dd class="mt-1 text-sm font-medium text-slate-700">{{ card_profile.school|default:"—" }}</dd>
+        </div>
+      {% endif %}
+    </dl>
+  </div>
+</section>

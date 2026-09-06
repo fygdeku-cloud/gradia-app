@@ -1,0 +1,28 @@
+{% load static i18n %}
+{# Drawer mobile (Flowbite drawer) — même navigation que la sidebar desktop. #}
+<div id="dashboard-drawer" data-drawer-backdrop="true" data-drawer-body-scrolling="true"
+    class="fixed inset-y-0 left-0 z-50 w-72 -translate-x-full transform overflow-y-auto border-r border-slate-200 bg-white transition-transform duration-300 lg:hidden"
+     tabindex="-1" aria-label="{% trans 'Menu du tableau de bord' %}">
+  <div class="flex h-16 items-center justify-between border-b border-slate-200 px-5">
+    <a href="{% url 'home' %}" class="flex items-center gap-2.5 text-slate-900">
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-lg font-extrabold text-white">G</span>
+      <span class="text-xl font-extrabold tracking-tight">Gradia</span>
+    </a>
+    <button type="button" data-drawer-hide="dashboard-drawer"
+            class="rounded-lg p-2 text-slate-400 transition hover:bg-night-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+            aria-label="{% trans 'Fermer le menu' %}">
+      <svg class="h-5 w-5" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+  {% include "dashboard/includes/sidebar_nav.html" %}
+  <div class="px-3 py-4">
+    <form method="post" action="{% url 'users:logout' %}">
+      {% csrf_token %}
+      <button type="submit"
+              class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-400 transition hover:bg-night-800 hover:text-red-300">
+        <svg class="h-5 w-5" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H2.25"/></svg>
+        {% trans 'Déconnexion' %}
+      </button>
+    </form>
+  </div>
+</div>

@@ -8,8 +8,7 @@
     <title>{% block title %}Gradia{% endblock title %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
-          content="{% blocktrans %}Plateforme nationale professionnelle de préparation aux concours.{% endblocktrans %}" />
-    <meta name="author" content="Gradia" />
+          content="{% blocktrans %}Plateforme éducative moderne dédiée à la préparation aux concours et à l'apprentissage.{% endblocktrans %}" />
     <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,12 +26,12 @@
               },
               colors: {
                 brand: {
-                  50: "#eef4ff",
-                  100: "#d9e6ff",
-                  200: "#b3ccff",
-                  300: "#7aa7ff",
-                  400: "#4a84ff",
-                  500: "#2f6bff",
+                  50: "#eff6ff",
+                  100: "#dbeafe",
+                  200: "#bfdbfe",
+                  300: "#93c5fd",
+                  400: "#60a5fa",
+                  500: "#3b82f6",
                   600: "#2563eb",
                   700: "#1d4ed8",
                   800: "#1e40af",
@@ -40,10 +39,10 @@
                 },
                 night: {
                   950: "#0a0f1c",
-                  900: "#0d1424",
-                  850: "#101826",
-                  800: "#141d30",
-                  700: "#1a2438",
+                  900: "#101826",
+                  850: "#141d30",
+                  800: "#1a2438",
+                  700: "#24324c",
                 },
               },
             },
@@ -56,23 +55,30 @@
       <link href="{% static 'css/common/components.css' %}" rel="stylesheet" />
       <link href="{% static 'css/common/forms.css' %}" rel="stylesheet" />
       <link href="{% static 'css/common/utilities.css' %}" rel="stylesheet" />
+      <link href="{% static 'css/dashboard/dashboard.css' %}" rel="stylesheet" />
+      <link href="{% static 'css/dashboard/sidebar.css' %}" rel="stylesheet" />
+      <link href="{% static 'css/dashboard/components.css' %}" rel="stylesheet" />
       {% block extra_css %}{% endblock extra_css %}
     {% endblock css %}
   </head>
-  <body class="flex min-h-screen flex-col bg-white font-sans text-slate-900 antialiased">
+  <body class="min-h-full bg-slate-50 font-sans text-slate-700 antialiased">
     <a href="#main-content" class="skip-link">{% trans 'Aller au contenu principal' %}</a>
-    {% block body %}
-      {% include "common/messages.html" %}
-      {% include "home/include/navbar.html" %}
-      <main class="flex-1" id="main-content" tabindex="-1">
+    {% include "common/messages.html" %}
+
+    {% include "dashboard/includes/drawer.html" %}
+    {% include "dashboard/includes/sidebar.html" %}
+
+    <div class="flex min-h-screen flex-col lg:pl-72">
+      {% include "dashboard/includes/header.html" %}
+      <main class="flex-1 px-4 py-8 sm:px-6 lg:px-8" id="main-content" tabindex="-1">
         {% block content %}{% endblock content %}
       </main>
-      {% include "common/footer.html" %}
-    {% endblock body %}
-    {% block modal %}{% endblock modal %}
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script defer src="{% static 'js/common/messages.js' %}"></script>
+    <script defer src="{% static 'js/dashboard/sidebar.js' %}"></script>
+    <script defer src="{% static 'js/dashboard/dropdown.js' %}"></script>
     {% block extra_js %}{% endblock extra_js %}
     {% block inline_javascript %}{% endblock inline_javascript %}
   </body>

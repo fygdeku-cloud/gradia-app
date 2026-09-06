@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ contest.title }} · Gradia{% endblock title %}
+
+{% block extra_css %}
+  <link href="{% static 'css/contest/contest.css' %}" rel="stylesheet" />
+{% endblock extra_css %}
+
+{% block content %}
+{# ============================================================
+   Bandeau du concours
+   ============================================================ #}
+<section class="gradia-hero-grid relative overflow-hidden border-b border-night-700 bg-night-900 text-white">
+  <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+    <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-400" aria-label="{% trans 'Fil d\u2019Ariane' %}">
+      <a href="{% url 'home' %}" class="transition hover:text-white">{% trans 'Accueil' %}</a>
+      <span aria-hidden="true">/</span>
+      <a href="{% url 'contest:list' %}" class="transition hover:text-white">{% trans 'Concours' %}</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-white" aria-current="page">{{ contest.title }}</span>
+    </nav>
+
+    <div class="mt-6 flex flex-wrap items-center gap-2 text-xs">
+      <a href="{% url 'contest:category_detail' slug=contest.category.slug %}"
+         class="rounded-full bg-brand-500/10 px-3 py-1 font-semibold text-brand-300 transition hover:bg-brand-500/20">{{ contest.category.title }}</a>
+      <a href="{% url 'contest:establishment_detail' slug=contest.establishment.slug %}"
+         class="rounded-full border border-night-700 bg-night-800 px-3 py-1 font-medium text-slate-300 transition hover:bg-night-700">{{ contest.establishment.title }}</a>
+    </div>
+
+    <h1 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{{ contest.title }}</h1>
+    {% if contest.description %}
+      <p class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-400 sm:text-base">{{ contest.description }}</p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+  <div class="grid grid-cols-1 gap-10 lg:grid-cols-3">
+    {# ================= Colonne principale ================= #}
+    <div class="space-y-10 lg:col-span-2">
+      {% if contest.requirements %}
+        <div class="gradia-card p-6">
+          <h2 class="gradia-card-title flex items-center gap-2">
+            <svg class="h-5 w-5 text-brand-400" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 11-18 9 9 0 0118 0z"/></svg>
+            {% trans 'Conditions et pré-requis' %}
+          </h2>
+            <p class="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-600">{{ contest.requirements }}</p>
+        </div>
+      {% endif %}
+
+      {# Sessions du concours #}
+      <div>
+        <div class="flex items-center justify-between">
+          <h2 class="gradia-section-title">{% trans 'Sessions du concours' %}</h2>
+          <span class="text-sm text-slate-500">
+            {% blocktranslate count total=contest.sessions.all|length trimmed %}
+              {{ total }} session
+            {% plural %}
+              {{ total }} sessions
+            {% endblocktranslate %}
+          </span>
+        </div>
+
+        {% if contest.sessions.all %}
+          <div class="mt-6 space-y-4">
+            {% for session in contest.sessions.all %}
+              {% include "contest/include/session_header.html" with session=session contest=contest %}
+            {% endfor %}
+          </div>
+        {% else %}
+          {% include "common/empty_state.html" with title=_("Aucune session publiée") description=_("Les sessions de ce concours seront annoncées prochainement.") %}
+        {% endif %}
+      </div>
+    </div>
+
+    {# ================= Colonne latérale ================= #}
+    <aside class="space-y-6 lg:col-span-1">
+      <div class="gradia-card p-6">
+        <h2 class="gradia-card-title">{% trans 'Bon à savoir' %}</h2>
+        <dl class="mt-4 space-y-4 text-sm">
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-slate-500">{% trans 'Catégorie' %}</dt>
+            <dd>
+              <a href="{% url 'contest:category_detail' slug=contest.category.slug %}" class="font-semibold text-brand-400 transition hover:text-brand-300">{{ contest.category.title }}</a>
+            </dd>
+          </div>
+          <div class="flex items-center justify-between gap-3">
+            <dt class="text-slate-500">{% trans 'Établissement' %}</dt>
+            <dd>
+              <a href="{% url 'contest:establishment_detail' slug=contest.establishment.slug %}" class="text-right font-semibold text-brand-400 transition hover:text-brand-300">{{ contest.establishment.title }}</a>
+            </dd>
+          </div>
+          <div class="border-t border-slate-200 pt-4">
+            <dt class="text-slate-500">{% trans 'Sujets et corrigés' %}</dt>
+            <dd class="mt-1 text-xs leading-relaxed text-slate-400">
+              {% trans "Les sujets et corrigés sont publiés au niveau de chaque session. Ouvrez une session pour y accéder." %}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock content %}

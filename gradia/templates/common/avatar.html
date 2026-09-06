@@ -1,0 +1,8 @@
+{% load i18n %}
+{# Avatar circulaire avec initiales (dérivées du nom ou de l'email,#}
+{# jamais de donnée inventée).                                #}
+{# Usage : {% include "common/avatar.html" with avatar_user=user avatar_size="h-10 w-10" %} #}
+{% with initials=avatar_user.name|default:avatar_user.email|slice:":2"|upper %}
+  <span class="inline-flex items-center justify-center rounded-full bg-brand-600 font-bold uppercase text-white ring-2 ring-night-800 {% if avatar_size %}{{ avatar_size }}{% else %}h-10 w-10 text-sm{% endif %}"
+        aria-hidden="true">{{ initials }}</span>
+{% endwith %}

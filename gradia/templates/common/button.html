@@ -1,0 +1,18 @@
+{% load static i18n %}
+{# Bouton Gradia (design system). #}
+{# Usage :                                                             #}
+{#   {% include "common/button.html" with button_type="submit" button_label=_('Se connecter') button_variant="primary" %} #}
+{# Variantes : primary, ghost, white, outline-white.                    #}
+{# Options : button_block, button_extra_class, button_aria, button_id.  #}
+{% trans 'Soumettre' as default_button_label %}
+{% if button_is_link and button_href %}
+  <a href="{{ button_href }}"
+     class="gradia-btn gradia-btn-{% firstof button_variant 'primary' %} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}"
+     {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}
+     {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</a>
+{% else %}
+  <button type="{{ button_type|default:'submit' }}"
+          class="gradia-btn gradia-btn-{% firstof button_variant 'primary' %} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}"
+          {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}
+          {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</button>
+{% endif %}

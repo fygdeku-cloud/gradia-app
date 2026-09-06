@@ -1,0 +1,42 @@
+{% load i18n %}
+{# ============================================================
+   Base commune des emails Gradia (structure imposée).
+   Les templates emails réellement utilisés par le backend restent
+   inchangés (emails/users/*); ceux-ci constituent la bibliothèque
+   conforme de la structure templates/emails/.
+   Contexte attendu : user, site_name, site_url (ajoutés par EmailUtil).
+   ============================================================ #}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block subject %}{% trans 'Gradia' %}{% endblock subject %}</title>
+    <style>
+      body { margin: 0; padding: 24px; background: #f4f6f8; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; color: #0f172a; }
+      .gradia-mail { max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; }
+      .gradia-mail-header { background: linear-gradient(135deg, #2563eb, #2f6bff); padding: 24px 28px; }
+      .gradia-mail-header h1 { margin: 0; font-size: 20px; color: #ffffff; }
+      .gradia-mail-body { padding: 28px; font-size: 15px; line-height: 1.6; color: #0f172a; }
+      .gradia-mail-code { font-size: 34px; font-weight: 800; letter-spacing: 8px; text-align: center; color: #2563eb; margin: 20px 0; }
+      .gradia-mail-footer { padding: 16px 28px; border-top: 1px solid #eef2f7; font-size: 12px; color: #64748b; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div class="gradia-mail" role="article">
+      <div class="gradia-mail-header">
+        <h1>{% block heading %}{{ site_name|default:"Gradia" }}{% endblock heading %}</h1>
+      </div>
+      <div class="gradia-mail-body">
+        <p>{% trans 'Bonjour' %} {{ user.name|default:user.email }},</p>
+        {% block content %}{% endblock content %}
+      </div>
+      <div class="gradia-mail-footer">
+        <p>{{ site_name|default:"Gradia" }} — {% trans 'Plateforme éducative moderne dédiée à la préparation aux concours.' %}</p>
+        {% if site_url %}<p style="margin-top:8px;"><a href="{{ site_url }}" style="color:#2563eb;">{{ site_url }}</a></p>{% endif %}
+      </div>
+    </div>
+  </body>
+</html>

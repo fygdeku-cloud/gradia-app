@@ -1,0 +1,14 @@
+{% extends "emails/base.html" %}
+{% load i18n %}
+
+{% block subject %}{% trans 'Votre code de vérification — Gradia' %}{% endblock subject %}
+
+{% block content %}
+<p>{% blocktrans %}Utilisez le code ci-dessous pour vérifier votre adresse email. Ce code expire dans quelques minutes.{% endblocktrans %}</p>
+
+<p class="gradia-mail-code">{{ code }}</p>
+
+<p style="color:#64748b; font-size:13px;">
+  {% blocktrans %}Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email.{% endblocktrans %}
+</p>
+{% endblock content %}

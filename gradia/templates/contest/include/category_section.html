@@ -1,0 +1,19 @@
+{% load i18n %}
+{# Section « Catégorie » réutilisable (thème sombre). Usage : {% include "contest/include/category_section.html" with category=category contests=contest_list %} #}
+<div class="mt-8">
+  <div class="mb-4 flex items-center gap-3">
+    <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/10 text-brand-400" aria-hidden="true">
+      <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M4.5 2.25a.75.75 0 000 1.5v5.25a3 3 0 013 3v8.25a3 3 0 013 3h5.25a3 3 0 003-3v-8.25a3 3 0 013-3V3.75a.75.75 0 000-1.5h-3.75a.75.75 0 000 1.5h.75v4.5a1.5 1.5 0 01-1.5 1.5h-.75a1.5 1.5 0 01-1.5-1.5V3.75a.75.75 0 000-1.5h-3a.75.75 0 000 1.5h.75v4.5a1.5 1.5 0 01-1.5 1.5H6.75a1.5 1.5 0 01-1.5-1.5V3.75a.75.75 0 000-1.5H4.5z" clip-rule="evenodd"/>
+      </svg>
+    </span>
+    <h3 class="text-lg font-bold text-white">{{ category.title }}</h3>
+    <a href="{% url 'contest:category_detail' slug=category.slug %}"
+       class="text-sm font-semibold text-brand-400 transition hover:text-brand-300">{% trans 'Tout voir' %} →</a>
+  </div>
+  <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    {% for contest in contests %}
+      {% include "contest/include/contest_card.html" with contest=contest %}
+    {% endfor %}
+  </div>
+</div>

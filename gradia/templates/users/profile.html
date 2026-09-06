@@ -1,0 +1,82 @@
+{% extends "dashboard/base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans 'Mon profil' %} · Gradia{% endblock title %}
+
+{% block content %}
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+
+  {# ===== Colonne principale : identité ===== #}
+  <div class="lg:col-span-2 space-y-6">
+    {% include "dashboard/components/profile_card.html" with card_user=user card_profile=profile %}
+
+    {# ===== Section ADMIN / SUPERUSER : statistiques et activité ===== #}
+    {% if user.is_staff or user.is_superuser or user.is_admin %}
+      <section class="gradia-panel" aria-labelledby="admin-stats-title">
+        <div class="gradia-panel-body">
+          <h2 id="admin-stats-title" class="gradia-card-title">{% trans "Vue d'administration" %}</h2>
+          <p class="mt-1 text-sm text-slate-400">{% trans 'Aperçu réservé aux administrateurs.' %}</p>
+
+          <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {% trans 'Étudiants inscrits' as stat_title %}
+            {% trans 'Indisponible' as stat_value %}
+            {% trans 'À venir' as stat_hint %}
+            {% include "dashboard/components/stat_card.html" with stat_title=stat_title stat_value=stat_value stat_hint=stat_hint %}
+            {% trans 'Documents publiés' as stat_title %}
+            {% include "dashboard/components/stat_card.html" with stat_title=stat_title stat_value=stat_value stat_hint=stat_hint %}
+            {% trans 'Concours actifs' as stat_title %}
+            {% include "dashboard/components/stat_card.html" with stat_title=stat_title stat_value=stat_value stat_hint=stat_hint %}
+          </div>
+          {% comment %}
+            TODO BACKEND : ces statistiques devront être fournies par une future
+            view/service (aucune donnée de comptage n'est actuellement exposée
+            au template par ProfileView et aucune donnée fictive ne doit être
+            affichée).
+          {% endcomment %}
+        </div>
+      </section>
+
+      <section class="gradia-panel" aria-labelledby="admin-activity-title">
+        <div class="gradia-panel-body">
+          <h2 id="admin-activity-title" class="gradia-card-title">{% trans 'Activité récente' %}</h2>
+          <div class="mt-4">
+            {% include "dashboard/components/activity_table.html" %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
+    {# ===== Section ÉTUDIANT : documents consultés ===== #}
+    {% if user.is_student %}
+      <section class="gradia-panel" aria-labelledby="student-docs-title">
+        <div class="gradia-panel-body">
+          <h2 id="student-docs-title" class="gradia-card-title">{% trans 'Mes documents consultés' %}</h2>
+          <p class="mt-1 text-sm text-slate-400">{% trans 'Les annales et ressources que vous avez consultées apparaîtront ici.' %}</p>
+          <div class="mt-4">
+            {% include "dashboard/components/recent_documents.html" %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
+  </div>
+
+  {# ===== Colonne latérale : modifier le profil ===== #}
+  <aside class="space-y-6">
+    <section class="gradia-panel" aria-labelledby="edit-profile-title">
+      <div class="gradia-panel-body">
+        <h2 id="edit-profile-title" class="gradia-card-title">{% trans 'Modifier mon profil' %}</h2>
+        <div class="mt-4">
+          {% include "common/form_errors.html" %}
+        </div>
+        <form method="post" action="{% url 'users:profile' %}" class="mt-4 space-y-4" novalidate>
+          {% csrf_token %}
+          {% include "common/form_field.html" with field=form.phone_number %}
+          {% include "common/form_field.html" with field=form.school %}
+          {% trans 'Enregistrer les modifications' as submit_label %}
+          {% include "common/button.html" with button_type="submit" button_label=submit_label button_block=True %}
+        </form>
+      </div>
+    </section>
+  </aside>
+</div>
+{% endblock content %}

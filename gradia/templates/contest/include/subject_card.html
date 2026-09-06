@@ -1,0 +1,34 @@
+{% load i18n %}
+{# Carte « Sujet » réutilisable (thème sombre). Usage : {% include "contest/include/subject_card.html" with document=document %} #}
+<div class="gradia-card flex flex-col gap-4 p-5 transition hover:border-brand-300 sm:flex-row sm:items-center sm:justify-between">
+  <div class="flex items-start gap-4">
+    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-brand-500/10 text-brand-400" aria-hidden="true">
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+    </span>
+    <div>
+      <h3 class="font-bold text-white">
+        {% if document.context %}{{ document.context }}{% else %}{{ document.title }}{% endif %}
+      </h3>
+      <p class="mt-0.5 text-sm text-slate-400">{{ document.title }}</p>
+      <span class="mt-2 inline-flex rounded-full bg-night-900 px-3 py-1 text-xs font-medium text-slate-400">
+        {% blocktranslate with price=document.price trimmed %}
+          {{ price }} FCFA
+        {% endblocktranslate %}
+      </span>
+    </div>
+  </div>
+  <div class="flex shrink-0 flex-wrap items-center gap-2">
+    {% if document.subject_file %}
+      <a href="{{ document.subject_file.url }}" target="_blank" rel="noopener"
+         class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+        {% trans 'Voir le sujet' %}
+      </a>
+    {% endif %}
+    {% include "contest/include/correction_card.html" with document=document %}
+    <a href="{% url 'contest:session_detail' contest_slug=document.contest_session.contest.slug year=document.contest_session.year %}"
+       class="rounded-xl border border-night-700 px-4 py-2 text-sm font-medium text-slate-300 transition hover:border-brand-500/40 hover:text-brand-300">
+      {% trans 'Session' %} {{ document.contest_session.year }}
+    </a>
+  </div>
+</div>
