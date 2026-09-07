@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from gradia.core.models import BaseModel, TitleDescriptionModel
-from gradia.utils.enums import ACTION_CHOICES
 from django.utils.translation import gettext_lazy as _
+
+from gradia.core.models import BaseModel, TitleDescriptionModel
+from gradia.document.storages import protected_document_storage
+from gradia.utils.enums import ACTION_CHOICES
 
 
 """ FONCTIONS UTILITAIRES INDIQUANT OU JE VAIS ENREGISTRER LES FICHIERS UPLOADEES"""
@@ -28,12 +30,30 @@ def document_correction_upload_path(instance, filename):
 
 
 class Document(BaseModel, TitleDescriptionModel):
-    subject_file = models.FileField( _("Subject File"), upload_to=document_subject_upload_path)
-    correction_file = models.FileField( _("Correction File"), upload_to=document_correction_upload_path)
+    subject_file = models.FileField(
+        _("Subject File"),
+        upload_to=document_subject_upload_path,
+        storage=protected_document_storage,
+        help_text=_("PDF or DOCX file."),
+    )
+    correction_file = models.FileField(
+        _("Correction File"),
+        upload_to=document_correction_upload_path,
+        storage=protected_document_storage,
+        help_text=_("PDF or DOCX file."),
+    )
     price = models.PositiveIntegerField(default=0)
-    context = models.CharField( _("Subject"), max_length=255, blank=True)
+    context = models.CharField(_("Subject"), max_length=255, blank=True)
     contest_session = models.ForeignKey("contest.ContestSession", on_delete=models.CASCADE, related_name="documents")
-   
+    is_published = models.BooleanField(
+        _("Published"),
+        default=True,
+        help_text=_(
+            "Seuls les documents publiés sont visibles dans le catalogue "
+            "et consultables par les étudiants."
+        ),
+    )
+
     class Meta:
         ordering = ["title"]
         verbose_name = _("Document")
