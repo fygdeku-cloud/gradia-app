@@ -23,7 +23,7 @@ services:
       - path: ./.envs/.local/.postgres
         required: false
     ports:
-      - '8000:8000'
+      - "8000:8000"
     command: /start
 
   postgres:
@@ -44,6 +44,7 @@ services:
     container_name: gradia_local_mailpit
     ports:
       - "8025:8025"
+      - "1025:1025"
 
   redis:
     image: docker.io/redis:7.2
@@ -78,5 +79,5 @@ services:
     image: gradia_local_flower
     container_name: gradia_local_flower
     ports:
-      - '5555:5555'
+      - "5555:5555"
     command: /start-flower
