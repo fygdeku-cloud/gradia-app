@@ -1,27 +1,24 @@
-from django.db import models
-
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from gradia.core.models import BaseModel, TitleDescriptionModel
-from gradia.utils.enums import Priority
+from gradia.utils.enums import Priority, TicketStatus
 
-class SupportRequest(BaseModel, TitleDescriptionModel):
+class Ticket(BaseModel, TitleDescriptionModel):
     # Représente une demande d'assistance envoyée par un utilisateur.
-    # Une demande peut contenir plusieurs SupportMessage.
+    # Une demande peut contenir plusieurs TicketMessage.
     student = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="support_requests",
+        related_name="tickets",
         verbose_name=_("Étudiant"),
-        help_text=_("Utilisateur à l'origine de la demande."),
+        help_text=_("Utilisateur à l'origine du ticket."),
     )
-    status = models.BooleanField(
-        default=True,
+    status = models.CharField(
+        max_length=20,
+        choices=TicketStatus.choices,
+        default=TicketStatus.OPEN,
         verbose_name=_("Statut"),
-        help_text=_(
-            "Indique si la demande est ouverte (True) ou fermée (False)."
-        ),
     )
 
     priority = models.CharField(
@@ -34,27 +31,27 @@ class SupportRequest(BaseModel, TitleDescriptionModel):
     class Meta:
         ordering = ["-created_at"]
 
-        verbose_name = _("Demande de support")
-        verbose_name_plural = _("Demandes de support")
+        verbose_name = _("Ticket")
+        verbose_name_plural = _("Tickets")
 
         indexes = [
             models.Index(
                 fields=["student", "-created_at"],
-                name="supp_stud_date_id",
+                name="ticket_stud_date_id",
             ),
             models.Index(
                 fields=["status", "-created_at"],
-                name="supp_req_stat_date_id",
+                name="ticket_stat_date_id",
             ),
             models.Index(
                 fields=["priority", "status"],
-                name="supp_req_prio_stat_id",
+                name="ticket_prio_stat_id",
             ),
         ]
 
     def __str__(self):
         return _(
-            "Demande de %(username)s - %(id)s"
+            "Ticket de %(username)s - %(id)s"
         ) % {
             "username": self.student.name,
             "id": str(self.id)[:8],
@@ -62,41 +59,24 @@ class SupportRequest(BaseModel, TitleDescriptionModel):
 
     @property
     def is_open(self):
-        """
-        Retourne True si la demande est ouverte.
-        """
-        return self.status
+        return self.status in [TicketStatus.OPEN, TicketStatus.IN_PROGRESS]
 
     @property
     def is_closed(self):
-        """
-        Retourne True si la demande est fermée.
-        """
-        return not self.status
+        return self.status in [TicketStatus.RESOLVED, TicketStatus.CLOSED]
 
     def close(self):
-        """
-        Ferme la demande de support.
-        """
-        if self.status:
-            self.status = False
+        if not self.is_closed:
+            self.status = TicketStatus.CLOSED
             self.save(update_fields=["status"])
 
     def reopen(self):
-        """
-        Réouvre une demande précédemment fermée.
-        """
-        if not self.status:
-            self.status = True
+        if self.is_closed:
+            self.status = TicketStatus.OPEN
             self.save(update_fields=["status"])
 
     def set_priority(self, priority):
-        """
-        Modifie la priorité de la demande.
-        """
-        valid_priorities = self.Priority.values
-
-        if priority not in valid_priorities:
+        if priority not in Priority.values:
             raise ValueError(
                 _("Priorité de support invalide.")
             )
@@ -106,15 +86,9 @@ class SupportRequest(BaseModel, TitleDescriptionModel):
             self.save(update_fields=["priority"])
 
     def get_messages(self):
-        """
-        Retourne les messages de la demande dans l'ordre chronologique.
-        """
         return self.messages.select_related("sender").all()
 
     def get_last_message(self):
-        """
-        Retourne le dernier message de la demande.
-        """
         return (
             self.messages
             .select_related("sender")
@@ -123,16 +97,9 @@ class SupportRequest(BaseModel, TitleDescriptionModel):
         )
 
     def add_message(self, sender, message):
-        """
-        Ajoute un nouveau message à la demande.
-
-        Cette méthode reste volontairement simple.
-        Les règles métier plus complexes peuvent être placées
-        dans support/services.py.
-        """
-        if not self.status:
+        if self.is_closed:
             raise ValueError(
-                _("Impossible d'ajouter un message à une demande fermée.")
+                _("Impossible d'ajouter un message à un ticket fermé.")
             )
 
         if not message or not message.strip():
@@ -146,22 +113,22 @@ class SupportRequest(BaseModel, TitleDescriptionModel):
         )
 
 
-class SupportMessage(BaseModel):
+class TicketMessage(BaseModel):
     """
-    Représente un message appartenant à une demande de support.
+    Représente un message appartenant à un ticket.
     """
-    support_request = models.ForeignKey(
-        SupportRequest,
+    ticket = models.ForeignKey(
+        Ticket,
         on_delete=models.CASCADE,
         related_name="messages",
-        verbose_name=_("Demande de support"),
-        help_text=_("Demande de support à laquelle appartient le message."),
+        verbose_name=_("Ticket"),
+        help_text=_("Ticket auquel appartient le message."),
     )
 
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name="support_messages",
+        related_name="ticket_messages",
         verbose_name=_("Expéditeur"),
         help_text=_("Utilisateur ayant envoyé le message."),
     )
@@ -174,17 +141,17 @@ class SupportMessage(BaseModel):
     class Meta:
         ordering = ["created_at"]
 
-        verbose_name = _("Message de support")
-        verbose_name_plural = _("Messages de support")
+        verbose_name = _("Message de ticket")
+        verbose_name_plural = _("Messages de ticket")
 
         indexes = [
             models.Index(
-                fields=["support_request", "created_at"],
-                name="support_msg_request_date_idx",
+                fields=["ticket", "created_at"],
+                name="ticket_msg_ticket_date_idx",
             ),
             models.Index(
                 fields=["sender", "-created_at"],
-                name="support_msg_sender_date_idx",
+                name="ticket_msg_sender_date_idx",
             ),
         ]
 
@@ -195,17 +162,3 @@ class SupportMessage(BaseModel):
             "username": self.sender.username,
             "date": self.created_at.strftime("%Y-%m-%d %H:%M"),
         }
-
-    @property
-    def is_from_admin(self):
-        """
-        Indique si le message a été envoyé par un administrateur.
-        """
-        return getattr(self.sender, "is_admin", False)
-
-    @property
-    def is_from_student(self):
-        """
-        Indique si le message a été envoyé par un étudiant.
-        """
-        return getattr(self.sender, "is_student", False)

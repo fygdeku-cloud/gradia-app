@@ -68,7 +68,13 @@ ACTION_CHOICES = [
     ),
 ]
 
-# SPPORT ENUMS
+# SUPPORT ENUMS
+
+class TicketStatus(models.TextChoices):
+    OPEN = "open", _("Ouvert")
+    IN_PROGRESS = "in_progress", _("En cours")
+    RESOLVED = "resolved", _("Résolu")
+    CLOSED = "closed", _("Fermé")
 
 class Priority(models.TextChoices):
         LOW = "low", _("Faible")
