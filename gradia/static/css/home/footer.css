@@ -1,0 +1,31 @@
+/* Footer section – home */
+.gradia-footer {
+  background: var(--gradia-surface-1);
+  padding: 3rem 0;
+  border-top: 1px solid var(--gradia-surface-2);
+}
+.gradia-footer .footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.gradia-footer .footer-brand span:first-child {
+  background: var(--gradia-primary-600);
+  color: #fff;
+  font-weight: 800;
+}
+.gradia-footer .footer-links h2 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  color: var(--gradia-surface-700);
+}
+.gradia-footer .footer-links a {
+  color: var(--gradia-surface-600);
+  transition: color var(--gradia-transition-duration) var(--gradia-transition-easing);
+}
+.gradia-footer .footer-links a:hover {
+  color: var(--gradia-primary-500);
+}

@@ -1,0 +1,77 @@
+/* Features / Avantages – premium styling */
+/* Container */
+.gradia-features {
+  background: rgba(255,255,255,0.93);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 4rem 0;
+}
+/* Section heading */
+.gradia-features .gradia-section-heading {
+  max-width: 48rem;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+}
+/* Feature grid – staggered layout */
+.gradia-features .gradia-feature-list {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+/* Individual feature card */
+.gradia-feature-card {
+  position: relative;
+  background: var(--gradia-surface-1);
+  border-radius: var(--gradia-radius-md);
+  padding: 2rem;
+  box-shadow: var(--gradia-shadow-sm);
+  overflow: hidden;
+  transition: transform 0.25s var(--gradia-transition-easing), box-shadow 0.25s;
+}
+.gradia-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--gradia-shadow-md);
+}
+/* Icon wrapper */
+.gradia-feature-card .icon {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--color-primary-100);
+  color: var(--color-primary-600);
+  margin-bottom: 1rem;
+}
+/* Title */
+.gradia-feature-card h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-gray-900);
+}
+/* Text */
+.gradia-feature-card p {
+  font-size: 0.95rem;
+  color: var(--color-gray-600);
+}
+/* Subtle decorative element */
+.gradia-feature-card::after {
+  content: "";
+  position: absolute;
+  top: -1rem;
+  right: -1rem;
+  width: 4rem;
+  height: 4rem;
+  background: var(--color-primary-200);
+  border-radius: 9999px;
+  opacity: 0.15;
+}
+/* Responsive tweaks */
+@media (min-width: 768px) {
+  .gradia-features .gradia-section-heading {
+    text-align: left;
+    margin-left: 2rem;
+  }
+}

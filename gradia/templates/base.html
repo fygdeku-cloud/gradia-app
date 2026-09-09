@@ -53,10 +53,23 @@
       <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" />
       <link href="{% static 'css/common/base.css' %}" rel="stylesheet" />
+      <link href="{% static 'css/common/design-system.css' %}" rel="stylesheet" />
       <link href="{% static 'css/common/components.css' %}" rel="stylesheet" />
       <link href="{% static 'css/common/forms.css' %}" rel="stylesheet" />
       <link href="{% static 'css/common/utilities.css' %}" rel="stylesheet" />
-      {% block extra_css %}{% endblock extra_css %}
+{% block extra_css %}
+        <link href="{% static 'css/home/features.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/home/contests.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/home/cta.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/home/footer.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/users/login.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/users/register.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/users/otp.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/users/profile.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/users/password_reset.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/users/password_reset_confirm.css' %}" rel="stylesheet" />
+{% endblock extra_css %}
+<link href="{% static 'css/common/navbar.css' %}" rel="stylesheet" />
     {% endblock css %}
   </head>
   <body class="flex min-h-screen flex-col bg-white font-sans text-slate-900 antialiased">
@@ -73,7 +86,24 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script defer src="{% static 'js/common/messages.js' %}"></script>
-    {% block extra_js %}{% endblock extra_js %}
+    {% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const navbar = document.querySelector('[data-gradia-navbar]');
+    if (!navbar) return;
+    const onScroll = () => {
+      if (window.scrollY > 20) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    };
+    window.addEventListener('scroll', onScroll);
+    // Initialize state
+    onScroll();
+  });
+</script>
+{% endblock extra_js %}
     {% block inline_javascript %}{% endblock inline_javascript %}
   </body>
 </html>

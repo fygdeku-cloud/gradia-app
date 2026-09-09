@@ -1,0 +1,54 @@
+/* profile.css – Premium Gradia user profile page */
+
+/* Global container (inherits base layout) */
+.gradia-profile-page {
+  background: var(--gradia-surface-100);
+  padding: 2rem 0;
+}
+
+/* Panels – reuse design‑system variables */
+.gradia-panel {
+  background: var(--gradia-surface-0);
+  border-radius: var(--gradia-radius-md);
+  box-shadow: var(--gradia-shadow-sm);
+  margin-bottom: 1.5rem;
+}
+.gradia-panel-body {
+  padding: 1.5rem;
+}
+
+/* Card title */
+.gradia-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gradia-surface-900);
+}
+
+/* Links */
+.gradia-panel a {
+  color: var(--gradia-primary-600);
+  transition: color var(--gradia-transition-duration) var(--gradia-transition-easing);
+}
+.gradia-panel a:hover {
+  color: var(--gradia-primary-800);
+}
+
+/* Form fields inside profile – same as auth */
+.gradia-field input,
+.gradia-field textarea,
+.gradia-field select {
+  width: 100%;
+  border: 1px solid var(--gradia-surface-300);
+  border-radius: var(--gradia-radius-sm);
+  padding: 0.5rem 0.75rem;
+  background: var(--gradia-surface-0);
+  color: var(--gradia-surface-900);
+  transition: var(--gradia-transition-duration) var(--gradia-transition-easing);
+}
+.gradia-field input:focus,
+.gradia-field textarea:focus,
+.gradia-field select:focus {
+  outline: none;
+  border-color: var(--gradia-primary-600);
+  box-shadow: 0 0 0 2px var(--gradia-primary-100);
+}

@@ -1,0 +1,165 @@
+/* =============================================================
+   Gradia – Design System (shared components & utilities)
+   -------------------------------------------------------------
+   Centralised definitions for colors, typography, spacing, radii,
+   shadows, buttons, cards, badges, form elements and transitions.
+   All other CSS files should reference these utilities to ensure
+   visual consistency across the entire site.
+   ============================================================= */
+
+/* -------------------------------------------------------------
+   1. Colour & Theme Variables (extend base.css)
+   ------------------------------------------------------------- */
+:root {
+  /* Primary brand colour – already defined in base.css as --gradia-accent */
+  --color-primary: var(--gradia-accent);
+  --color-primary-hover: var(--gradia-accent-hover);
+  --color-secondary: var(--gradia-success);
+  --color-success: var(--gradia-success);
+  --color-warning: var(--gradia-warning);
+  --color-danger: var(--gradia-danger);
+  /* Neutral palette */
+  --color-bg: var(--gradia-bg);
+  --color-surface: var(--gradia-surface);
+  --color-surface-2: var(--gradia-surface-2);
+  --color-surface-3: var(--gradia-surface-3);
+  --color-muted: var(--gradia-text-muted);
+  --color-text: var(--gradia-text);
+  --color-text-secondary: var(--gradia-text-secondary);
+}
+
+/* -------------------------------------------------------------
+   2. Typography Scale (Tailwind utilities will be used, but we
+      provide semantic class names for consistency.)
+   ------------------------------------------------------------- */
+.h1 {
+  @apply text-5xl md:text-6xl xl:text-7xl font-extrabold leading-tight;
+}
+.h2 {
+  @apply text-3xl md:text-4xl font-bold leading-snug;
+}
+.h3 {
+  @apply text-2xl md:text-3xl font-semibold;
+}
+.body-lg {
+  @apply text-lg leading-relaxed;
+}
+.body-sm {
+  @apply text-sm leading-snug;
+}
+
+/* -------------------------------------------------------------
+   3. Spacing & Radius (reuse Tailwind spacing, expose semantic names)
+   ------------------------------------------------------------- */
+.s0 { @apply p-0; }
+.s1 { @apply p-1; }
+.s2 { @apply p-2; }
+.s3 { @apply p-3; }
+.s4 { @apply p-4; }
+.s5 { @apply p-5; }
+.s6 { @apply p-6; }
+
+/* Radius shortcuts */
+.r-sm { @apply rounded-sm; }
+.r-md { @apply rounded-md; }
+.r-lg { @apply rounded-lg; }
+.r-full { @apply rounded-full; }
+
+/* -------------------------------------------------------------
+   4. Shadows & Elevation
+   ------------------------------------------------------------- */
+.shadow-sm { @apply shadow-sm; }
+.shadow-md { @apply shadow-md; }
+.shadow-lg { @apply shadow-lg; }
+
+/* -------------------------------------------------------------
+   5. Buttons – primary, ghost, outline
+   ------------------------------------------------------------- */
+.gradia-btn-primary {
+  @apply inline-flex items-center gap-2 px-6 py-3 bg-brand-600 text-white rounded-xl font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-brand-500/30;
+}
+.gradia-btn-primary:hover {
+  @apply bg-brand-700;
+}
+.gradia-btn-ghost {
+  @apply inline-flex items-center gap-2 px-6 py-3 border border-white/30 text-white rounded-xl font-medium transition-colors hover:border-white/60 hover:bg-white/10;
+}
+.gradia-btn-outline {
+  @apply inline-flex items-center gap-2 px-6 py-3 border border-brand-600 text-brand-600 rounded-xl font-medium transition-colors hover:bg-brand-600 hover:text-white;
+}
+
+/* -------------------------------------------------------------
+   6. Card Base – used for contest, session, document cards
+   ------------------------------------------------------------- */
+.gradia-card {
+  @apply group relative bg-surface dark:bg-night-800 rounded-xl overflow-hidden shadow-sm transition-shadow hover:shadow-lg;
+}
+.gradia-card-img {
+  @apply h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105;
+}
+.gradia-card-body {
+  @apply p-4;
+}
+.gradia-card-title {
+  @apply mt-2 text-lg font-semibold text-text dark:text-white group-hover:text-brand-600 transition-colors;
+}
+.gradia-card-meta {
+  @apply mt-1 text-sm text-text-secondary dark:text-slate-300;
+}
+.gradia-card-cta {
+  @apply mt-3 inline-block text-sm font-medium text-brand-600 hover:underline;
+}
+
+/* -------------------------------------------------------------
+   7. Badges & Labels
+   ------------------------------------------------------------- */
+.gradia-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-100 text-brand-800;
+}
+.gradia-badge--secondary {
+  @apply bg-secondary-100 text-secondary-800;
+}
+
+/* -------------------------------------------------------------
+   8. Form Elements – inputs, selects, textarea, error states
+   ------------------------------------------------------------- */
+.gradia-input {
+  @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-brand-600 focus:ring-brand-600 sm:text-sm;
+}
+.gradia-input-error {
+  @apply border-danger-600 text-danger-600 placeholder-danger-400;
+}
+.gradia-label {
+  @apply block text-sm font-medium text-text;
+}
+
+/* -------------------------------------------------------------
+   9. Transitions – unified timing function & duration
+   ------------------------------------------------------------- */
+:root {
+  --gradia-transition-duration: 250ms;
+  --gradia-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.transition-all {
+  transition: all var(--gradia-transition-duration) var(--gradia-transition-easing);
+}
+
+/* -------------------------------------------------------------
+   10. Motion – reveal utilities (used by JS)
+   ------------------------------------------------------------- */
+.gradia-fade-in {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: gradia-fade-in var(--gradia-transition-duration) var(--gradia-transition-easing) both forwards;
+}
+@keyframes gradia-fade-in {
+  to { opacity: 1; transform: none; }
+}
+
+/* -------------------------------------------------------------
+   11. Accessibility – focus-visible already defined in base.css
+   ------------------------------------------------------------- */
+
+/* -------------------------------------------------------------
+   END OF DESIGN SYSTEM
+   ------------------------------------------------------------- */

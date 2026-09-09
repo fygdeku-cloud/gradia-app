@@ -1,0 +1,105 @@
+/* Gradia Navbar – Premium styling */
+/* Glass effect with subtle backdrop blur */
+.gradia-navbar {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+/* Sticky transition on scroll */
+.gradia-navbar.scrolled {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+/* Logo scaling */
+.gradia-navbar .gradia-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.gradia-navbar .gradia-logo span:first-child {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+/* Navigation links – premium look */
+.gradia-navbar .nav-link {
+  position: relative;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  color: var(--color-text);
+  transition: color var(--gradia-transition-duration) var(--gradia-transition-easing);
+}
+.gradia-navbar .nav-link:hover,
+.gradia-navbar .nav-link.active {
+  color: var(--color-primary);
+}
+.gradia-navbar .nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.25rem;
+  height: 2px;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transition: transform var(--gradia-transition-duration) var(--gradia-transition-easing);
+}
+.gradia-navbar .nav-link:hover::after,
+.gradia-navbar .nav-link.active::after {
+  transform: scaleX(1);
+}
+/* CTA buttons spacing */
+.gradia-navbar .auth-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+/* Mobile menu overlay */
+.gradia-mobile-menu {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding-top: 4rem;
+  transform: translateX(-100%);
+  transition: transform var(--gradia-transition-duration) var(--gradia-transition-easing);
+  overflow-y: auto;
+  z-index: 40;
+}
+.gradia-mobile-menu.open {
+  transform: translateX(0);
+}
+.gradia-mobile-menu .mobile-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.gradia-mobile-menu a {
+  display: block;
+  padding: 1rem 1.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.gradia-mobile-menu a:hover {
+  background: var(--gradia-surface-2);
+  color: var(--color-primary);
+}
+/* Ensure sufficient touch targets */
+.gradia-mobile-menu a,
+.gradia-mobile-menu button {
+  min-height: 48px;
+}
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .gradia-mobile-menu {
+    display: none;
+  }
+}
