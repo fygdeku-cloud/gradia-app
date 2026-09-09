@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 from gradia.core.models import BaseModel, TitleDescriptionModel
 from gradia.utils.slug import DbFunctions
+# from gradia.contest.validators import validate_session_dates
+
 
 
 class Establishment(BaseModel, TitleDescriptionModel):
@@ -139,16 +141,14 @@ class ContestSession(BaseModel, TitleDescriptionModel):
     def __str__(self):
         return f"{self.contest.title} - Session {self.title}"
 
-    def clean(self):
-        from gradia.contest.validators import validate_session_dates
+    # def clean(self):
+    #     validate_session_dates(
+    #         self.registration_start_date,
+    #         self.registration_end_date,
+    #         self.exam_date,
+    #     )
 
-        validate_session_dates(
-            self.registration_start_date,
-            self.registration_end_date,
-            self.exam_date,
-        )
-
-        super().clean()
+    #     super().clean()
 
     def get_documents(self):
         return self.documents.all()
