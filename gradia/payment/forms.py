@@ -16,13 +16,11 @@ class PaymentInitiationForm(forms.Form):
     il est toujours déterminé côté serveur depuis Order.total_amount.
     """
 
-    # Permet de sélectionner le moyen de paiement.
     method = forms.ChoiceField(
         label=_("Moyen de paiement"),
         choices=PaymentMethod.choices,
     )
 
-    # Permet de sélectionner le fournisseur correspondant.
     provider = forms.ChoiceField(
         label=_("Fournisseur de paiement"),
         choices=PaymentProvider.choices,
@@ -33,13 +31,10 @@ class PaymentInitiationForm(forms.Form):
         Vérifie la cohérence entre le moyen de paiement
         et le fournisseur sélectionné.
         """
-
         # Récupère les données validées par Django.
         cleaned_data = super().clean()
-
         # Récupère le moyen choisi.
         method = cleaned_data.get("method")
-
         # Récupère le fournisseur choisi.
         provider = cleaned_data.get("provider")
 
@@ -48,8 +43,7 @@ class PaymentInitiationForm(forms.Form):
         if not method or not provider:
             return cleaned_data
 
-        # Réutilise la règle métier centrale afin d'éviter
-        # d'avoir une deuxième implémentation dans le formulaire.
+        # Réutilise la règle métier centrale afin d'éviter d'avoir une deuxième implémentation dans le formulaire.
         validate_payment_method_and_provider(
             method=method,
             provider=provider,

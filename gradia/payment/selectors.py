@@ -7,14 +7,12 @@ from gradia.utils.enums import PaymentStatus, PaymentType
 
 
 # Retourne le queryset de base des paiements.
-# select_related("order") évite une requête SQL supplémentaire lorsque
 # le service ou la vue accède ensuite à payment.order.
 def get_payments() -> QuerySet[Payment]:
     return Payment.objects.select_related("order")
 
 
 # Retourne un paiement précis à partir de son UUID.
-# first() permet de retourner None si aucun paiement ne correspond.
 def get_payment(payment_id) -> Payment | None:
     return (
         get_payments()
@@ -46,7 +44,6 @@ def get_order_payments(order) -> QuerySet[Payment]:
 
 
 # Retourne les paiements d'une commande ayant un statut précis.
-# Cette fonction évite de répéter la même requête dans plusieurs services.
 def get_order_payments_by_status(
     order,
     status: str,
@@ -85,7 +82,7 @@ def get_pending_charge_for_order(order) -> Payment | None:
 
 
 # Recherche un paiement grâce à la référence fournie par le prestataire.
-# Cette référence peut servir à faire le rapprochement entre Gradia
+# Cette référence va servir à faire le rapprochement entre Gradia
 # et le système externe de paiement.
 def get_payment_by_provider_reference(
     provider_reference: str,

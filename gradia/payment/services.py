@@ -65,7 +65,6 @@ class PaymentService:
             provider=provider,
         )
 
-        # Retourne la transaction locale.
-        # Le paiement n'est PAS encore considéré comme réussi.
+        # Retourne la transaction locale ,Le paiement n'est PAS encore considéré comme réussi.
         return payment
         

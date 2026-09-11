@@ -12,8 +12,8 @@ from gradia.utils.enums import (
     PaymentStatus,
     PaymentType,
 )
-
-
+# VERIFICATION DE L'UTILISATEUR QUI PAIE
+ 
 def validate_user_can_pay(user) -> None:
     if not user or not user.is_authenticated:
         raise ValidationError(
@@ -25,6 +25,7 @@ def validate_user_can_pay(user) -> None:
             _("Seuls les étudiants peuvent effectuer un paiement.")
         )
 
+# VERIFICATION DE CHAQUE COMMANDE  AVANT LE PAIEMENT
 
 def validate_order_for_payment(order, user) -> None:
     if order is None:
@@ -47,6 +48,7 @@ def validate_order_for_payment(order, user) -> None:
             _("Le montant de la commande doit être supérieur à zéro.")
         )
 
+# VERIFICATIONDE LA METHODE DE PAIEMENT
 
 def validate_payment_method_and_provider(
     method: str,
@@ -68,6 +70,7 @@ def validate_payment_method_and_provider(
             _("Le paiement Mobile Money doit utiliser Flutterwave.")
         )
 
+# VERIFICATION DU MONTANT DE PAIEMENT
 
 def validate_payment_amount(amount, order) -> None:
     if amount is None:
@@ -80,6 +83,7 @@ def validate_payment_amount(amount, order) -> None:
             _("Le montant du paiement ne correspond pas au montant de la commande.")
         )
 
+# VERIFICATION DE LA REFERENCE DE TRANSACTION DU FOURNISSEUR
 
 def validate_provider_transaction_id(transaction_id: str) -> None:
     if not transaction_id:
@@ -87,6 +91,7 @@ def validate_provider_transaction_id(transaction_id: str) -> None:
             _("La référence de transaction du fournisseur est obligatoire.")
         )
 
+# VERIFICATION DU REMBOURSEMENT
 
 def validate_refund_amount(payment, refund_amount: Decimal) -> None:
     if payment.transaction_type != PaymentType.CHARGE:

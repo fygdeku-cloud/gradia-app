@@ -33,6 +33,12 @@ urlpatterns = [
     path("documents/", include("gradia.document.urls", namespace="document")),
     # Support
     path("support/", include("gradia.support.urls", namespace="support")),
+    # Cart
+    path("cart/", include("gradia.cart.urls", namespace="cart")),
+    # Order
+    path("order/", include("gradia.order.urls", namespace="order")),
+    # Payment
+    path("payment/", include("gradia.payment.urls", namespace="payment")),
     # Your stuff: custom urls includes go here
     # ...
     # Media files
