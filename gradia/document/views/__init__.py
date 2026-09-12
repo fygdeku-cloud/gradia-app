@@ -2,7 +2,6 @@
 
 from gradia.document.views.detail_views import DocumentDetailView
 from gradia.document.views.download_views import (
-    CorrectionDownloadView,
     CorrectionViewView,
     SubjectDownloadView,
 )

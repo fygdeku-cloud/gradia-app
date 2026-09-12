@@ -71,6 +71,6 @@ class DocumentDeleteView(DocumentManageMixin, DeleteView):
     def form_valid(self, form):
         DocumentService.delete(document=self.object)
                 
-        messages.success(self.request, _("Document suprimé."))
+        messages.success(self.request, _("Document supprimé."))
         return redirect(self.get_success_url())
     

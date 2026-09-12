@@ -182,19 +182,15 @@ class DocumentAccessService:
         return DocumentAccessService._is_manager(user)
 
 class DocumentServingService:
-    """
-    Service de lecture des fichiers contrôlés.
-
-    Ces méthodes sont les SEULES voies d'accès aux fichiers des documents.
-    Le fichier est lu via le stockage protégé (hors MEDIA_ROOT) puis servi
-    par Django avec les en-têtes appropriés.
-    """
-
+    # Ouvre un fichier protégé depuis le stockage configuré.
     @staticmethod
     def _open_protected_file(document_field: File) -> File:
-        """Ouvre le fichier depuis le stockage protégé."""
+        # Refuse immédiatement l'accès si aucun fichier n'est disponible.
         if not document_field:
             raise PermissionDenied(_("Fichier indisponible."))
+
+        # Ouvre le fichier uniquement après que la méthode appelante
+        # a effectué son contrôle d'autorisation.
         return document_field.open("rb")
 
     @staticmethod
@@ -220,44 +216,38 @@ class DocumentServingService:
         response["Pragma"] = "no-cache"
         return response
 
+      # Sert le sujet après avoir obligatoirement vérifié le droit
+    # de téléchargement de l'utilisateur.
     @staticmethod
-    def serve_subject_download(document: Document) -> HttpResponse:
-        """Sert le sujet en téléchargement (Content-Disposition: attachment)."""
+    def serve_subject_download(*, user, document: Document) -> HttpResponse:
+        # Le contrôle d'accès est maintenant imposé par le service.
+        if not DocumentAccessService.can_download_subject(user, document):
+            raise PermissionDenied(
+                _("Vous n'êtes pas autorisé à télécharger ce sujet.")
+            )
+
+        # Ouvre le fichier uniquement après autorisation.
         return DocumentServingService._stream_file(
             document=document,
             field=document.subject_file,
             as_attachment=True,
         )
 
+    # Sert le corrigé en consultation intégrée après vérification
+    # obligatoire du droit de consultation.
     @staticmethod
-    def serve_correction_inline(document: Document) -> HttpResponse:
-        """
-        Sert le corrigé en consultation (Content-Disposition: inline).
+    def serve_correction_inline(*, user, document: Document) -> HttpResponse:
+        # Le contrôle d'accès au corrigé est imposé par le service.
+        if not DocumentAccessService.can_view_correction(user, document):
+            raise PermissionDenied(
+                _("Vous n'êtes pas autorisé à consulter ce corrigé.")
+            )
 
-        Aucun téléchargement : l'en-tête `inline` demande au navigateur
-        d'afficher le document dans un viewer. La protection de fond reste
-        l'authentification + l'autorisation vérifiées en amont, ainsi que le
-        stockage hors du répertoire média public.
-        """
+        # Le fichier est envoyé au navigateur sans mode téléchargement.
         return DocumentServingService._stream_file(
             document=document,
             field=document.correction_file,
             as_attachment=False,
-        )
-
-    @staticmethod
-    def serve_correction_download(document: Document) -> HttpResponse:
-        """
-        Sert le corrigé en téléchargement, réservé à la gestion.
-
-
-
-        Ne doit être appelé qu'après `DocumentAccessService.can_download_correction`.
-        """
-        return DocumentServingService._stream_file(
-            document=document,
-            field=document.correction_file,
-            as_attachment=True,
         )
 
 class DocumentAccessLogService:
