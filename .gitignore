@@ -275,7 +275,7 @@ gradia/media/
 .ipython/
 .env
 .envs/*
-!.envs/.local/
+.envs/.local/
 
 # Local environment / database artifacts
 *.django
