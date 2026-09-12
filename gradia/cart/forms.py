@@ -22,7 +22,7 @@ class AddToCartForm(forms.Form):
 
     def clean_document_id(self) -> int:
         doc_id = self.cleaned_data["document_id"]
-        # Validation does NOT mutate the cart.
+        # La validation ne modifie PAS le panier.
         try:
             validate_document_exists_and_purchasable(doc_id)
         except ValidationError as exc:

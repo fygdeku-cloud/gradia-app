@@ -11,7 +11,94 @@ from gradia.payment.validators import (
     validate_payment_method_and_provider,
     validate_user_can_pay,
 )
-from gradia.utils.enums import PaymentStatus, PaymentType
+from gradia.utils.enums import PaymentStatus, PaymentType, OrderStatus
+
+
+class PaymentWebhookService:
+    """
+    Contient le traitement métier commun d'un webhook de paiement.
+
+    Cette classe ne vérifie volontairement pas encore la signature
+    spécifique à Stripe ou Flutterwave.
+    """
+
+    @staticmethod
+    @transaction.atomic
+    def mark_payment_success(
+        *,
+        payment: Payment,
+        provider_transaction_id: str,
+        provider_response: dict,
+    ) -> Payment:
+        """
+        Marque un paiement comme réussi après validation du webhook.
+
+        Le montant doit avoir été vérifié avant l'appel de cette méthode.
+        """
+
+        # Vérifie qu'il s'agit bien d'une transaction principale.
+        if payment.transaction_type != PaymentType.CHARGE:
+            raise ValidationError(
+                "Seule une transaction CHARGE peut être confirmée."
+            )
+
+        # Si le paiement est déjà réussi, on rend le traitement idempotent.
+        # Un même webhook peut en effet être reçu plusieurs fois.
+        if payment.status == PaymentStatus.SUCCESS:
+            return payment
+
+        # Un paiement déjà échoué, annulé ou frauduleux
+        # ne doit pas être transformé arbitrairement en succès.
+        if payment.status != PaymentStatus.PENDING:
+            raise ValidationError(
+                "Ce paiement ne peut plus être confirmé."
+            )
+
+        # Une référence fournisseur valide est obligatoire
+        # pour identifier la transaction externe.
+        if not provider_transaction_id:
+            raise ValidationError(
+                "L'identifiant de transaction fournisseur est obligatoire."
+            )
+
+        # Enregistre l'identifiant officiel fourni par le prestataire.
+        payment.provider_transaction_id = provider_transaction_id
+
+        # Conserve la réponse brute utile du fournisseur pour audit.
+        payment.provider_response = provider_response
+
+        # Le paiement est maintenant confirmé.
+        payment.status = PaymentStatus.SUCCESS
+
+        # Enregistre la date de traitement du paiement.
+        from django.utils import timezone
+
+        payment.processed_at = timezone.now()
+
+        # Sauvegarde uniquement les champs modifiés.
+        payment.save(
+            update_fields=[
+                "provider_transaction_id",
+                "provider_response",
+                "status",
+                "processed_at",
+                "updated_at",
+            ]
+        )
+
+        # Une transaction CHARGE réussie valide également la commande.
+        payment.order.status = OrderStatus.SUCCESS
+
+        # Sauvegarde le nouveau statut de la commande.
+        payment.order.save(
+            update_fields=[
+                "status",
+                "updated_at",
+            ]
+        )
+
+        # Retourne le paiement maintenant confirmé.
+        return payment
 
 
 class PaymentService:

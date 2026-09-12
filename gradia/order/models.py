@@ -38,42 +38,42 @@ class OrderItem(BaseModel):
     unit_price = MoneyField(
         max_digits=12,
         decimal_places=2,
-        verbose_name=_("Unit price"),
-        help_text=_("Original price per unit (before discount), computed from catalog at order time."),
+        verbose_name=_("Prix unitaire"),
+        help_text=_("Prix original par unité (avant remise), calculé depuis le catalogue au moment de la commande."),
     )
     unit_discount = MoneyField(
         default=0,
         max_digits=12,
         decimal_places=2,
-        verbose_name=_("Unit discount"),
+        verbose_name=_("Remise unitaire"),
         help_text=_(
-            "Discount per unit. For a product: the product's active discount at order time. "
-            "For a pack: the sum of per-unit discounts from every product inside the pack.",
+            "Remise par unité. Pour un produit : la remise active du produit au moment de la commande. "
+            "Pour un pack : la somme des remises par unité de chaque produit à l'intérieur du pack.",
         ),
     )
     quantity = models.PositiveSmallIntegerField(
         default=1,
-        verbose_name=_("Quantity"),
+        verbose_name=_("Quantité"),
     )
     line_subtotal = MoneyField(
         max_digits=12,
         decimal_places=2,
         default=0,
-        verbose_name=_("Line subtotal"),
-        help_text=_("Subtotal for this line before discount: unit_price x quantity."),
+        verbose_name=_("Sous-total de la ligne"),
+        help_text=_("Sous-total pour cette ligne avant remise : prix unitaire x quantité."),
     )
     line_discount = MoneyField(
         default=0,
         max_digits=12,
         decimal_places=2,
-        verbose_name=_("Line discount"),
-        help_text=_("Total discount for this line: unit_discount x quantity."),
+        verbose_name=_("Remise de la ligne"),
+        help_text=_("Remise totale pour cette ligne : remise unitaire x quantité."),
     )
     line_total = MoneyField(
         max_digits=12,
         decimal_places=2,
-        verbose_name=_("Line total"),
-        help_text=_("Total for this line after discount: line_subtotal - line_discount."),
+        verbose_name=_("Total de la ligne"),
+        help_text=_("Total pour cette ligne après remise : sous-total de la ligne - remise de la ligne."),
     )
      
     class Meta:

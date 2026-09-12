@@ -11,12 +11,12 @@ from gradia.utils.enums import OrderStatus, CartStatus
 
 def create_order_from_cart(user, cart: Cart) -> Order:
     """
-    Transform cart into order.
-    1. Verify cart belongs to user.
-    2. Check cart not empty.
-    3. Calculate totals.
-    4. Atomic creation of Order and OrderItems.
-    5. Update cart status.
+    Transforme le panier en commande.
+    1. Vérifier que le panier appartient à l'utilisateur.
+    2. Vérifier que le panier n'est pas vide.
+    3. Calculer les totaux.
+    4. Création atomique de la commande et des articles de commande.
+    5. Mettre à jour le statut du panier.
     """
     if cart.student != user:
         raise ValidationError("Panier invalide.")
@@ -25,31 +25,31 @@ def create_order_from_cart(user, cart: Cart) -> Order:
     if not items.exists():
         raise ValidationError("Le panier est vide.")
 
-    # Calculate total
+    # Calculer le total
     total_amount = sum((item.unit_price.amount for item in items), Money(0, settings.DEFAULT_CURRENCY))
 
     with transaction.atomic():
-        # Create order
+        # Créer la commande
         order = Order.objects.create(
             student=user,
-            order_number=f"ORD-{uuid.uuid4().hex[:12].upper()}", # Simplistic order number
+            order_number=f"ORD-{uuid.uuid4().hex[:12].upper()}", # Numéro de commande simplifié
             total_amount=total_amount,
             status=OrderStatus.PENDING,
         )
 
-        # Create OrderItems
+        # Créer les articles de commande
         for item in items:
             OrderItem.objects.create(
                 order=order,
                 document=item.document,
                 unit_price=item.unit_price,
-                quantity=1, # Default as per business rule
+                quantity=1, # Par défaut selon la règle métier
                 line_subtotal=item.unit_price,
                 line_total=item.unit_price,
             )
         
-        # Update cart
+        # Mettre à jour le panier
         cart.status = CartStatus.ACTIVE
-        cart.items.all().delete() # Optional: clear cart items
+        cart.items.all().delete() # Optionnel : vider les articles du panier
 
     return order

@@ -18,16 +18,16 @@ from gradia.cart.validators import (
 from gradia.utils.enums import CartStatus
 
 def get_cart(user) -> Optional[Cart]:
-    """Return the active cart for *user* or ``None``.
+    """Retourner le panier actif pour *user* ou ``None``.
 
-    The caller should handle ``None`` (e.g., treat as empty cart).
+    L'appelant doit gérer ``None`` (par exemple, traiter comme un panier vide).
     """
     validate_user_is_student(user)
     return get_or_create_cart(user)
 
 
 def get_or_create_cart(user) -> Cart:
-    """Retrieve the existing cart for *user* or create a new one (ACTIVE)."""
+    """Récupérer le panier existant pour *user* ou en créer un nouveau (ACTIF)."""
     cart, _ = Cart.objects.get_or_create(
         student=user,
         defaults={"status": CartStatus.ACTIVE},
@@ -36,13 +36,13 @@ def get_or_create_cart(user) -> Cart:
     return cart
 
 def add_document_to_cart(user, document_id: int) -> CartItem:
-    """Add a document to the user's cart.
+    """Ajouter un document au panier de l'utilisateur.
 
-    - Ensures the user is a student.
-    - Validates the document exists and is purchasable.
-    - Retrieves or creates the active cart.
-    - If the document is already in the cart, raises ``ValidationError``.
-    - Stores the current price from the Document as ``unit_price`` (snapshot).
+    - S'assure que l'utilisateur est un étudiant.
+    - Valide que le document existe et peut être acheté.
+    - Récupère ou crée le panier actif.
+    - Si le document est déjà dans le panier, lève une ``ValidationError``.
+    - Stocke le prix actuel du Document comme ``unit_price`` (instantané).
     """
     validate_user_is_student(user)
     document = validate_document_exists_and_purchasable(document_id)
@@ -58,7 +58,7 @@ def add_document_to_cart(user, document_id: int) -> CartItem:
 
 # def update_cart_item(user, item_id: int, quantity: int) -> CartItem:
 #     """Update the quantity of a cart item.
-
+#
 #     The current model does not store ``quantity`` (items are unique per document),
 #     but the function is kept for future extensibility. For now, we only allow
 #     ``quantity`` of ``1``; any other value raises ``ValidationError``.
@@ -76,7 +76,7 @@ def add_document_to_cart(user, document_id: int) -> CartItem:
 #     return item
 
 def remove_cart_item(user, item_id: int) -> None:
-    """Remove a cart item belonging to *user*.
+    """Supprimer un article du panier appartenant à *user*.
     """
     validate_user_is_student(user)
     try:
@@ -89,7 +89,7 @@ def remove_cart_item(user, item_id: int) -> None:
     item.delete()
 
 def clear_cart(user) -> None:
-    """Delete all items from the user's active cart.
+    """Supprimer tous les articles du panier actif de l'utilisateur.
     """
     validate_user_is_student(user)
     cart = get_or_create_cart(user)
@@ -97,9 +97,9 @@ def clear_cart(user) -> None:
     CartItem.objects.filter(cart=cart).delete()
 
 def calculate_cart_totals(cart: Cart) -> dict:
-    """Return a dict with ``subtotal`` and ``total`` for *cart*.
+    """Retourner un dictionnaire avec ``subtotal`` et ``total`` pour *cart*.
 
-    Currently, no extra fees are applied, so ``total`` == ``subtotal``.
+    Actuellement, aucun frais supplémentaire n'est appliqué, donc ``total`` == ``subtotal``.
     """
     subtotal = (
         CartItem.objects.filter(cart=cart)

@@ -7,12 +7,12 @@ from gradia.cart.models import Cart, CartItem
 
 
 def get_user_cart(user) -> Optional[Cart]:
-    """Return the Cart belonging to *user* or ``None`` if absent."""
+    """Retourne le panier appartenant à *user* ou ``None`` s'il est absent."""
     return Cart.objects.filter(student=user).first()
 
 
 def get_cart_with_items(cart: Cart) -> Cart:
-    """Prefetch items and related Document for efficient rendering."""
+    """Précharge les éléments et le Document associé pour un rendu efficace."""
     return (
         Cart.objects.filter(pk=cart.pk)
         .prefetch_related(
@@ -26,5 +26,5 @@ def get_cart_with_items(cart: Cart) -> Cart:
 
 
 def get_cart_items(cart: Cart) -> QuerySet[CartItem]:
-    """Return cart items with the Document already selected."""
+    """Retourne les articles du panier avec le Document déjà sélectionné."""
     return CartItem.objects.filter(cart=cart).select_related("document")
