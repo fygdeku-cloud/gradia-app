@@ -7,7 +7,6 @@ from gradia.utils.enums import PaymentStatus, PaymentType
 
 
 # Retourne le queryset de base des paiements.
-# le service ou la vue accède ensuite à payment.order.
 def get_payments() -> QuerySet[Payment]:
     return Payment.objects.select_related("order")
 
@@ -22,8 +21,6 @@ def get_payment(payment_id) -> Payment | None:
 
 
 # Retourne tous les paiements appartenant aux commandes d'un étudiant.
-# On passe par order__student puisque Payment ne possède pas directement
-# de relation vers User.
 def get_user_payments(user) -> QuerySet[Payment]:
     return (
         get_payments()
@@ -33,8 +30,7 @@ def get_user_payments(user) -> QuerySet[Payment]:
 
 
 # Retourne les transactions associées à une commande précise.
-# Cela permet notamment de voir les différentes tentatives de paiement
-# et les éventuels remboursements liés à cette commande.
+
 def get_order_payments(order) -> QuerySet[Payment]:
     return (
         get_payments()
@@ -55,7 +51,6 @@ def get_order_payments_by_status(
 
 
 # Retourne le paiement CHARGE réussi d'une commande.
-# On ne considère ici que la transaction financière principale de type CHARGE.
 def get_successful_charge_for_order(order) -> Payment | None:
     return (
         get_order_payments(order)
@@ -68,8 +63,6 @@ def get_successful_charge_for_order(order) -> Payment | None:
 
 
 # Retourne le paiement CHARGE actuellement en attente pour une commande.
-# Cela permettra notamment d'éviter de créer inutilement plusieurs
-# transactions PENDING pour la même commande.
 def get_pending_charge_for_order(order) -> Payment | None:
     return (
         get_order_payments(order)
