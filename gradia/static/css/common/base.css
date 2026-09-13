@@ -1,46 +1,17 @@
 /* ============================================================
-   Gradia — Design system (base)
-  Direction : LIGHT PROFESSIONAL / INSTITUTIONNEL MODERNE
-  Palette claire, accent bleu professionnel et touche turquoise.
+   Gradia — Design System (base)
+   Direction: Light Professional, Modern Institutional
+   Dependencies: design-system.css (tokens)
    ============================================================ */
 
 :root {
-  --color-primary: #2563eb;
-  --color-primary-dark: #1d4ed8;
-  --color-secondary: #0f9f9a;
-  --color-background: #f7f9fc;
-  --color-surface: #ffffff;
-  --color-text: #12233f;
-  --color-muted: #61708a;
-  --color-border: #e3e9f2;
-  --color-success: #168b78;
-  --color-warning: #b7791f;
-  --color-danger: #c2415a;
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1.25rem;
-  --shadow-sm: 0 2px 8px rgba(18, 35, 63, 0.06);
-  --shadow-md: 0 16px 40px rgba(18, 35, 63, 0.1);
-  --container-width: 80rem;
-  --gradia-bg: #ffffff;
-  --gradia-bg-soft: #f6f8fc;
-  --gradia-surface: #ffffff;
-  --gradia-surface-2: #f1f5fb;
-  --gradia-surface-3: #e8eef8;
-  --gradia-border: #e3e9f2;
-  --gradia-border-strong: #cbd7e8;
-  --gradia-text: #12233f;
-  --gradia-text-secondary: #61708a;
-  --gradia-text-muted: #8a96a8;
-  --gradia-accent: #2f6bff;
-  --gradia-accent-hover: #2563eb;
-  --gradia-accent-soft: rgba(47, 107, 255, 0.09);
-  --gradia-danger: #c2415a;
-  --gradia-danger-soft: rgba(194, 65, 90, 0.08);
-  --gradia-success: #168b78;
-  --gradia-success-soft: rgba(22, 139, 120, 0.09);
-  --gradia-warning: #b7791f;
-  --gradia-warning-soft: rgba(183, 121, 31, 0.1);
+  /* No hardcoded colors here; refer to design-system.css tokens */
+  --gradia-bg: var(--color-bg);
+  --gradia-surface: var(--color-surface);
+  --gradia-text: var(--color-text);
+  --gradia-text-secondary: var(--color-text-muted);
+  --gradia-accent: var(--color-primary);
+  --gradia-border: var(--color-border);
 }
 
 html {
@@ -48,84 +19,20 @@ html {
 }
 
 body {
-  font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-family);
   background-color: var(--gradia-bg);
   color: var(--gradia-text);
   overflow-x: hidden;
+  line-height: 1.5;
 }
 
-header[data-gradia-navbar] {
-  box-sizing: border-box;
-  max-width: 100vw;
-}
-
-header[data-gradia-navbar] nav {
-  box-sizing: border-box;
-  max-width: 100%;
-}
-
-.gradia-announcement {
-  min-height: 1.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.35rem 1rem;
-  background: #12233f;
-  color: #ffffff;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  text-align: center;
-}
-
+/* Base structural styles */
 .gradia-page-shell {
-  width: min(100% - 2rem, var(--container-width));
+  width: min(100% - 2rem, 80rem);
   margin-inline: auto;
 }
 
-.gradia-section-heading {
-  max-width: 42rem;
-}
-
-.gradia-section-heading p:first-child {
-  color: var(--color-secondary);
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Petite micro-interaction d'apparition (messages, cartes) */
-@keyframes gradia-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.gradia-fade-in {
-  animation: gradia-fade-in 0.25s ease-out both;
-}
-
-/* ---- Focus visible accessible ---- */
+/* Accessibility */
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -137,91 +44,17 @@ header[data-gradia-navbar] nav {
   left: 0.5rem;
   top: 0.5rem;
   background: var(--gradia-accent);
-  color: #ffffff;
-  border-radius: 0.5rem;
+  color: white;
+  border-radius: var(--radius-md);
   padding: 0.5rem 0.875rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
-/* Focus ring global cohérent (bleu professionnel) */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
-textarea:focus-visible,
-[tabindex]:focus-visible {
+textarea:focus-visible {
   outline: 2px solid var(--gradia-accent);
   outline-offset: 2px;
-}
-
-/* ---- Fond décoratif institutionnel (ombres bleutées discrètes) ---- */
-.gradia-hero-grid {
-  color: var(--gradia-text);
-  background-image:
-    radial-gradient(circle at 16% 14%, rgba(47, 107, 255, 0.09), transparent 46%),
-    radial-gradient(circle at 82% 16%, rgba(33, 181, 164, 0.08), transparent 44%),
-    linear-gradient(135deg, #f7faff 0%, #ffffff 58%, #f4fbfa 100%);
-}
-
-.gradia-hero-grid h1,
-.gradia-hero-grid h2,
-.gradia-hero-grid h3 {
-  color: var(--gradia-text);
-}
-
-.gradia-hero-grid .bg-brand-600,
-.gradia-hero-grid .bg-brand-600 * {
-  color: #ffffff !important;
-}
-
-/* Compatibilité avec les utilitaires hérités des premiers templates. */
-[class*="bg-night-"] {
-  background-color: var(--gradia-surface) !important;
-}
-
-[class*="border-night-"] {
-  border-color: var(--gradia-border) !important;
-}
-
-[class*="divide-night-"] > :not([hidden]) ~ :not([hidden]) {
-  border-color: var(--gradia-border) !important;
-}
-
-[class*="text-slate-300"] {
-  color: var(--gradia-text-secondary) !important;
-}
-
-[class*="text-slate-400"] {
-  color: var(--gradia-text-secondary) !important;
-}
-
-[class*="text-slate-200"] {
-  color: var(--gradia-text) !important;
-}
-
-[class*="from-night-"] {
-  --tw-gradient-from: var(--gradia-surface) !important;
-}
-
-[class*="to-night-"] {
-  --tw-gradient-to: var(--gradia-bg-soft) !important;
-}
-
-.gradia-hero-grid > div > div > div > .text-white,
-.gradia-card h1.text-white,
-.gradia-card h2.text-white,
-.gradia-card h3.text-white,
-.gradia-panel h1.text-white,
-.gradia-panel h2.text-white,
-.gradia-panel h3.text-white,
-.auth-page h1.text-white,
-.auth-page h2.text-white {
-  color: var(--gradia-text) !important;
-}
-
-.gradia-btn-primary,
-.gradia-btn-primary.text-white,
-a.bg-brand-600,
-button.bg-brand-600 {
-  color: #ffffff !important;
 }

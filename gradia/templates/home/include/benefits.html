@@ -1,38 +1,21 @@
 {% load i18n %}
-<section class="gradia-features gradia-home-section" aria-labelledby="gradia-features-title">
-  <div class="gradia-section-heading">
-    <p>{% trans 'Un espace pensé pour vous' %}</p>
-    <h2 id="gradia-features-title">{% trans 'Tout ce dont vous avez besoin pour réussir' %}</h2>
-    <p>{% blocktrans %}Des ressources claires et organisées pour transformer chaque session de révision en progrès concret.{% endblocktrans %}</p>
+<section class="py-20 bg-surface-muted" aria-labelledby="features-title">
+  <div class="gradia-page-shell">
+    <div class="max-w-3xl mb-16">
+      <h2 id="features-title" class="text-3xl md:text-4xl font-extrabold text-text">{% trans 'Tout ce dont vous avez besoin pour réussir' %}</h2>
+      <p class="mt-4 text-lg text-text-muted">{% blocktrans %}Des ressources claires et organisées pour transformer chaque session de révision en progrès concret.{% endblocktrans %}</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {% for item in benefits %}
+      <div class="p-6 bg-surface rounded-xl border border-border shadow-sm">
+        <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-primary/10 text-primary mb-6">
+          {{ item.icon|safe }}
+        </div>
+        <h3 class="text-lg font-semibold text-text">{{ item.title }}</h3>
+        <p class="mt-2 text-sm text-text-muted">{{ item.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
   </div>
-  <ul class="gradia-feature-list">
-    <li class="gradia-feature-card">
-      <div class="icon">
-        <svg class="h-6 w-6" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 9 9 0 0118 0z"/></svg>
-      </div>
-      <h3>{% trans 'Concours variés' %}</h3>
-      <p>{% trans 'Un catalogue organisé par session, catégorie et établissement.' %}</p>
-    </li>
-    <li class="gradia-feature-card">
-      <div class="icon">
-        <svg class="h-6 w-6" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 0 00-3.375-3.375H8.25m2.25 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-      </div>
-      <h3>{% trans 'Sujets et corrigés' %}</h3>
-      <p>{% trans 'Consultez les sujets et, quand disponibles, les corrigés par session.' %}</p>
-    </li>
-    <li class="gradia-feature-card">
-      <div class="icon">
-        <svg class="h-6 w-6" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042a8.835 8.835 0 00-9 0c-.63.307-1.05.966-1.05 1.74v5.3c0 .815.534 1.52 1.334 1.668.722.135 1.443.289 2.16.43a11.7 11.7 0 001.5-.54l-1.556 4.662a2.123 2.123 0 001.824 2.7 2.404 2.404 0 002.934-2.22l-.07-.14zM9 13.792h6M12 13.791a39.755 39.755 0 003.474 1.512 4.007 4.007 0 01-2.288-.39v1.68c0 .242.058.476.167.688l.042.085a.927.927 0 01.548.866v.037a1.5 1.5 0 01-1.5 1.5 1.5 1.5 0 01-1.5-1.5v-.037a.927 .927 0 01.548-.866l.042-.085a1.68 1.68 0 00.167-.688v-2.051"/></svg>
-      </div>
-      <h3>{% trans 'Préparation efficace' %}</h3>
-      <p>{% trans 'Des ressources pensées pour structurer votre révision.' %}</p>
-    </li>
-    <li class="gradia-feature-card">
-      <div class="icon">
-        <svg class="h-6 w-6" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
-      </div>
-      <h3>{% trans 'Fiable et à jour' %}</h3>
-      <p>{% trans 'Des données réelles, vérifiées et régulièrement actualisées.' %}</p>
-    </li>
-  </ul>
 </section>

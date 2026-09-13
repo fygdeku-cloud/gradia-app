@@ -5,14 +5,21 @@
 {# Variantes : primary, ghost, white, outline-white.                    #}
 {# Options : button_block, button_extra_class, button_aria, button_id.  #}
 {% trans 'Soumettre' as default_button_label %}
-{% if button_is_link and button_href %}
-  <a href="{{ button_href }}"
-     class="gradia-btn gradia-btn-{% firstof button_variant 'primary' %} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}"
-     {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}
-     {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</a>
-{% else %}
-  <button type="{{ button_type|default:'submit' }}"
-          class="gradia-btn gradia-btn-{% firstof button_variant 'primary' %} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}"
-          {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}
-          {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</button>
-{% endif %}
+
+{% comment %}
+  Refactor note: Using custom classes in base.css or tailwind utilities directly
+  is preferred. For now, maintaining consistent mapping.
+{% endcomment %}
+{% with base_classes="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2" %}
+  {% if button_is_link and button_href %}
+    <a href="{{ button_href }}"
+       class="{{ base_classes }} {% if button_variant == 'ghost' %}bg-transparent text-text hover:bg-surface-muted{% else %}bg-primary text-white hover:bg-primary-hover{% endif %} {% if button_block %}w-full{% endif %} {{ button_extra_class|default:'' }}"
+       {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}
+       {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</a>
+  {% else %}
+    <button type="{{ button_type|default:'submit' }}"
+            class="{{ base_classes }} {% if button_variant == 'ghost' %}bg-transparent text-text hover:bg-surface-muted{% else %}bg-primary text-white hover:bg-primary-hover{% endif %} {% if button_block %}w-full{% endif %} {{ button_extra_class|default:'' }}"
+            {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}
+            {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</button>
+  {% endif %}
+{% endwith %}

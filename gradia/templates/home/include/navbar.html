@@ -2,8 +2,8 @@
 <header class="gradia-navbar" data-gradia-navbar>
   <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20" aria-label="{% trans 'Navigation principale' %}">
     <div class="flex items-center gap-4">
-      <a href="{% url 'home' %}" class="flex items-center gap-2.5 text-slate-900">
-        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-lg font-extrabold text-white">G</span>
+      <a href="{% url 'home' %}" class="flex items-center gap-2.5 text-text">
+        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-lg font-extrabold text-white">G</span>
         <span class="text-xl font-extrabold tracking-tight">Gradia</span>
       </a>
       <!-- Desktop navigation links -->
@@ -17,7 +17,7 @@
     <div class="flex items-center gap-3">
       {% if request.user.is_authenticated %}
         <a href="{% url 'users:profile' %}" class="gradia-btn-ghost hidden sm:inline-flex">{% trans 'Mon profil' %}</a>
-        <button id="user-menu-button" type="button" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom-end" class="flex items-center gap-2 rounded-full p-1 text-sm text-slate-600 hover:bg-slate-50" aria-expanded="false" aria-haspopup="menu">
+        <button id="user-menu-button" type="button" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom-end" class="flex items-center gap-2 rounded-full p-1 text-sm text-text-muted hover:bg-surface-muted" aria-expanded="false" aria-haspopup="menu">
           <span class="sr-only">{% trans 'Ouvrir le menu utilisateur' %}</span>
           {% include "common/avatar.html" with avatar_user=request.user avatar_size="h-9 w-9 text-xs" %}
         </button>
@@ -26,7 +26,7 @@
         <a href="{% url 'users:register' %}" class="gradia-btn-primary">{% trans "S'inscrire" %}</a>
       {% endif %}
       <!-- Mobile menu button -->
-      <button data-collapse-toggle="mobile-menu" type="button" id="mobile-menu-button" class="inline-flex md:hidden items-center justify-center rounded-lg p-2 text-slate-500 hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-brand-400" aria-controls="mobile-menu" aria-expanded="false">
+      <button data-collapse-toggle="mobile-menu" type="button" id="mobile-menu-button" class="inline-flex md:hidden items-center justify-center rounded-lg p-2 text-text-muted hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-primary" aria-controls="mobile-menu" aria-expanded="false">
         <span class="sr-only">{% trans 'Ouvrir le menu' %}</span>
         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
       </button>
@@ -35,40 +35,40 @@
   <!-- Mobile menu -->
   <div class="md:hidden" id="mobile-menu">
     <div class="space-y-1 py-2">
-      <a href="{% url 'home' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50">{% trans 'Accueil' %}</a>
-      <a href="{% url 'contest:list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50">{% trans 'Concours' %}</a>
-      <a href="{% url 'contest:category_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50">{% trans 'Catégories' %}</a>
-      <a href="{% url 'about' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50">{% trans 'À propos' %}</a>
+      <a href="{% url 'home' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans 'Accueil' %}</a>
+      <a href="{% url 'contest:list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans 'Concours' %}</a>
+      <a href="{% url 'contest:category_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans 'Catégories' %}</a>
+      <a href="{% url 'about' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans 'À propos' %}</a>
       {% if request.user.is_authenticated %}
-        <a href="{% url 'users:profile' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50">{% trans 'Mon profil' %}</a>
+        <a href="{% url 'users:profile' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans 'Mon profil' %}</a>
         <form method="post" action="{% url 'users:logout' %}" class="px-3 py-2">
           {% csrf_token %}
-          <button type="submit" class="w-full text-left text-sm font-medium text-red-400 hover:bg-red-500/10">{% trans 'Déconnexion' %}</button>
+          <button type="submit" class="w-full text-left text-sm font-medium text-red-600 hover:bg-red-50">{% trans 'Déconnexion' %}</button>
         </form>
       {% else %}
-        <a href="{% url 'users:login' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50">{% trans 'Se connecter' %}</a>
-        <a href="{% url 'users:register' %}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:bg-slate-50">{% trans "S'inscrire" %}</a>
+        <a href="{% url 'users:login' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans 'Se connecter' %}</a>
+        <a href="{% url 'users:register' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans "S'inscrire" %}</a>
       {% endif %}
     </div>
   </div>
 </header>
 {% if request.user.is_authenticated %}
-  <div id="user-dropdown" role="menu" aria-labelledby="user-menu-button" class="z-50 hidden w-64 divide-y divide-night-700 rounded-2xl border border-night-700 bg-night-800 text-slate-200 shadow-2xl">
+  <div id="user-dropdown" role="menu" aria-labelledby="user-menu-button" class="z-50 hidden w-64 divide-y divide-border rounded-xl border border-border bg-surface text-text shadow-lg">
     <div class="px-4 py-3">
-      <p class="truncate text-sm font-semibold text-white">{{ request.user.name|default:request.user.email }}</p>
-      <p class="truncate text-sm text-slate-400">{{ request.user.email }}</p>
+      <p class="truncate text-sm font-semibold text-text">{{ request.user.name|default:request.user.email }}</p>
+      <p class="truncate text-sm text-text-muted">{{ request.user.email }}</p>
     </div>
-    <ul class="py-1 text-sm text-slate-300" role="none">
-      <li><a href="{% url 'users:profile' %}" role="menuitem" class="block px-4 py-2 hover:bg-night-700">{% trans 'Mon profil' %}</a></li>
-      <li><a href="{% url 'users:password_reset' %}" role="menuitem" class="block px-4 py-2 hover:bg-night-700">{% trans 'Modifier mon mot de passe' %}</a></li>
+    <ul class="py-1 text-sm text-text-muted" role="none">
+      <li><a href="{% url 'users:profile' %}" role="menuitem" class="block px-4 py-2 hover:bg-surface-muted">{% trans 'Mon profil' %}</a></li>
+      <li><a href="{% url 'users:password_reset' %}" role="menuitem" class="block px-4 py-2 hover:bg-surface-muted">{% trans 'Modifier mon mot de passe' %}</a></li>
       {% if request.user.is_staff or request.user.is_superuser %}
-        <li><a href="{% url 'admin:index' %}" role="menuitem" class="block px-4 py-2 hover:bg-night-700">{% trans 'Administration' %}</a></li>
+        <li><a href="{% url 'admin:index' %}" role="menuitem" class="block px-4 py-2 hover:bg-surface-muted">{% trans 'Administration' %}</a></li>
       {% endif %}
     </ul>
     <div class="py-1">
       <form method="post" action="{% url 'users:logout' %}">
         {% csrf_token %}
-        <button type="submit" role="menuitem" class="block w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10">{% trans 'Déconnexion' %}</button>
+        <button type="submit" role="menuitem" class="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50">{% trans 'Déconnexion' %}</button>
       </form>
     </div>
   </div>
