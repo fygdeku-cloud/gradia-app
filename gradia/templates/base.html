@@ -25,26 +25,43 @@
                 sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
               },
               colors: {
-                // Mapping aux nouveaux tokens
-                bg: '#fdfcfc',
-                surface: '#ffffff',
-                'surface-muted': '#f8fafc',
-                primary: {
-                  DEFAULT: '#2563eb',
-                  hover: '#1d4ed8',
+                night: {
+                  500: '#33456e',
+                  600: '#27375a',
+                  700: '#1c2a45',
+                  750: '#182338',
+                  800: '#131d31',
+                  850: '#0f1728',
+                  900: '#0b1220',
+                  925: '#0a101d',
+                  950: '#070b14',
                 },
-                secondary: '#10b981',
-                text: {
-                  DEFAULT: '#12233f',
-                  muted: '#64748b',
+                brand: {
+                  50: '#fdfaef',
+                  100: '#f8f0d3',
+                  200: '#f0dfa3',
+                  300: '#e9cc70',
+                  400: '#e0b851',
+                  500: '#d2a23c',
+                  600: '#b9862f',
+                  700: '#946827',
+                  800: '#795224',
+                  900: '#65431f',
+                  950: '#3a240d',
                 },
-                border: '#e2e8f0',
+                // Corrections d'esprit pour le thème sombre
+                ink: {
+                  DEFAULT: '#eef1f7',
+                  secondary: '#a6b4cb',
+                  muted: '#7c8aa3',
+                },
               },
               borderRadius: {
-                'sm': '0.25rem',
-                'md': '0.5rem',
-                'lg': '1rem',
-                'xl': '1.5rem',
+                'sm': '0.375rem',
+                'md': '0.625rem',
+                'lg': '0.875rem',
+                'xl': '1.125rem',
+                '2xl': '1.5rem',
               },
             },
           },
@@ -52,31 +69,20 @@
       </script>
       <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" />
-      <link href="{% static 'css/common/base.css' %}" rel="stylesheet" />
       <link href="{% static 'css/common/design-system.css' %}" rel="stylesheet" />
+      <link href="{% static 'css/common/base.css' %}" rel="stylesheet" />
       <link href="{% static 'css/common/components.css' %}" rel="stylesheet" />
       <link href="{% static 'css/common/forms.css' %}" rel="stylesheet" />
       <link href="{% static 'css/common/utilities.css' %}" rel="stylesheet" />
-{% block extra_css %}
-        <link href="{% static 'css/home/features.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/home/contests.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/home/cta.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/home/footer.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/users/login.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/users/register.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/users/otp.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/users/profile.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/users/password_reset.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/users/password_reset_confirm.css' %}" rel="stylesheet" />
-{% endblock extra_css %}
-<link href="{% static 'css/common/navbar.css' %}" rel="stylesheet" />
+      <link href="{% static 'css/common/navbar.css' %}" rel="stylesheet" />
+      {% block extra_css %}{% endblock extra_css %}
     {% endblock css %}
   </head>
-  <body class="flex min-h-screen flex-col bg-white font-sans text-slate-900 antialiased">
+  <body class="flex min-h-screen flex-col bg-night-950 font-sans text-ink antialiased">
     <a href="#main-content" class="skip-link">{% trans 'Aller au contenu principal' %}</a>
     {% block body %}
       {% include "common/messages.html" %}
-      {% include "home/include/navbar.html" %}
+      {% include "common/navbar.html" %}
       <main class="flex-1" id="main-content" tabindex="-1">
         {% block content %}{% endblock content %}
       </main>
@@ -87,23 +93,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
     <script defer src="{% static 'js/common/messages.js' %}"></script>
     {% block extra_js %}
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const navbar = document.querySelector('[data-gradia-navbar]');
-    if (!navbar) return;
-    const onScroll = () => {
-      if (window.scrollY > 20) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
-      }
-    };
-    window.addEventListener('scroll', onScroll);
-    // Initialize state
-    onScroll();
-  });
-</script>
-{% endblock extra_js %}
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const navbar = document.querySelector('[data-gradia-navbar]');
+          if (!navbar) return;
+          const onScroll = () => {
+            if (window.scrollY > 20) {
+              navbar.classList.add('scrolled');
+            } else {
+              navbar.classList.remove('scrolled');
+            }
+          };
+          window.addEventListener('scroll', onScroll, { passive: true });
+          onScroll();
+        });
+      </script>
+    {% endblock extra_js %}
     {% block inline_javascript %}{% endblock inline_javascript %}
   </body>
 </html>

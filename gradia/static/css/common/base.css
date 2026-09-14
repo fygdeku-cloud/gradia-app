@@ -1,17 +1,15 @@
 /* ============================================================
    Gradia — Design System (base)
-   Direction: Light Professional, Modern Institutional
-   Dependencies: design-system.css (tokens)
+   Direction : plateforme éducative premium — fond bleu-nuit
+   profond, texte clair, accents dorés.
+   Dépendances : design-system.css (tokens).
    ============================================================ */
 
 :root {
-  /* No hardcoded colors here; refer to design-system.css tokens */
-  --gradia-bg: var(--color-bg);
-  --gradia-surface: var(--color-surface);
-  --gradia-text: var(--color-text);
-  --gradia-text-secondary: var(--color-text-muted);
-  --gradia-accent: var(--color-primary);
-  --gradia-border: var(--color-border);
+  /* Alias de compatibilité pour les anciens tokens (dépréciés). */
+  --gradia-bg-soft: var(--gradia-night-850);
+  --gradia-surface-1: var(--gradia-night-900);
+  --gradia-radius-md: var(--gradia-radius-lg);
 }
 
 html {
@@ -19,20 +17,47 @@ html {
 }
 
 body {
-  font-family: var(--font-family);
+  font-family: var(--gradia-font-family);
   background-color: var(--gradia-bg);
   color: var(--gradia-text);
   overflow-x: hidden;
-  line-height: 1.5;
+  line-height: var(--gradia-line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Base structural styles */
+/* Barre de défilement discrète et cohérente avec le thème sombre. */
+::selection {
+  background-color: var(--gradia-accent-soft);
+  color: var(--gradia-text);
+}
+
+/* ------------------------------------------------------------------
+   Conteneurs
+   ------------------------------------------------------------------ */
 .gradia-page-shell {
-  width: min(100% - 2rem, 80rem);
+  width: min(100% - var(--gradia-page-gutter) * 2, var(--gradia-page-max));
   margin-inline: auto;
 }
 
-/* Accessibility */
+.gradia-section {
+  padding-block: var(--gradia-spacing-16);
+}
+
+@media (min-width: 1024px) {
+  .gradia-section {
+    padding-block: var(--gradia-spacing-20);
+  }
+}
+
+.gradia-hero-grid {
+  background-color: var(--gradia-night-900);
+  color: var(--gradia-text);
+}
+
+/* ------------------------------------------------------------------
+   Accessibilité — lien d'évitement
+   ------------------------------------------------------------------ */
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -41,20 +66,28 @@ body {
 }
 
 .skip-link:focus {
-  left: 0.5rem;
-  top: 0.5rem;
-  background: var(--gradia-accent);
-  color: white;
-  border-radius: var(--radius-md);
-  padding: 0.5rem 0.875rem;
-  box-shadow: var(--shadow-md);
+  left: var(--gradia-spacing-2);
+  top: var(--gradia-spacing-2);
+  background-color: var(--gradia-accent);
+  color: var(--gradia-night-900);
+  border-radius: var(--gradia-radius-md);
+  padding: var(--gradia-spacing-2) var(--gradia-spacing-3);
+  box-shadow: var(--gradia-shadow-md);
+  font-weight: var(--gradia-font-weight-semibold);
 }
 
+/* ------------------------------------------------------------------
+   Focus visible cohérent (doré) — ne jamais dépendre uniquement
+   de la couleur pour l'accessibilité.
+   ------------------------------------------------------------------ */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
-textarea:focus-visible {
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
   outline: 2px solid var(--gradia-accent);
   outline-offset: 2px;
+  border-radius: 2px;
 }

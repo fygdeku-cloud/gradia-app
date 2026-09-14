@@ -1,0 +1,138 @@
+{% load static i18n %}
+{# Barre de navigation Gradia — contextuelle (visiteur / étudiant / admin). #}
+<header class="gradia-navbar" data-gradia-navbar>
+  <nav class="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8"
+       aria-label="{% trans 'Navigation principale' %}">
+    <div class="flex min-w-0 items-center gap-6">
+      <a href="{% url 'home' %}" class="gradia-logo shrink-0">
+        <span class="gradia-logo-mark" aria-hidden="true">G</span>
+        <span class="gradia-logo-text">Gradia</span>
+      </a>
+
+      <div class="hidden items-center gap-1 md:flex">
+        <a href="{% url 'home' %}" class="gradia-nav-link{% if request.resolver_match.url_name == 'home' and not request.resolver_match.namespace %} active{% endif %}">
+          {% trans 'Accueil' %}
+        </a>
+        <a href="{% url 'contest:list' %}" class="gradia-nav-link{% if request.resolver_match.namespace == 'contest' and request.resolver_match.url_name == 'list' %} active{% endif %}">
+          {% trans 'Concours' %}
+        </a>
+        <a href="{% url 'document:list' %}" class="gradia-nav-link{% if request.resolver_match.namespace == 'document' and request.resolver_match.url_name == 'list' %} active{% endif %}">
+          {% trans 'Documents' %}
+        </a>
+        <a href="{% url 'contest:category_list' %}" class="gradia-nav-link{% if request.resolver_match.namespace == 'contest' and request.resolver_match.url_name == 'category_list' %} active{% endif %}">
+          {% trans 'Catégories' %}
+        </a>
+      </div>
+    </div>
+
+    <div class="flex flex-shrink-0 items-center gap-2 sm:gap-3">
+      {% if request.user.is_authenticated %}
+        {# Panier étudiant : affiché uniquement lorsque le module cart est branché. #}
+        {% if GRADIA_CART_ENABLED and request.user.is_student %}
+          <a href="{% url 'cart:detail' %}" class="gradia-nav-cart-link" aria-label="{% trans 'Voir mon panier' %}">
+            <svg class="h-5 w-5" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+            </svg>
+          </a>
+        {% endif %}
+
+        {% if request.user.is_staff or request.user.is_superuser or request.user.is_admin %}
+          <a href="{% url 'admin:index' %}" class="gradia-nav-link hidden lg:inline-flex">
+            {% trans 'Administration' %}
+          </a>
+        {% endif %}
+
+        <button id="user-menu-button" type="button"
+                data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom-end"
+                class="flex items-center gap-2 rounded-full p-1 text-sm text-ink-secondary transition hover:bg-night-800"
+                aria-expanded="false" aria-haspopup="menu">
+          <span class="sr-only">{% trans 'Ouvrir le menu utilisateur' %}</span>
+          {% include "common/avatar.html" with avatar_user=request.user avatar_size="h-9 w-9 text-xs" %}
+        </button>
+      {% else %}
+        <a href="{% url 'users:login' %}" class="gradia-btn-ghost hidden sm:inline-flex">
+          {% trans 'Se connecter' %}
+        </a>
+        <a href="{% url 'users:register' %}" class="gradia-btn-primary !px-5 !py-2.5">
+          {% trans "S'inscrire" %}
+        </a>
+      {% endif %}
+
+      <button data-collapse-toggle="mobile-menu" type="button"
+              class="inline-flex items-center justify-center rounded-lg p-2 text-ink-muted transition hover:bg-night-800 focus-visible:ring-2 focus-visible:ring-brand-400 md:hidden"
+              aria-controls="mobile-menu" aria-expanded="false">
+        <span class="sr-only">{% trans 'Ouvrir le menu' %}</span>
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true">
+          <path stroke-linecap="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+{# Menu mobile (Flowbite collapse) #}
+  <div class="gradia-mobile-menu md:hidden" id="mobile-menu">
+    <div class="space-y-1 px-3 py-3">
+      <a href="{% url 'home' %}" class="mobile-link{% if request.resolver_match.url_name == 'home' %} mobile-active{% endif %}">
+        {% trans 'Accueil' %}
+      </a>
+      <a href="{% url 'contest:list' %}" class="mobile-link">{% trans 'Concours' %}</a>
+      <a href="{% url 'contest:category_list' %}" class="mobile-link">{% trans 'Catégories' %}</a>
+      <a href="{% url 'document:list' %}" class="mobile-link">{% trans 'Documents' %}</a>
+
+      {% if request.user.is_authenticated %}
+        {% if GRADIA_CART_ENABLED and request.user.is_student %}
+          <a href="{% url 'cart:detail' %}" class="mobile-link">{% trans 'Mon panier' %}</a>
+        {% endif %}
+        {% if request.user.is_staff or request.user.is_superuser or request.user.is_admin %}
+          <a href="{% url 'admin:index' %}" class="mobile-link">{% trans 'Administration' %}</a>
+        {% endif %}
+        <a href="{% url 'users:profile' %}" class="mobile-link">{% trans 'Mon profil' %}</a>
+        <form method="post" action="{% url 'users:logout' %}" class="px-1 py-1">
+          {% csrf_token %}
+          <button type="submit" class="gradia-btn-danger w-full">{% trans 'Déconnexion' %}</button>
+        </form>
+      {% else %}
+        <a href="{% url 'users:login' %}" class="mobile-link">{% trans 'Se connecter' %}</a>
+        <a href="{% url 'users:register' %}" class="mobile-link">{% trans "S'inscrire" %}</a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+{% if request.user.is_authenticated %}
+  {# Menu utilisateur (Flowbite dropdown) #}
+  <div id="user-dropdown" role="menu" aria-labelledby="user-menu-button"
+       class="z-50 hidden w-64 divide-y divide-night-700 rounded-xl border border-night-700 bg-night-900 text-ink shadow-xl">
+    <div class="px-4 py-3">
+      <p class="truncate text-sm font-semibold text-ink">{{ request.user.name|default:request.user.email }}</p>
+      <p class="truncate text-sm text-ink-muted">{{ request.user.email }}</p>
+    </div>
+    <ul class="py-1 text-sm text-ink-secondary" role="none">
+      <li role="none">
+        <a href="{% url 'users:profile' %}" role="menuitem" class="block px-4 py-2 transition hover:bg-night-800 hover:text-ink">
+          {% trans 'Mon profil' %}
+        </a>
+      </li>
+      <li role="none">
+        <a href="{% url 'users:password_reset' %}" role="menuitem" class="block px-4 py-2 transition hover:bg-night-800 hover:text-ink">
+          {% trans 'Modifier mon mot de passe' %}
+        </a>
+      </li>
+      {% if request.user.is_staff or request.user.is_superuser or request.user.is_admin %}
+        <li role="none">
+          <a href="{% url 'admin:index' %}" role="menuitem" class="block px-4 py-2 transition hover:bg-night-800 hover:text-ink">
+            {% trans 'Administration' %}
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+    <div class="py-1">
+      <form method="post" action="{% url 'users:logout' %}">
+        {% csrf_token %}
+        <button type="submit" role="menuitem"
+                class="block w-full px-4 py-2 text-left text-sm text-red-400 transition hover:bg-red-500/10 hover:text-red-300">
+          {% trans 'Déconnexion' %}
+        </button>
+      </form>
+    </div>
+  </div>
+{% endif %}

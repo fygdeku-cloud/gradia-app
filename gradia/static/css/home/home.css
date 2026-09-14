@@ -1,78 +1,56 @@
-/* ------------------------------------------------------------
-   Gradia – Home page custom styles (Hero, Cards, Transitions)
-   ------------------------------------------------------------ */
+/* ============================================================
+   Gradia — Home page (hero + sections, thème sombre)
+   Détails spécifiques à l'accueil uniquement ; le reste vit dans
+   common/design-system.css et common/components.css.
+   ============================================================ */
+
 /* HERO ------------------------------------------------------ */
 .gradia-home-hero {
-  @apply relative min-h-screen flex items-center bg-gray-900 text-white overflow-hidden;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--gradia-night-950);
+  background-image:
+    radial-gradient(50rem 32rem at 85% -10%, rgba(224, 184, 81, 0.14), transparent 60%),
+    radial-gradient(42rem 28rem at -10% 110%, rgba(39, 55, 90, 0.5), transparent 62%);
 }
-.gradia-home-hero__inner {
-  @apply container mx-auto flex flex-col-reverse md:flex-row items-center gap-8 py-20;
+
+.gradia-hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--gradia-radius-full);
+  border: 1px solid rgba(224, 184, 81, 0.35);
+  background-color: var(--gradia-accent-soft);
+  padding: 0.25rem 0.875rem;
+  font-size: var(--gradia-font-size-xs);
+  font-weight: var(--gradia-font-weight-semibold);
+  color: var(--gradia-brand-300);
+  letter-spacing: 0.04em;
 }
-/* Text area */
-.gradia-home-hero__copy {
-  @apply max-w-xl space-y-6;
+
+.gradia-hero-visual-frame {
+  position: relative;
 }
-.gradia-eyebrow {
-  @apply text-brand-300 text-sm font-medium tracking-wider uppercase;
+
+.gradia-hero-visual-frame::before {
+  content: "";
+  position: absolute;
+  inset: -0.75rem;
+  border-radius: var(--gradia-radius-2xl);
+  background: linear-gradient(135deg, rgba(224, 184, 81, 0.25), rgba(39, 55, 90, 0.05) 55%, rgba(224, 184, 81, 0.12));
+  filter: blur(24px);
+  z-index: 0;
 }
-.gradia-home-hero h1 {
-  @apply text-5xl md:text-6xl xl:text-7xl font-extrabold leading-tight;
-}
-.gradia-home-hero__intro {
-  @apply mt-4 max-w-2xl text-lg text-gray-200;
-}
-/* CTA buttons */
-.gradia-btn-primary {
-  @apply inline-flex items-center gap-2 px-6 py-3 bg-brand-600 text-white rounded-xl font-semibold transition-colors hover:bg-brand-700 focus-visible:ring-2 focus-visible:ring-brand-500/30;
-}
-.gradia-btn-ghost {
-  @apply inline-flex items-center gap-2 px-6 py-3 border border-white/30 text-white rounded-xl font-medium transition-colors hover:border-white/60 hover:bg-white/10;
-}
-/* Image area */
-.gradia-home-hero__visual {
-  @apply relative w-full md:w-1/2 h-96 md:h-auto;
-}
-.gradia-home-hero__visual img {
-  @apply w-full h-full object-cover rounded-xl shadow-lg;
-}
-/* Float badges (counters) */
+
+/* Notification flottante du hero (informations réelles uniquement) */
 .gradia-hero-float {
-  @apply absolute top-4 right-4 bg-white/10 backdrop-blur-sm px-3 py-1 rounded-md text-sm font-medium text-white shadow-md;
-}
-/* ------------------------------------------------------------
-   CARD COMPONENTS
-   ------------------------------------------------------------ */
-.gradia-card {
-  @apply group relative bg-white dark:bg-night-800 rounded-xl overflow-hidden shadow-sm transition-shadow hover:shadow-lg;
-}
-.gradia-card-img {
-  @apply h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105;
-}
-.gradia-card-body {
-  @apply p-4;
-}
-.gradia-card-title {
-  @apply mt-2 text-lg font-semibold text-slate-900 dark:text-white group-hover:text-brand-600 transition-colors;
-}
-.gradia-card-meta {
-  @apply mt-1 text-sm text-slate-600 dark:text-slate-300;
-}
-.gradia-card-cta {
-  @apply mt-3 inline-block text-sm font-medium text-brand-600 hover:underline;
-}
-/* ------------------------------------------------------------
-   GLOBAL TRANSITIONS & UTILITIES
-   ------------------------------------------------------------ */
-/* Fade‑in when element enters viewport */
-.gradia-fade-in {
-  opacity: 0;
-  transform: translateY(12px);
-  animation: gradia-fade-in 0.4s ease-out both forwards;
-}
-@keyframes gradia-fade-in {
-  to { opacity: 1; transform: none; }
-}
-/* Navbar scroll effect – toggled via JS */
-[data-gradia-navbar].scrolled {
-  @apply bg-white/95 shadow-md backdrop-blur-md;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: rgba(11, 18, 32, 0.92);
+  border: 1px solid var(--gradia-border-strong);
+  border-radius: var(--gradia-radius-xl);
+  padding: 0.875rem 1rem;
+  box-shadow: var(--gradia-shadow-xl);
+  backdrop-filter: blur(8px);
 }

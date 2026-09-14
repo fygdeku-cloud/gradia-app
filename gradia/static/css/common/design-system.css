@@ -1,41 +1,137 @@
-/* =============================================================
-   Gradia – Design System Tokens
-   -------------------------------------------------------------
-   Centralized CSS Variables for branding and theme consistency.
-   Tailwind config references these variables for utility classes.
-   ============================================================= */
+/* ==========================================================================
+   Gradia — Design System Tokens (single source of truth)
+   Direction artistique : plateforme éducative premium, fond bleu-nuit profond,
+   accents dorés chauds, blanc cassé, lisibilité et contraste élevés.
+   ========================================================================== */
 
 :root {
-  /* Colors */
-  --color-bg: #fdfcfc;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f8fafc;
+  /* ------------------------------------------------------------------
+     COULEURS — Palette « night » (fonds bleu-nuit profonds)
+     ------------------------------------------------------------------ */
+  --gradia-night-950: #070b14;
+  --gradia-night-925: #0a101d;
+  --gradia-night-900: #0b1220;
+  --gradia-night-850: #0f1728;
+  --gradia-night-800: #131d31;
+  --gradia-night-750: #182338;
+  --gradia-night-700: #1c2a45;
+  --gradia-night-600: #27375a;
+  --gradia-night-500: #33456e;
 
-  --color-primary: #2563eb; /* Medium Blue */
-  --color-primary-hover: #1d4ed8;
+  /* ------------------------------------------------------------------
+     COULEURS — Palette « brand » (doré / jaune chaud)
+     ------------------------------------------------------------------ */
+  --gradia-brand-50: #fdfaef;
+  --gradia-brand-100: #f8f0d3;
+  --gradia-brand-200: #f0dfa3;
+  --gradia-brand-300: #e9cc70;
+  --gradia-brand-400: #e0b851;
+  --gradia-brand-500: #d2a23c;
+  --gradia-brand-600: #b9862f;
+  --gradia-brand-700: #946827;
+  --gradia-brand-800: #795224;
+  --gradia-brand-900: #65431f;
+  --gradia-brand-950: #3a240d;
 
-  --color-secondary: #10b981; /* Modern Green */
+  /* ------------------------------------------------------------------
+     SÉMANTIQUE
+     ------------------------------------------------------------------ */
+  --gradia-bg: var(--gradia-night-950);
+  --gradia-surface: var(--gradia-night-900);
+  --gradia-surface-2: var(--gradia-night-850);
+  --gradia-surface-3: var(--gradia-night-800);
 
-  --color-text: #12233f;
-  --color-text-muted: #64748b;
+  --gradia-text: #eef1f7;
+  --gradia-text-secondary: #a6b4cb;
+  --gradia-text-muted: #7c8aa3;
 
-  --color-border: #e2e8f0;
+  --gradia-border: #1c2a45;
+  --gradia-border-strong: #2a3b5d;
 
-  /* Radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
+  --gradia-accent: var(--gradia-brand-400);
+  --gradia-accent-hover: var(--gradia-brand-300);
+  --gradia-accent-soft: rgba(224, 184, 81, 0.12);
+  --gradia-accent-softer: rgba(224, 184, 81, 0.07);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --gradia-success: #34d399;
+  --gradia-success-soft: rgba(52, 211, 153, 0.12);
+  --gradia-danger: #f87171;
+  --gradia-danger-soft: rgba(248, 113, 113, 0.12);
+  --gradia-warning: #fbbf24;
+  --gradia-warning-soft: rgba(251, 191, 36, 0.12);
+  --gradia-info: #60a5fa;
+  --gradia-info-soft: rgba(96, 165, 250, 0.12);
 
-  /* Typography */
-  --font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --gradia-focus-ring: rgba(224, 184, 81, 0.45);
 
-  /* Transitions */
-  --transition-duration: 250ms;
-  --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  /* ------------------------------------------------------------------
+     TYPOGRAPHIE
+     ------------------------------------------------------------------ */
+  --gradia-font-family: "Plus Jakarta Sans", system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  --gradia-font-size-xs: 0.75rem;
+  --gradia-font-size-sm: 0.875rem;
+  --gradia-font-size-base: 1rem;
+  --gradia-font-size-lg: 1.125rem;
+  --gradia-font-size-xl: 1.25rem;
+  --gradia-font-size-2xl: 1.5rem;
+  --gradia-font-size-3xl: 1.875rem;
+  --gradia-font-size-4xl: 2.25rem;
+  --gradia-font-size-5xl: 3rem;
+
+  --gradia-font-weight-medium: 500;
+  --gradia-font-weight-semibold: 600;
+  --gradia-font-weight-bold: 700;
+  --gradia-font-weight-extrabold: 800;
+
+  --gradia-line-height-tight: 1.15;
+  --gradia-line-height-normal: 1.5;
+  --gradia-line-height-relaxed: 1.65;
+
+  --gradia-letter-spacing-tight: -0.02em;
+  --gradia-letter-spacing-wide: 0.05em;
+
+  /* ------------------------------------------------------------------
+     SPACING
+     ------------------------------------------------------------------ */
+  --gradia-spacing-1: 0.25rem;
+  --gradia-spacing-2: 0.5rem;
+  --gradia-spacing-3: 0.75rem;
+  --gradia-spacing-4: 1rem;
+  --gradia-spacing-5: 1.25rem;
+  --gradia-spacing-6: 1.5rem;
+  --gradia-spacing-8: 2rem;
+  --gradia-spacing-10: 2.5rem;
+  --gradia-spacing-12: 3rem;
+  --gradia-spacing-16: 4rem;
+  --gradia-spacing-20: 5rem;
+  --gradia-spacing-24: 6rem;
+
+  --gradia-page-max: 80rem;
+  --gradia-page-gutter: 1.25rem;
+
+  /* ------------------------------------------------------------------
+     RADIUS
+     ------------------------------------------------------------------ */
+  --gradia-radius-sm: 0.375rem;
+  --gradia-radius-md: 0.625rem;
+  --gradia-radius-lg: 0.875rem;
+  --gradia-radius-xl: 1.125rem;
+  --gradia-radius-2xl: 1.5rem;
+  --gradia-radius-full: 9999px;
+
+  /* ------------------------------------------------------------------
+     SHADOWS (profondeur sur fond sombre)
+     ------------------------------------------------------------------ */
+  --gradia-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --gradia-shadow-md: 0 4px 8px -2px rgba(0, 0, 0, 0.4);
+  --gradia-shadow-lg: 0 12px 28px -6px rgba(0, 0, 0, 0.5);
+  --gradia-shadow-xl: 0 24px 48px -12px rgba(0, 0, 0, 0.6);
+
+  /* ------------------------------------------------------------------
+     TRANSITIONS
+     ------------------------------------------------------------------ */
+  --gradia-duration-fast: 150ms;
+  --gradia-duration: 250ms;
+  --gradia-easing: cubic-bezier(0.4, 0, 0.2, 1);
 }

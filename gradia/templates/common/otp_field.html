@@ -28,7 +28,7 @@
     </div>
 
     {% if otp_field.help_text %}
-      <p class="mt-2 text-xs text-slate-500">{{ otp_field.help_text }}</p>
+      <p class="mt-2 text-xs text-ink-muted">{{ otp_field.help_text }}</p>
     {% endif %}
 
     {% if otp_field.errors %}
@@ -39,7 +39,7 @@
       </div>
     {% endif %}
 
-    <p class="mt-3 text-center text-xs text-slate-500">
+    <p class="mt-3 text-center text-xs text-ink-muted">
       {% trans 'Si vous rencontrez un problème, saisissez le code directement dans le champ prévu à cet effet.' %}
     </p>
   </div>

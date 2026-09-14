@@ -1,40 +1,63 @@
 /* ============================================================
    Gradia — Utilitaires typographiques (hiérarchie visuelle)
-   THÈME SOMBRE.
+   Fond bleu-nuit, texte clair. H1→titre, H2→section, H3→sous-section.
    ============================================================ */
 
 .gradia-page-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.025em;
+  font-size: var(--gradia-font-size-3xl);
+  font-weight: var(--gradia-font-weight-extrabold);
+  letter-spacing: var(--gradia-letter-spacing-tight);
   color: var(--gradia-text);
+  line-height: var(--gradia-line-height-tight);
 }
 
 @media (min-width: 640px) {
   .gradia-page-title {
-    font-size: 1.875rem;
+    font-size: var(--gradia-font-size-4xl);
   }
 }
 
 .gradia-section-title {
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-size: var(--gradia-font-size-2xl);
+  font-weight: var(--gradia-font-weight-extrabold);
   letter-spacing: -0.02em;
   color: var(--gradia-text);
+  line-height: var(--gradia-line-height-tight);
 }
 
 @media (min-width: 640px) {
   .gradia-section-title {
-    font-size: 1.875rem;
+    font-size: var(--gradia-font-size-3xl);
   }
 }
 
 .gradia-card-title {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: var(--gradia-font-size-lg);
+  font-weight: var(--gradia-font-weight-bold);
   color: var(--gradia-text);
+}
+
+.gradia-subtitle {
+  font-size: var(--gradia-font-size-base);
+  color: var(--gradia-text-secondary);
+  line-height: var(--gradia-line-height-relaxed);
+}
+
+.gradia-eyebrow {
+  font-size: var(--gradia-font-size-xs);
+  font-weight: var(--gradia-font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gradia-brand-400);
 }
 
 .gradia-muted {
   color: var(--gradia-text-muted);
+}
+
+/* Mise en forme des prix / montants (fournis par le backend) */
+.gradia-price {
+  font-weight: var(--gradia-font-weight-bold);
+  color: var(--gradia-brand-300);
+  white-space: nowrap;
 }
