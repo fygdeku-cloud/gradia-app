@@ -9,8 +9,10 @@ from django.shortcuts import redirect, render
 from django.views import View
 from gradia.order.selectors import get_order_detail
 from gradia.payment.forms import PaymentInitiationForm
-from gradia.payment.services import PaymentService
 from gradia.payment.selectors import get_payment
+from ..services.stripe_service import StripePaymentService
+from ..services.transaction_service import TransactionService
+from ..services.payment_orchestrator import PaymentOrchestrator
 from gradia.utils.enums import PaymentStatus
 
 
@@ -54,19 +56,9 @@ class PaymentInitiationView(LoginRequiredMixin, View):
         # Récupère la commande via le sélecteur existant.
         order = get_order_detail(order_id)
 
-        # Une commande inexistante retourne une 404.
-        if order is None:
-            raise Http404
-
-        # Empêche un utilisateur de payer la commande d'un autre étudiant.
-        if order.student_id != request.user.id:
-            raise PermissionDenied
-
         # Reconstruit le formulaire avec les données envoyées.
         form = PaymentInitiationForm(request.POST)
 
-        # Si le formulaire est invalide, on réaffiche la page
-        # avec les erreurs correspondantes.
         if not form.is_valid():
             return render(
                 request,
@@ -77,66 +69,94 @@ class PaymentInitiationView(LoginRequiredMixin, View):
                 },
                 status=400,
             )
-
-        try:
-            # Le service crée le Payment local puis la session Stripe.
-            checkout_url = PaymentService.initiate_payment(
-                user=request.user,
-                order=order,
-                method=form.cleaned_data["method"],
-                provider=form.cleaned_data["provider"],
-            )
-
-        except ValidationError as exc:
-            form.add_error(None, exc)
-
-            # Réaffiche le formulaire sans masquer l'erreur.
-            return render(
-                request,
-                "payment/payment_form.html",
-                {
-                    "form": form,
-                    "order": order,
-                },
-                status=400,
-            )
-
-        # Redirige directement l'étudiant vers Stripe Checkout.
+                
+        # Crée l'orchestrateur chargé de sélectionner le provider.
+        orchestrator = PaymentOrchestrator()
+        checkout_url = orchestrator.initiate_payment(
+            user=request.user,
+            order=order,
+            method=form.cleaned_data["method"],
+            provider=form.cleaned_data["provider"],
+        )
+        
         return redirect(checkout_url)
     
     
-    
 class PaymentProcessingView(LoginRequiredMixin, View):
-    """
-    Affiche la page d'attente après le retour depuis Stripe.
-    Elle attend que le webhook Stripe mette à jour la base locale.
-    """
-
-    login_url = "users:login"
+    """Vérifie l'état réel d'un paiement après le retour de Stripe."""
 
     def get(self, request, payment_id):
-        """Affiche la page de vérification du paiement."""
-
-        # Récupère le paiement via le sélecteur existant.
+        # Récupère le paiement enregistré 
         payment = get_payment(payment_id)
 
-        # Si le paiement n'existe pas, retourner une 404.
+        # si le paiement n'existe pas.
         if payment is None:
             raise Http404
 
-        # Un étudiant ne peut consulter que son propre paiement.
+        # Empêche un utilisateur d'accéder au paiement d'un autre étudiant.
         if payment.order.student_id != request.user.id:
             raise PermissionDenied
 
-        # Affiche la page de traitement.
+
+        if payment.status == PaymentStatus.SUCCESS:
+            return redirect(
+                "payment:success",
+                payment_id=payment.pk,
+            )
+
+        # Récupère la référence de Checkout Session enregistrée.
+        session_id = payment.provider_reference
+
+        # Si la transaction Stripe ne posséde pas une Checkout Session.
+        if not session_id:
+            raise Http404
+
+        # Vérifie directement l'état actuel auprès de Stripe.
+        stripe_service = StripePaymentService()
+
+        # Récupère la Checkout Session réelle.
+        session = stripe_service.retrieve_checkout_session(
+            session_id=session_id,
+        )
+
+        # Si Stripe confirme le paiement, on synchronise 
+        if session.payment_status == "paid":
+            stripe_service.validate_checkout_amount(
+                session=session,
+                expected_amount=payment.amount,
+            )
+
+            # Récupère la référence du PaymentIntent Stripe.
+            payment_intent_id = session.payment_intent
+
+            if not payment_intent_id:
+                raise ValidationError(
+                    "La transaction Stripe ne possède pas de référence de paiement."
+                )
+
+            # Marque la transaction comme réussie.
+            TransactionService.mark_success(
+                payment=payment,
+                provider_transaction_id=payment_intent_id,
+                provider_response={
+                    "session_id": session.id,
+                    "payment_status": session.payment_status,
+                    "payment_intent": payment_intent_id,
+                },
+            )
+
+            # Redirige immédiatement vers la page de succès.
+            return redirect(
+                "payment:success",
+                payment_id=payment.pk,
+            )
+
+        # on affiche la page de traitement.
         return render(
             request,
             "payment/processing.html",
-            {
-                "payment": payment,
-            },
+            {"payment": payment},
         )
-
 
 class PaymentStatusView(LoginRequiredMixin, View):
     """

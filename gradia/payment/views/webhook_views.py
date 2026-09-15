@@ -1,108 +1,59 @@
 from __future__ import annotations
 
-from django.conf import settings
-from django.http import HttpResponse, JsonResponse
-from django.views import View
-import stripe
+import json
 
-from gradia.payment.services import PaymentWebhookService
+import stripe
+from django.conf import settings
+from django.http import HttpRequest, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views import View
+
+from gradia.payment.services.webhook_service import WebhookService
 
 
 class PaymentWebhookView(View):
-    """
-    Reçoit et vérifie les événements envoyés par Stripe.
 
-    Cette vue ne nécessite pas d'authentification Django :
-    Stripe ne possède pas de session utilisateur Django.
-    """
-
-    authentication_required = False
-
-    def post(self, request):
-        """Traite un événement Stripe envoyé par webhook."""
-
-        # Le corps brut permettra de  vérifier correctement la signature Stripe.
+    @csrf_exempt
+    def post(self, request: HttpRequest) -> HttpResponse:
+        # Récupère le payload brut envoyé par Stripe.
         payload = request.body
 
-        # Récupère la signature envoyée par Stripe dans l'en-tête HTTP.
-        signature = request.META.get("HTTP_STRIPE_SIGNATURE")
+        # Récupère la signature Stripe.
+        signature = request.META.get("HTTP_STRIPE_SIGNATURE", "")
 
-        if not payload or not signature:
-            return JsonResponse(
-                {
-                    "error": "Webhook Stripe invalide.",
-                },
-                status=400,
-            )
+        # Vérifie que Stripe a bien envoyé sa signature.
+        if not signature:
+            return HttpResponse(status=400)
 
         try:
-            # Vérifie cryptographiquement la signature Stripe et construit
-            # l'événement uniquement si le payload est authentique.
+            # Vérifie cryptographiquement la signature et construit
+            # l'événement Stripe.
             event = stripe.Webhook.construct_event(
-                payload=payload,
-                sig_header=signature,
-                secret=settings.STRIPE_WEBHOOK_SECRET,
+                payload,
+                signature,
+                settings.STRIPE_WEBHOOK_SECRET,
             )
 
-        # Signature invalide ou payload falsifié.
-        except stripe.error.SignatureVerificationError:
-            return JsonResponse(
-                {
-                    "error": "Signature Stripe invalide.",
-                },
-                status=400,
-            )
+            # Transforme le payload vérifié en dictionnaire JSON.
+            payload_data = json.loads(payload.decode("utf-8"))
 
-        # Payload qui ne peut pas être interprété comme événement Stripe.
-        except ValueError:
-            return JsonResponse(
-                {
-                    "error": "Payload Stripe invalide.",
-                },
-                status=400,
-            )
+        except (
+            ValueError,
+            stripe.error.SignatureVerificationError,
+        ):
+            # Payload invalide ou signature invalide.
+            return HttpResponse(status=400)
 
-        # Récupère le type de l'événement Stripe.
-        event_type = event["type"]
+        # Récupère l'adresse IP directe de la requête.
+        remote_address = request.META.get("REMOTE_ADDR")
 
-        # Récupère l'objet Stripe associé à l'événement.
-        event_object = event["data"]["object"]
+        # Délègue toute la logique métier au service.
+        WebhookService().process_event(
+            event=event,
+            payload=payload_data,
+            signature=signature,
+            remote_address=remote_address,
+        )
 
-       # Une Checkout Session terminée doit être traitée uniquement
-        # lorsque Stripe indique réellement que le paiement est payé.
-        if event_type == "checkout.session.completed":
-            try:
-                # Traite et vérifie le paiement côté serveur.
-                PaymentWebhookService.handle_checkout_session_completed(
-                    checkout_session=event_object,
-                )
-
-            except Exception:
-                # L'erreur doit remonter afin que Stripe puisse
-                # retenter la livraison du webhook.
-                raise
-
-        elif event_type == "checkout.session.expired":
-            try:
-                # Récupère le paiement correspondant à la session Stripe
-                # puis le termine comme CANCELLED.
-                PaymentWebhookService.handle_checkout_session_expired(
-                    checkout_session=event_object,
-                )
-
-            except Exception:
-                raise
-
-        elif event_type == "checkout.session.async_payment_failed":
-            try:
-                # Termine le paiement comme FAILED.
-                PaymentWebhookService.handle_checkout_session_failed(
-                    checkout_session=event_object,
-                )
-
-            except Exception:
-                # Stripe pourra ainsi effectuer une nouvelle livraison.
-                raise
-
+        # Stripe a reçu une réponse positive.
         return HttpResponse(status=200)
-        

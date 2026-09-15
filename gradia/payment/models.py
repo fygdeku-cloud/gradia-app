@@ -6,8 +6,13 @@ from djmoney.models.fields import MoneyField
 
 from gradia.core.models import BaseModel
 from gradia.order.models import Order
-from gradia.utils.enums import PaymentMethod, PaymentStatus, PaymentProvider, PaymentType
-
+from gradia.utils.enums import (
+    PaymentMethod,
+    PaymentProvider,
+    PaymentStatus,
+    PaymentType,
+    ProcessingStatus,
+)
 
 
 class Payment(BaseModel):
@@ -68,9 +73,7 @@ class Payment(BaseModel):
         _("fournisseur de paiement"),
         max_length=50,
         choices=PaymentProvider.choices,
-        help_text=_(
-            "Exemple : Stripe, Flutterwave, MTN, Orange."
-        ),
+        help_text=_("Exemple : Stripe, Flutterwave, MTN, Orange."),
     )
 
     provider_reference = models.CharField(
@@ -89,8 +92,7 @@ class Payment(BaseModel):
         blank=True,
         db_index=True,
         help_text=_(
-            "Identifiant de transaction fourni par le prestataire "
-            "de paiement."
+            "Identifiant de transaction fourni par le prestataire."
         ),
     )
 
@@ -98,9 +100,6 @@ class Payment(BaseModel):
         _("réponse du fournisseur"),
         default=dict,
         blank=True,
-        help_text=_(
-            "Réponse brute retournée par le fournisseur de paiement."
-        ),
     )
 
     initiated_at = models.DateTimeField(
@@ -114,6 +113,7 @@ class Payment(BaseModel):
         blank=True,
     )
 
+    # Motif d'échec ou de fraude.
     failure_reason = models.TextField(
         _("motif d'échec"),
         blank=True,
@@ -124,6 +124,7 @@ class Payment(BaseModel):
         blank=True,
     )
 
+    # Informations complémentaires.
     metadata = models.JSONField(
         _("métadonnées"),
         default=dict,
@@ -141,3 +142,83 @@ class Payment(BaseModel):
             f"#{self.pk} - {self.amount} "
             f"({self.get_status_display()})"
         )
+
+
+class PaymentWebhookEvent(BaseModel):
+
+    provider = models.CharField(
+        _("fournisseur"),
+        max_length=50,
+        choices=PaymentProvider.choices,
+    )
+
+    # Identifiant unique de l'événement chez le fournisseur.
+    event_id = models.CharField(
+        _("identifiant de l'événement"),
+        max_length=255,
+    )
+
+    event_type = models.CharField(
+        _("type d'événement"),
+        max_length=255,
+    )
+
+    # Payload complet reçu et vérifié.
+    payload = models.JSONField(
+        _("payload"),
+        default=dict,
+    )
+
+    # Signature Stripe reçue dans l'en-tête.
+    signature = models.TextField(
+        _("signature"),
+        blank=True,
+    )
+
+    # Adresse IP ayant envoyé la requête.
+    remote_address = models.GenericIPAddressField(
+        _("adresse IP"),
+        null=True,
+        blank=True,
+    )
+
+    received_at = models.DateTimeField(
+        _("date de réception"),
+        auto_now_add=True,
+    )
+
+    processed_at = models.DateTimeField(
+        _("date de traitement"),
+        null=True,
+        blank=True,
+    )
+
+    processing_status = models.CharField(
+        _("statut de traitement"),
+        max_length=20,
+        choices=ProcessingStatus.choices,
+        default=ProcessingStatus.RECEIVED,
+        db_index=True,
+    )
+
+    error_message = models.TextField(
+        _("message d'erreur"),
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = _("événement webhook")
+        verbose_name_plural = _("événements webhook")
+        ordering = ["-received_at"]
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["provider", "event_id"],
+                name="unique_payment_webhook_event",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.provider} - {self.event_type} - {self.event_id}"
+        
+        
