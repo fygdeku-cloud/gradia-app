@@ -1,7 +1,6 @@
 from django.urls import path
 
 from gradia.document.views import (
-    CorrectionDownloadView,
     CorrectionViewView,
     DocumentCreateView,
     DocumentDeleteView,
@@ -31,11 +30,6 @@ urlpatterns = [
         "<uuid:pk>/corrige/consulter/",
         CorrectionViewView.as_view(),
         name="view_correction",
-    ),
-    path(
-        "<uuid:pk>/corrige/telecharger/",
-        CorrectionDownloadView.as_view(),
-        name="download_correction",
     ),
 
     # Gestion (staff / administrateurs)

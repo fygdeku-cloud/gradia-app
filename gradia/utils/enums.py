@@ -89,6 +89,18 @@ class OtpPurpose(models.TextChoices):
     LOGIN = "login", _("Login")
     PASSWORD_RESET = "password_reset", _("Password reset")
 
+
+# PROCESSUS STATUT
+class ProcessingStatus(models.TextChoices):
+    RECEIVED = "received", _("Reçu")
+
+    PROCESSING = "processing", _("En cours de traitement")
+
+    PROCESSED = "processed", _("Traité")
+
+    FAILED = "failed", _("Échec")
+
+
 #DOCUMENTS
 
 

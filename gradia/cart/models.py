@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from djmoney.forms import MoneyField
+from djmoney.models.fields import MoneyField
 
 from gradia.core.models import BaseModel
 from gradia.utils.enums import CartStatus
@@ -31,7 +31,7 @@ class CartItem(BaseModel):
     cart = models.ForeignKey(Cart, verbose_name=_("panier"), on_delete=models.CASCADE, related_name="items")
     document = models.ForeignKey(Document, verbose_name=_("document"), on_delete=models.PROTECT, related_name="cart_items")
     unit_price = MoneyField(
-        _("prix unitaire figé"), max_digits=12, decimal_places=2, default_currency=settings.DEFAULT_CURRENCY
+        _("prix unitaire figé"), max_digits=12, decimal_places=2, default_currency=settings.DEFAULT_CURRENCY,
     )
     added_at = models.DateTimeField(auto_now_add=True)
 

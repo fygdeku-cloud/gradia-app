@@ -202,6 +202,11 @@ AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", default="")
 # R2 utilise la signature AWS Signature Version 4.
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 
+# STRIPE
+STRIPE_PUBLISHABLE_KEY = env.str("STRIPE_PUBLISHABLE_KEY", default="")
+STRIPE_SECRET_KEY = env.str("STRIPE_SECRET_KEY", default="")
+STRIPE_WEBHOOK_SECRET = env.str("STRIPE_WEBHOOK_SECRET", default="")
+
 
 # Répertoire de stockage des fichiers protégés (sujets/corrigés des documents).
 # Il est volontairement situé HORS de MEDIA_ROOT : aucun serveur web ni la vue
