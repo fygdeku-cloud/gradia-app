@@ -12,11 +12,7 @@
     {% trans 'Mot de passe' %}
   </a>
 
-  {% comment %}
-    TODO BACKEND : ajouter ici les liens du catalogue (concours, documents,
-    annales…) dès que les routes correspondantes seront disponibles.
 
-  {% endcomment %}
 
   {% if request.user.is_staff or request.user.is_superuser %}
     <p class="dashboard-nav-section pt-6">{% trans 'Administration' %}</p>
