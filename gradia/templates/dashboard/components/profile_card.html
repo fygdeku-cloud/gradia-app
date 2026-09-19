@@ -7,7 +7,7 @@
     <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
       {% include "common/avatar.html" with avatar_user=card_user avatar_size="h-20 w-20 text-2xl" %}
       <div class="flex-1">
-        <h1 id="profile-title" class="text-2xl font-extrabold tracking-tight text-slate-900">{{ card_user.name|default:card_user.email }}</h1>
+        <h1 id="profile-title" class="text-2xl font-extrabold tracking-tight text-white">{{ card_user.name|default:card_user.email }}</h1>
         <p class="text-sm text-slate-400">{{ card_user.email }}</p>
         <div class="mt-2 flex flex-wrap items-center gap-2">
           {% if card_user.is_superuser %}

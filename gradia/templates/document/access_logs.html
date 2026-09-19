@@ -1,0 +1,70 @@
+{% extends "dashboard/base.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "Journal des accès" %} · Gradia{% endblock title %}
+
+{% block content %}
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+  <div>
+    <h1 class="text-2xl font-extrabold text-white">{% trans "Journal des accès" %}</h1>
+    <p class="mt-1 text-sm text-slate-400">
+      {% trans "Historique des accès aux documents de la plateforme." %}
+    </p>
+  </div>
+</div>
+
+<section class="gradia-panel overflow-hidden" aria-labelledby="logs-title">
+  <h2 id="logs-title" class="sr-only">{% trans 'Liste des journaux' %}</h2>
+  
+  <div class="overflow-x-auto">
+    <table class="gradia-table">
+      <thead>
+        <tr>
+          <th scope="col">{% trans "Utilisateur" %}</th>
+          <th scope="col">{% trans "Document" %}</th>
+          <th scope="col">{% trans "Action" %}</th>
+          <th scope="col">{% trans "Date" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+          <tr class="hover:bg-night-800 transition-colors">
+            <td>
+              <span class="font-medium text-white">{{ log.user.name|default:log.user.email|default:"Anonyme" }}</span>
+            </td>
+            <td>
+              <span class="text-white">{{ log.document.title }}</span>
+            </td>
+            <td>
+              {% if log.action == "download_subject" or log.action == "download_correction" %}
+                {% trans 'Téléchargement' as action_label %}
+                {% include "common/badge.html" with badge_text=action_label badge_variant="brand" %}
+              {% else %}
+                {% trans 'Consultation' as action_label %}
+                {% include "common/badge.html" with badge_text=action_label badge_variant="indigo" %}
+              {% endif %}
+            </td>
+            <td>
+              {{ log.accessed_at|date:"DATE_FORMAT" }} {{ log.accessed_at|time:"TIME_FORMAT" }}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4" class="py-8">
+              {% trans "Aucun journal d'accès trouvé." as empty_title %}
+              {% trans "Les actions des utilisateurs apparaîtront ici." as empty_description %}
+              {% include "common/empty_state.html" with title=empty_title description=empty_description %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  {% if is_paginated %}
+    <div class="border-t border-night-700 bg-night-900 px-4 py-3 sm:px-6">
+      {% include "common/pagination.html" %}
+    </div>
+  {% endif %}
+</section>
+{% endblock content %}

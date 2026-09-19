@@ -14,7 +14,7 @@
    ============================================================ #}
 <section class="gradia-hero-grid relative overflow-hidden border-b border-night-700 bg-night-900 text-white">
   <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-    <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-400" aria-label="{% trans 'Fil d\u2019Ariane' %}">
+    <nav class="flex flex-wrap items-center gap-2 text-sm text-ink-muted" aria-label="{% trans 'Fil d\u2019Ariane' %}">
       <a href="{% url 'home' %}" class="transition hover:text-white">{% trans 'Accueil' %}</a>
       <span aria-hidden="true">/</span>
       <a href="{% url 'contest:list' %}" class="transition hover:text-white">{% trans 'Concours' %}</a>
@@ -28,13 +28,13 @@
       <a href="{% url 'contest:category_detail' slug=session.contest.category.slug %}"
          class="rounded-full bg-brand-500/10 px-3 py-1 font-semibold text-brand-300 transition hover:bg-brand-500/20">{{ session.contest.category.title }}</a>
       <a href="{% url 'contest:establishment_detail' slug=session.contest.establishment.slug %}"
-         class="rounded-full border border-night-700 bg-night-800 px-3 py-1 font-medium text-slate-300 transition hover:bg-night-700">{{ session.contest.establishment.title }}</a>
+         class="rounded-full border border-night-700 bg-night-800 px-3 py-1 font-medium text-ink-secondary transition hover:bg-night-700">{{ session.contest.establishment.title }}</a>
     </div>
 
     <h1 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{{ session.title }}</h1>
-    <p class="mt-2 text-sm text-slate-400">{% trans 'Session' %} {{ session.year }}</p>
+    <p class="mt-2 text-sm text-ink-muted">{% trans 'Session' %} {{ session.year }}</p>
     {% if session.description %}
-      <p class="mt-4 max-w-3xl text-sm leading-relaxed text-slate-400">{{ session.description }}</p>
+      <p class="mt-4 max-w-3xl text-sm leading-relaxed text-ink-muted">{{ session.description }}</p>
     {% endif %}
   </div>
 </section>
@@ -44,20 +44,20 @@
   <div class="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
     {% if session.registration_start_date %}
       <div class="gradia-card p-5">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">{% trans 'Début des inscriptions' %}</p>
-        <p class="mt-1 text-lg font-bold text-slate-900">{{ session.registration_start_date|date:"SHORT_DATE_FORMAT" }}</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-ink-muted">{% trans 'Début des inscriptions' %}</p>
+        <p class="mt-1 text-lg font-bold text-ink">{{ session.registration_start_date|date:"SHORT_DATE_FORMAT" }}</p>
       </div>
     {% endif %}
     {% if session.registration_end_date %}
       <div class="gradia-card p-5">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">{% trans 'Clôture des inscriptions' %}</p>
-        <p class="mt-1 text-lg font-bold text-slate-900">{{ session.registration_end_date|date:"SHORT_DATE_FORMAT" }}</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-ink-muted">{% trans 'Clôture des inscriptions' %}</p>
+        <p class="mt-1 text-lg font-bold text-ink">{{ session.registration_end_date|date:"SHORT_DATE_FORMAT" }}</p>
       </div>
     {% endif %}
     {% if session.exam_date %}
       <div class="gradia-card p-5">
-        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">{% trans "Date de l'épreuve" %}</p>
-        <p class="mt-1 text-lg font-bold text-brand-700">{{ session.exam_date|date:"SHORT_DATE_FORMAT" }}</p>
+        <p class="text-xs font-semibold uppercase tracking-wide text-ink-muted">{% trans "Date de l'épreuve" %}</p>
+        <p class="mt-1 text-lg font-bold text-brand-300">{{ session.exam_date|date:"SHORT_DATE_FORMAT" }}</p>
       </div>
     {% endif %}
   </div>
@@ -65,7 +65,7 @@
   {# Sujets & corrigés #}
   <div class="flex items-center justify-between">
     <h2 class="gradia-section-title">{% trans 'Sujets et corrigés' %}</h2>
-    <span class="text-sm text-slate-500">
+    <span class="text-sm text-ink-muted">
       {% blocktranslate count total=documents|length trimmed %}
         {{ total }} sujet
       {% plural %}

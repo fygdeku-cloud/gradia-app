@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans 'Supprimer le document' %} · Gradia{% endblock title %}
+
+{% block extra_css %}
+  <link href="{% static 'css/document/document.css' %}" rel="stylesheet" />
+{% endblock extra_css %}
+
+{% block content %}
+<section class="document-hero text-ink">
+  <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+    <nav class="flex flex-wrap items-center gap-2 text-sm text-ink-muted" aria-label="{% trans 'Fil d’Ariane' %}">
+      <a href="{% url 'home' %}" class="transition hover:text-ink">{% trans 'Accueil' %}</a>
+      <span aria-hidden="true">/</span>
+      <a href="{% url 'document:management_list' %}" class="transition hover:text-ink">{% trans 'Gestion des documents' %}</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink" aria-current="page">{% trans 'Suppression' %}</span>
+    </nav>
+  </div>
+</section>
+
+<section class="mx-auto max-w-xl px-4 py-16 sm:px-6 lg:px-8">
+  <div class="gradia-card p-8 text-center">
+    <span class="gradia-empty-icon mx-auto mb-4" aria-hidden="true">
+      <svg class="h-6 w-6" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+    </span>
+    <h1 class="text-2xl font-extrabold tracking-tight text-ink">{% trans 'Supprimer ce document ?' %}</h1>
+    <p class="mt-3 text-sm text-ink-secondary">
+      {% blocktrans %}Vous êtes sur le point de supprimer définitivement le document « {{ object.title }} » ainsi que ses fichiers. Cette action est irréversible.{% endblocktrans %}
+    </p>
+    <form method="post" class="mt-8">
+      {% csrf_token %}
+      <div class="flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <button type="submit" class="gradia-btn gradia-btn-danger">
+          {% trans 'Confirmer la suppression' %}
+        </button>
+        <a href="{% url 'document:management_list' %}" class="gradia-btn gradia-btn-ghost">
+          {% trans 'Annuler' %}
+        </a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock content %}

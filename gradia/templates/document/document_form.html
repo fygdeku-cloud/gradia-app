@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% if object %}{% trans 'Modifier' %} {{ object.title }}{% else %}{% trans 'Nouveau document' %}{% endif %} · Gradia{% endblock title %}
+
+{% block extra_css %}
+  <link href="{% static 'css/document/document.css' %}" rel="stylesheet" />
+{% endblock extra_css %}
+
+{% block content %}
+<section class="document-hero text-ink">
+  <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+    <nav class="flex flex-wrap items-center gap-2 text-sm text-ink-muted" aria-label="{% trans 'Fil d’Ariane' %}">
+      <a href="{% url 'home' %}" class="transition hover:text-ink">{% trans 'Accueil' %}</a>
+      <span aria-hidden="true">/</span>
+      <a href="{% url 'document:management_list' %}" class="transition hover:text-ink">{% trans 'Gestion des documents' %}</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink" aria-current="page">{% if object %}{% trans 'Modification' %}{% else %}{% trans 'Création' %}{% endif %}</span>
+    </nav>
+    <p class="gradia-eyebrow mt-6">{% trans 'Administration' %}</p>
+    <h1 class="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
+      {% if object %}{% trans 'Modifier le document' %}{% else %}{% trans 'Nouveau document' %}{% endif %}
+    </h1>
+  </div>
+</section>
+
+<section class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+  <div class="gradia-card p-6 sm:p-8">
+    <form method="post" enctype="multipart/form-data" class="space-y-4" novalidate>
+      {% csrf_token %}
+      {% include "common/form_errors.html" %}
+
+      {% include "common/form_field.html" with field=form.title %}
+      {% include "common/form_field.html" with field=form.description %}
+      {% include "common/form_field.html" with field=form.context %}
+      {% include "common/form_field.html" with field=form.contest_session %}
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {% include "common/form_field.html" with field=form.price %}
+        {% include "common/form_field.html" with field=form.is_published %}
+      </div>
+
+      {% if form.subject_file %}
+        {% include "common/form_field.html" with field=form.subject_file %}
+      {% endif %}
+      {% if form.correction_file %}
+        {% include "common/form_field.html" with field=form.correction_file %}
+      {% endif %}
+
+      <div class="flex flex-col gap-3 pt-4 sm:flex-row">
+        <button type="submit" class="gradia-btn gradia-btn-primary">
+          {% if object %}{% trans 'Enregistrer les modifications' %}{% else %}{% trans 'Créer le document' %}{% endif %}
+        </button>
+        <a href="{% url 'document:management_list' %}" class="gradia-btn gradia-btn-ghost">
+          {% trans 'Annuler' %}
+        </a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock content %}

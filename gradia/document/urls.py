@@ -12,6 +12,7 @@ from gradia.document.views import (
     DocumentUnpublishView,
     DocumentUpdateView,
     SubjectDownloadView,
+    DocumentAccessLogListView,
 )
 
 app_name = "document"
@@ -45,4 +46,5 @@ urlpatterns = [
     path("<uuid:pk>/supprimer/", DocumentDeleteView.as_view(), name="delete"),
     path("<uuid:pk>/publier/", DocumentPublishView.as_view(), name="publish"),
     path("<uuid:pk>/depublier/", DocumentUnpublishView.as_view(), name="unpublish"),
+    path("journaux/", DocumentAccessLogListView.as_view(), name="access_logs"),
 ]

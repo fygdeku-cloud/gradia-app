@@ -11,13 +11,13 @@
 {% block content %}
 <section class="gradia-hero-grid relative overflow-hidden border-b border-night-700 bg-night-900 py-14 text-white">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <nav class="flex items-center gap-2 text-sm text-slate-400" aria-label="{% trans 'Fil d\u2019Ariane' %}">
+    <nav class="flex items-center gap-2 text-sm text-ink-muted" aria-label="{% trans 'Fil d\u2019Ariane' %}">
       <a href="{% url 'contest:list' %}" class="transition hover:text-white">{% trans 'Concours' %}</a>
       <span aria-hidden="true">/</span>
       <span class="text-white" aria-current="page">{% trans 'Établissements' %}</span>
     </nav>
     <h1 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{% trans 'Établissements partenaires' %}</h1>
-    <p class="mt-3 max-w-2xl text-sm text-slate-400">{% trans "Les organismes et établissements qui organisent les concours référencés sur Gradia." %}</p>
+    <p class="mt-3 max-w-2xl text-sm text-ink-muted">{% trans "Les organismes et établissements qui organisent les concours référencés sur Gradia." %}</p>
   </div>
 </section>
 
@@ -28,10 +28,10 @@
          class="gradia-card gradia-card-hover flex flex-col p-6">
         <h2 class="text-lg font-bold text-white">{{ establishment.title }}</h2>
         {% if establishment.location %}
-          <p class="mt-1 text-sm text-slate-400">{{ establishment.location }}</p>
+          <p class="mt-1 text-sm text-ink-muted">{{ establishment.location }}</p>
         {% endif %}
         {% if establishment.description %}
-          <p class="mt-2 text-sm text-slate-400">{{ establishment.description|truncatechars:140 }}</p>
+          <p class="mt-2 text-sm text-ink-muted">{{ establishment.description|truncatechars:140 }}</p>
         {% endif %}
         {% if establishment.contest_count is not None %}
           <p class="mt-4 text-xs font-semibold uppercase tracking-wide text-brand-400">

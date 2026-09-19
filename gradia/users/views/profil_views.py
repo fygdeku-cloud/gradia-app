@@ -25,14 +25,36 @@ class ProfileView(LoginRequiredMixin, View):
             instance=profile,
         )
 
+        context = {
+            "user": request.user,
+            "profile": profile,
+            "form": form,
+        }
+
+        if getattr(request.user, "is_staff", False) or getattr(request.user, "is_superuser", False) or getattr(request.user, "is_admin", False):
+            from django.contrib.auth import get_user_model
+            from gradia.document.models import Document
+            from gradia.contest.models import Contest
+            User = get_user_model()
+            context["student_count"] = User.objects.filter(is_student=True).count()
+            context["published_docs_count"] = Document.objects.filter(is_published=True).count()
+            context["active_contests_count"] = Contest.objects.count()
+
+        if getattr(request.user, "is_student", False):
+            from gradia.document.models import DocumentAccessLog
+            logs = DocumentAccessLog.objects.filter(user=request.user).select_related('document').order_by('-accessed_at')[:5]
+            recent_documents = [
+                {
+                    "title": log.document.title,
+                    "accessed_at": log.accessed_at
+                } for log in logs
+            ]
+            context["recent_documents"] = recent_documents
+
         return render(
             request,
             self.template_name,
-            {
-                "user": request.user,
-                "profile": profile,
-                "form": form,
-            },
+            context,
         )
 
     def post(self, request):

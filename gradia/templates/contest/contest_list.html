@@ -12,20 +12,20 @@
 {% comment %}Hero de la bibliothèque des concours.{% endcomment %}
 <section class="gradia-hero-grid relative overflow-hidden border-b border-night-700 bg-night-900 text-white">
   <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-    <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-400" aria-label="{% trans 'Fil d\u2019Ariane' %}">
+    <nav class="flex flex-wrap items-center gap-2 text-sm text-ink-muted" aria-label="{% trans 'Fil d\u2019Ariane' %}">
       <a href="{% url 'home' %}" class="transition hover:text-white">{% trans 'Accueil' %}</a>
       <span aria-hidden="true">/</span>
       <span class="text-white" aria-current="page">{% trans 'Concours' %}</span>
     </nav>
     <p class="mt-6 text-sm font-semibold uppercase tracking-widest text-brand-400">{% trans 'Catalogue Gradia' %}</p>
     <h1 class="mt-3 text-3xl font-extrabold tracking-tight sm:text-5xl">{% trans 'Tous les concours' %}</h1>
-    <p class="mt-4 max-w-2xl text-sm text-slate-400 sm:text-base">
+    <p class="mt-4 max-w-2xl text-sm text-ink-muted sm:text-base">
       {% trans "Explorer les concours organisés par nos établissements partenaires, par catégorie et par session." %}
     </p>
 
     <div class="mt-6 flex flex-wrap gap-3 text-sm">
-      <a href="{% url 'contest:category_list' %}" class="rounded-full border border-night-700 bg-night-800 px-4 py-2 font-medium text-slate-300 transition hover:bg-night-700 hover:text-white">{% trans 'Parcourir par catégorie' %}</a>
-      <a href="{% url 'contest:establishment_list' %}" class="rounded-full border border-night-700 bg-night-800 px-4 py-2 font-medium text-slate-300 transition hover:bg-night-700 hover:text-white">{% trans 'Parcourir par établissement' %}</a>
+      <a href="{% url 'contest:category_list' %}" class="rounded-full border border-night-700 bg-night-800 px-4 py-2 font-medium text-ink-secondary transition hover:bg-night-700 hover:text-white">{% trans 'Parcourir par catégorie' %}</a>
+      <a href="{% url 'contest:establishment_list' %}" class="rounded-full border border-night-700 bg-night-800 px-4 py-2 font-medium text-ink-secondary transition hover:bg-night-700 hover:text-white">{% trans 'Parcourir par établissement' %}</a>
     </div>
   </div>
 </section>
@@ -36,7 +36,7 @@
     {% regroup contests by category as category_groups %}
     <div class="mb-8 flex flex-wrap items-center justify-between gap-3">
       <h2 class="gradia-section-title">{% trans 'Bibliothèque des concours' %}</h2>
-      <span class="text-sm text-slate-500">
+      <span class="text-sm text-ink-muted">
         {% blocktranslate count total=contests|length trimmed %}
           {{ total }} concours
         {% plural %}

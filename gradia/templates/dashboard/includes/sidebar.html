@@ -1,12 +1,12 @@
 {% load static i18n %}
-{# Sidebar bureau (desktop) — fixe à gauche. #}
+{# Sidebar bureau (desktop) — fixe à gauche, fond sombre. #}
 <aside id="dashboard-sidebar-desktop"
-      class="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-slate-200 bg-white lg:block"
+      class="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-night-800 bg-night-900 lg:block"
        aria-label="{% trans 'Barre latérale' %}">
-  <div class="flex h-16 items-center gap-2.5 border-b border-slate-200 px-5">
-    <a href="{% url 'home' %}" class="flex items-center gap-2.5 text-slate-900">
-      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-lg font-extrabold text-white">G</span>
-      <span class="text-xl font-extrabold tracking-tight">Gradia</span>
+  <div class="flex h-16 items-center gap-2.5 border-b border-night-800 px-5">
+    <a href="{% url 'home' %}" class="flex items-center gap-2.5">
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-300 to-brand-500 text-lg font-extrabold text-night-900">G</span>
+      <span class="text-xl font-extrabold tracking-tight text-ink">Gradia</span>
     </a>
   </div>
   <div class="flex h-full flex-col justify-between pb-6">
@@ -15,7 +15,7 @@
       <form method="post" action="{% url 'users:logout' %}">
         {% csrf_token %}
         <button type="submit"
-                        class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 hover:text-red-700">
+                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-400 transition hover:bg-red-500/10 hover:text-red-300">
           <svg class="h-5 w-5" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H2.25"/></svg>
           {% trans 'Déconnexion' %}
         </button>
