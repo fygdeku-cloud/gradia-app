@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans 'Documents' %} · Gradia{% endblock title %}
+
+{% block extra_css %}
+  <link href="{% static 'css/document/document.css' %}" rel="stylesheet" />
+{% endblock extra_css %}
+
+{% block content %}
+{# ============================================================
+   Bibliothèque des documents — liste publique avec recherche.
+   Contexte : documents (annotés has_paid), query, pagination.
+   ============================================================ #}
+<section class="document-hero text-ink">
+  <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+    <nav class="flex flex-wrap items-center gap-2 text-sm text-ink-muted" aria-label="{% trans 'Fil d’Ariane' %}">
+      <a href="{% url 'home' %}" class="transition hover:text-ink">{% trans 'Accueil' %}</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-ink" aria-current="page">{% trans 'Documents' %}</span>
+    </nav>
+    <p class="gradia-eyebrow mt-6">{% trans 'Bibliothèque Gradia' %}</p>
+    <h1 class="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">{% trans 'Sujets et corrigés' %}</h1>
+    <p class="mt-4 max-w-2xl text-sm text-ink-muted sm:text-base">
+      {% trans "Tous les documents publiés, classés par titre et session de concours." %}
+    </p>
+
+    {# Recherche (alimentée par le backend, GET q) #}
+    <form method="get" action="{% url 'document:list' %}" class="mt-8 flex w-full max-w-xl flex-col gap-3 sm:flex-row" role="search">
+      <label for="document-search" class="sr-only">{% trans 'Rechercher un document' %}</label>
+      <div class="relative flex-1">
+        <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-muted" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+        </svg>
+        <input type="search" id="document-search" name="q" value="{{ query }}"
+               placeholder="{% trans 'Rechercher par titre, matière, concours…' %}"
+               class="w-full rounded-xl border border-night-700 bg-night-850 py-2.5 pl-10 pr-4 text-sm text-ink placeholder:text-ink-muted focus:border-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-500/20" />
+      </div>
+      <button type="submit" class="gradia-btn gradia-btn-primary">
+        {% trans 'Rechercher' %}
+      </button>
+      {% if query %}
+        <a href="{% url 'document:list' %}" class="gradia-btn gradia-btn-ghost">
+          {% trans 'Effacer' %}
+        </a>
+      {% endif %}
+    </form>
+  </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <h2 class="gradia-section-title">{% trans 'Bibliothèque des documents' %}</h2>
+    {% if query %}
+      <span class="text-sm text-ink-muted">{% blocktranslate %}Résultats pour « {{ query }} »{% endblocktranslate %}</span>
+    {% else %}
+      <span class="text-sm text-ink-muted">
+        {% blocktranslate count total=page_obj.paginator.count trimmed %}
+          {{ total }} document
+        {% plural %}
+          {{ total }} documents
+        {% endblocktranslate %}
+      </span>
+    {% endif %}
+  </div>
+
+  {% if documents %}
+    <ul class="space-y-4">
+      {% for document in documents %}
+        <li>
+          {% include "document/include/document_row.html" with document=document %}
+        </li>
+      {% endfor %}
+    </ul>
+
+    {# Pagination (Flowbite) #}
+    {% if is_paginated %}
+      <nav class="mt-10 flex items-center justify-center gap-2" aria-label="{% trans 'Pagination' %}">
+        {% if page_obj.has_previous %}
+          <a href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}"
+             class="inline-flex items-center gap-1 rounded-lg border border-night-700 bg-night-900 px-3 py-2 text-sm font-medium text-ink-secondary transition hover:border-brand-400 hover:text-brand-300">
+            <svg class="h-4 w-4" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+            {% trans 'Précédent' %}
+          </a>
+        {% endif %}
+        <span class="px-2 text-sm text-ink-muted">
+          {% blocktranslate with current=page_obj.number total=page_obj.paginator.num_pages trimmed %}
+            Page {{ current }} sur {{ total }}
+          {% endblocktranslate %}
+        </span>
+        {% if page_obj.has_next %}
+          <a href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}"
+             class="inline-flex items-center gap-1 rounded-lg border border-night-700 bg-night-900 px-3 py-2 text-sm font-medium text-ink-secondary transition hover:border-brand-400 hover:text-brand-300">
+            {% trans 'Suivant' %}
+            <svg class="h-4 w-4" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+          </a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <div class="mt-4">
+      {% include "common/empty_state.html" with title=_("Aucun document disponible") description=_("Les documents correspondant à votre recherche apparaîtront ici dès leur publication.") %}
+    </div>
+  {% endif %}
+</section>
+{% endblock content %}

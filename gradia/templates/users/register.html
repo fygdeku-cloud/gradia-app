@@ -17,31 +17,33 @@
     <div class="auth-split-inner">
 
       {# Panneau de présentation (desktop) #}
-      <aside class="auth-brand-panel gradia-hero-grid">
+      <aside class="auth-brand-panel">
         <a href="{% url 'home' %}" class="flex items-center gap-2.5">
-          <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-600 text-xl font-extrabold text-white">G</span>
+          <span class="gradia-logo-mark">G</span>
           <span class="text-2xl font-extrabold tracking-tight">Gradia</span>
         </a>
         <div>
-          <h2 class="text-3xl font-extrabold leading-tight">{% trans 'Rejoignez une préparation pensée pour la réussite.' %}</h2>
-          <ul class="mt-6 space-y-3 text-sm text-slate-400">
+          <p class="gradia-eyebrow">{% trans 'Rejoignez Gradia' %}</p>
+          <h2 class="mt-3 text-3xl font-extrabold leading-tight">{% trans 'Rejoignez une préparation pensée pour la réussite.' %}</h2>
+          <ul class="mt-6 space-y-3 text-sm text-ink-secondary">
             <li class="flex items-center gap-3"><svg class="h-5 w-5 shrink-0 text-brand-400" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{% trans 'Concours par session et catégorie' %}</li>
             <li class="flex items-center gap-3"><svg class="h-5 w-5 shrink-0 text-brand-400" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{% trans 'Sujets et corrigés' %}</li>
             <li class="flex items-center gap-3"><svg class="h-5 w-5 shrink-0 text-brand-400" fill="currentcolor" viewBox="0 0 20 20" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{% trans 'Préparation structurée' %}</li>
           </ul>
         </div>
-        <p class="text-xs text-slate-600">© {% now "Y" %} Gradia</p>
+        <p class="text-xs text-ink-muted">© {% now "Y" %} Gradia</p>
       </aside>
 
       {# Formulaire d'inscription #}
       <div class="auth-form-col">
         <div class="auth-form-col-inner">
           <a href="{% url 'home' %}" class="auth-mobile-brand">
-            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-lg font-extrabold text-white">G</span>
+            <span class="gradia-logo-mark">G</span>
             <span class="text-xl font-extrabold tracking-tight">Gradia</span>
           </a>
-          <h1 class="gradia-page-title">{% trans "Créer un compte" %}</h1>
-          <p class="mt-2 text-sm text-slate-400">{% trans "Rejoignez Gradia et commencez votre préparation." %}</p>
+          <p class="gradia-eyebrow">{% trans 'Inscription' %}</p>
+          <h1 class="gradia-page-title mt-2">{% trans "Créer un compte" %}</h1>
+          <p class="mt-2 text-sm text-ink-secondary">{% trans "Rejoignez Gradia et commencez votre préparation." %}</p>
           <div class="mt-4">
             {% include "common/form_errors.html" %}
           </div>
@@ -56,7 +58,7 @@
             {% trans "S'inscrire" as submit_label %}
             {% include "common/button.html" with button_type="submit" button_label=submit_label button_block=True %}
           </form>
-          <p class="mt-6 text-center text-sm text-slate-400">{% trans "Déjà un compte ?" %} <a href="{% url 'users:login' %}" class="font-semibold text-brand-400 transition hover:text-brand-300">{% trans 'Se connecter' %}</a></p>
+          <p class="mt-6 text-center text-sm text-ink-secondary">{% trans "Déjà un compte ?" %} <a href="{% url 'users:login' %}" class="font-semibold text-brand-300 transition hover:text-brand-200">{% trans 'Se connecter' %}</a></p>
         </div>
       </div>
     </div>

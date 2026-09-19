@@ -236,6 +236,9 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
+                # Expose GRADIA_CURRENCY / flags d'activation frontend
+                # (déjà présent dans gradia.users mais n'était pas branché).
+                "gradia.users.context_processors.gradia_settings",
             ],
         },
     },
@@ -406,3 +409,5 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+SITE_URL = env.str("SITE_URL", default="http://127.0.0.1:8000")

@@ -1,0 +1,41 @@
+/* ============================================================
+   Gradia — Module Document (bibliothèque, détail, gestion)
+   ============================================================ */
+
+/* Bandeau d'entête */
+.document-hero {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--gradia-night-900);
+  background-image:
+    radial-gradient(42rem 26rem at 90% -20%, rgba(224, 184, 81, 0.12), transparent 60%),
+    radial-gradient(36rem 24rem at -15% 115%, rgba(39, 55, 90, 0.5), transparent 62%);
+  border-bottom: 1px solid var(--gradia-border);
+}
+
+/* Ligne de document (bibliothèque) */
+.document-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .document-row {
+    grid-template-columns: minmax(0, 2.5fr) minmax(0, 1.5fr) auto auto;
+  }
+}
+
+/* Sticker de fichier */
+.document-file-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  border-radius: var(--gradia-radius-lg);
+  background-color: var(--gradia-accent-soft);
+  color: var(--gradia-brand-300);
+}

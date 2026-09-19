@@ -10,8 +10,8 @@
           <svg class="h-5 w-5" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
         </span>
         <div class="min-w-0 flex-1">
-          <p class="truncate text-sm font-medium text-slate-900">{{ document.title }}</p>
-          {% if document.accessed_at %}<p class="text-xs text-slate-500">{{ document.accessed_at|date:"DATE_FORMAT" }}</p>{% endif %}
+          <p class="truncate text-sm font-medium text-white">{{ document.title }}</p>
+          {% if document.accessed_at %}<p class="text-xs text-slate-400">{{ document.accessed_at|date:"DATE_FORMAT" }}</p>{% endif %}
         </div>
       </li>
     {% endfor %}
@@ -20,9 +20,5 @@
   {% trans "Aucun document consulté récemment." as empty_title %}
   {% trans "Votre historique de consultation s'affichera dès que disponible." as empty_description %}
   {% include "common/empty_state.html" with title=empty_title description=empty_description %}
-  {% comment %}
-    TODO BACKEND : l'historique des consultations (DocumentAccessLog) devra être
-    fourni par une future view/service (la vue ProfileView ne l'expose pas
-    actuellement).
-  {% endcomment %}
+
 {% endif %}

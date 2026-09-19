@@ -1,6 +1,17 @@
 /* ============================================================
-   Gradia — Module Contest (THÈME SOMBRE)
+   Gradia — Module Contest (thème sombre premium)
    ============================================================ */
+
+/* Bandeau d'entête des pages concours/catégories/établissements */
+.contest-hero {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--gradia-night-900);
+  background-image:
+    radial-gradient(42rem 26rem at 90% -20%, rgba(224, 184, 81, 0.12), transparent 60%),
+    radial-gradient(36rem 24rem at -15% 115%, rgba(39, 55, 90, 0.5), transparent 62%);
+  border-bottom: 1px solid var(--gradia-border);
+}
 
 /* Bibliothèque : hauteur homogène et transitions douces des cards */
 .contest-grid {
@@ -27,4 +38,22 @@
 
 .contest-section-toggle[aria-expanded="true"] {
   transform: rotate(180deg);
+}
+
+/* Cartes de concours : en-tête coloré par catégorie */
+.contest-card-category {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: var(--gradia-radius-full);
+  background-color: var(--gradia-accent-soft);
+  padding: 0.25rem 0.75rem;
+  font-size: var(--gradia-font-size-xs);
+  font-weight: var(--gradia-font-weight-semibold);
+  color: var(--gradia-brand-300);
+  transition: background-color var(--gradia-duration-fast) var(--gradia-easing);
+}
+
+.contest-card-category:hover {
+  background-color: rgba(224, 184, 81, 0.2);
 }

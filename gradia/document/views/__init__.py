@@ -17,9 +17,12 @@ from gradia.document.views.upload_views import (
     DocumentUpdateView,
 )
 
+from gradia.document.views.access_log_views import DocumentAccessLogListView
+
 __all__ = [
     "CorrectionDownloadView",
     "CorrectionViewView",
+    "DocumentAccessLogListView",
     "DocumentCreateView",
     "DocumentDeleteView",
     "DocumentDetailView",

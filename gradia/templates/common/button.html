@@ -2,17 +2,56 @@
 {# Bouton Gradia (design system). #}
 {# Usage :                                                             #}
 {#   {% include "common/button.html" with button_type="submit" button_label=_('Se connecter') button_variant="primary" %} #}
-{# Variantes : primary, ghost, white, outline-white.                    #}
+{# Variantes : primary, ghost, white, outline-white, outline-brand, danger. #}
 {# Options : button_block, button_extra_class, button_aria, button_id.  #}
 {% trans 'Soumettre' as default_button_label %}
-{% if button_is_link and button_href %}
-  <a href="{{ button_href }}"
-     class="gradia-btn gradia-btn-{% firstof button_variant 'primary' %} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}"
-     {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}
-     {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</a>
+
+{% if button_variant == "ghost" %}
+  {% with btn_class="gradia-btn gradia-btn-ghost" %}
+    {% if button_is_link and button_href %}
+      <a href="{{ button_href }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %} {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</a>
+    {% else %}
+      <button type="{{ button_type|default:'submit' }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %} {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</button>
+    {% endif %}
+  {% endwith %}
+{% elif button_variant == "outline-white" %}
+  {% with btn_class="gradia-btn gradia-btn-outline-white" %}
+    {% if button_is_link and button_href %}
+      <a href="{{ button_href }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}>{{ button_label|default:default_button_label }}</a>
+    {% else %}
+      <button type="{{ button_type|default:'submit' }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}>{{ button_label|default:default_button_label }}</button>
+    {% endif %}
+  {% endwith %}
+{% elif button_variant == "outline-brand" %}
+  {% with btn_class="gradia-btn gradia-btn-outline-brand" %}
+    {% if button_is_link and button_href %}
+      <a href="{{ button_href }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}>{{ button_label|default:default_button_label }}</a>
+    {% else %}
+      <button type="{{ button_type|default:'submit' }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}>{{ button_label|default:default_button_label }}</button>
+    {% endif %}
+  {% endwith %}
+{% elif button_variant == "danger" %}
+  {% with btn_class="gradia-btn gradia-btn-danger" %}
+    {% if button_is_link and button_href %}
+      <a href="{{ button_href }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}>{{ button_label|default:default_button_label }}</a>
+    {% else %}
+      <button type="{{ button_type|default:'submit' }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}>{{ button_label|default:default_button_label }}</button>
+    {% endif %}
+  {% endwith %}
+{% elif button_variant == "outline-none" %}
+  {% with btn_class="gradia-btn gradia-btn-outline-brand" %}
+    {% if button_is_link and button_href %}
+      <a href="{{ button_href }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}>{{ button_label|default:default_button_label }}</a>
+    {% else %}
+      <button type="{{ button_type|default:'submit' }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}>{{ button_label|default:default_button_label }}</button>
+    {% endif %}
+  {% endwith %}
 {% else %}
-  <button type="{{ button_type|default:'submit' }}"
-          class="gradia-btn gradia-btn-{% firstof button_variant 'primary' %} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}"
-          {% if button_aria %}aria-label="{{ button_aria }}"{% endif %}
-          {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</button>
+  {% with btn_class="gradia-btn gradia-btn-primary" %}
+    {% if button_is_link and button_href %}
+      <a href="{{ button_href }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %} {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</a>
+    {% else %}
+      <button type="{{ button_type|default:'submit' }}" class="{{ btn_class }} {% if button_block %}gradia-btn-block{% endif %} {{ button_extra_class|default:'' }}" {% if button_aria %}aria-label="{{ button_aria }}"{% endif %} {% if button_id %}id="{{ button_id }}"{% endif %}>{{ button_label|default:default_button_label }}</button>
+    {% endif %}
+  {% endwith %}
 {% endif %}

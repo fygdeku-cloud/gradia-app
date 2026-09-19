@@ -1,0 +1,38 @@
+/* ============================================================
+   Gradia — Footer (styles complémentaires au template common/footer)
+   ============================================================ */
+.gradia-footer {
+  background-color: var(--gradia-night-950);
+  padding: 3rem 0;
+  border-top: 1px solid var(--gradia-border);
+}
+
+.gradia-footer .footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.gradia-footer .footer-brand span:first-child {
+  background: linear-gradient(135deg, var(--gradia-brand-300), var(--gradia-brand-500));
+  color: var(--gradia-night-900);
+  font-weight: var(--gradia-font-weight-extrabold);
+}
+
+.gradia-footer .footer-links h2 {
+  font-size: var(--gradia-font-size-sm);
+  font-weight: var(--gradia-font-weight-semibold);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  color: var(--gradia-text-muted);
+}
+
+.gradia-footer .footer-links a {
+  color: var(--gradia-text-secondary);
+  transition: color var(--gradia-duration) var(--gradia-easing);
+}
+
+.gradia-footer .footer-links a:hover {
+  color: var(--gradia-brand-300);
+}

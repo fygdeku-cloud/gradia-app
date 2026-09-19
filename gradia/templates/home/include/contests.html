@@ -1,29 +1,38 @@
-{% load i18n %}
-{# Aperçu des concours sur l'accueil. Données réelles fournies par la view (home_contests). #}
-<section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8" aria-labelledby="gradia-contests-title">
-  <div class="flex flex-wrap items-end justify-between gap-4">
-    <div>
-      <p class="text-xs font-semibold uppercase tracking-widest text-brand-400">{% trans 'Catalogue' %}</p>
-      <h2 id="gradia-contests-title" class="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-        {% trans 'Concours récents' %}
-      </h2>
+{% load static i18n %}
+<section class="gradia-contests" aria-labelledby="gradia-contests-title">
+  <div class="gradia-page-shell">
+    <div class="gradia-section-heading">
+      <p class="gradia-eyebrow">{% trans 'Catalogue' %}</p>
+      <h2 id="gradia-contests-title" class="mt-3 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">{% trans 'Concours récents' %}</h2>
+      <p class="mt-2 text-lg text-ink-secondary">{% blocktrans %}Explorez les concours disponibles, leurs sessions et préparez‑vous efficacement.{% endblocktrans %}</p>
     </div>
-    <a href="{% url 'contest:list' %}"
-       class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-400 transition hover:text-brand-300">
-      {% trans 'Tous les concours' %}
-      <svg class="h-4 w-4" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
-    </a>
-  </div>
 
-  {% if home_contests %}
-    <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      {% for contest in home_contests %}
-        {% include "contest/include/contest_card.html" with contest=contest %}
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="mt-8">
-      {% include "common/empty_state.html" with title=_("Aucun concours disponible") description=_("Le catalogue sera bientôt disponible.") %}
-    </div>
-  {% endif %}
+    {% if home_contests %}
+      {% with home_contests|first as featured %}
+        <div class="gradia-contest-featured mb-10">
+          {% include "contest/include/contest_card.html" with contest=featured %}
+        </div>
+      {% endwith %}
+
+      {% if home_contests|length > 1 %}
+        <ul class="gradia-contest-list">
+          {% for contest in home_contests|slice:"1:" %}
+            <li class="gradia-contest-card">
+              {% include "contest/include/contest_card.html" with contest=contest %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <div class="mt-10 text-center">
+        <a href="{% url 'contest:list' %}" class="gradia-btn gradia-btn-outline-brand">
+          {% trans 'Voir tous les concours' %}
+        </a>
+      </div>
+    {% else %}
+      <div class="mt-8">
+        {% include "common/empty_state.html" with title=_("Aucun concours disponible") description=_("Le catalogue sera bientôt disponible.") %}
+      </div>
+    {% endif %}
+  </div>
 </section>

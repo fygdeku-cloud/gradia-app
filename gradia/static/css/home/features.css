@@ -1,0 +1,64 @@
+/* ============================================================
+   Gradia — Section « points clés » de l'accueil
+   ============================================================ */
+.gradia-features {
+  padding: 4rem 0;
+  background-color: var(--gradia-night-925);
+  border-top: 1px solid var(--gradia-border);
+  border-bottom: 1px solid var(--gradia-border);
+}
+
+.gradia-features .gradia-section-heading {
+  max-width: 48rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (min-width: 1024px) {
+  .gradia-features .gradia-section-heading {
+    margin-inline-start: 0;
+  }
+}
+
+.gradia-feature-card {
+  position: relative;
+  background-color: var(--gradia-surface-2);
+  border: 1px solid var(--gradia-border);
+  border-radius: var(--gradia-radius-lg);
+  padding: 2rem;
+  overflow: hidden;
+  transition:
+    transform 0.25s var(--gradia-easing),
+    border-color 0.25s var(--gradia-easing),
+    box-shadow 0.25s var(--gradia-easing);
+}
+
+.gradia-feature-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--gradia-border-strong);
+  box-shadow: var(--gradia-shadow-lg);
+}
+
+.gradia-feature-card .icon {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--gradia-radius-lg);
+  background-color: var(--gradia-accent-soft);
+  color: var(--gradia-brand-300);
+  margin-bottom: 1rem;
+}
+
+.gradia-feature-card h3 {
+  font-size: var(--gradia-font-size-lg);
+  font-weight: var(--gradia-font-weight-semibold);
+  margin-bottom: 0.5rem;
+  color: var(--gradia-text);
+}
+
+.gradia-feature-card p {
+  font-size: 0.9375rem;
+  line-height: var(--gradia-line-height-relaxed);
+  color: var(--gradia-text-secondary);
+}

@@ -1,0 +1,48 @@
+/* ============================================================
+   Gradia — Section « concours » de l'accueil
+   ============================================================ */
+.gradia-contests {
+  padding: 4rem 0;
+  background-color: var(--gradia-night-950);
+}
+
+.gradia-contests .gradia-section-heading {
+  max-width: 48rem;
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .gradia-contests .gradia-section-heading {
+    margin-inline-start: 0;
+  }
+}
+
+.gradia-contest-featured {
+  border-radius: var(--gradia-radius-xl);
+  padding: 1.25rem;
+  background-image: linear-gradient(135deg, rgba(224, 184, 81, 0.08), transparent 60%);
+  border: 1px solid rgba(224, 184, 81, 0.18);
+  box-shadow: var(--gradia-shadow-md);
+}
+
+.gradia-contest-list {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .gradia-contest-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .gradia-contest-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.gradia-contest-card {
+  display: flex;
+}
