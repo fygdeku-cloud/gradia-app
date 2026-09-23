@@ -6,7 +6,6 @@ from typing import Optional
 from django.db import transaction
 from django.db.models import Sum
 from django.core.exceptions import ValidationError
-from requests import request
 
 from gradia.cart.models import Cart, CartItem
 from gradia.cart.selectors import get_cart_items
@@ -46,7 +45,7 @@ def add_document_to_cart(user, document_id: int) -> CartItem:
     """
     validate_user_is_student(user)
     document = validate_document_exists_and_purchasable(document_id)
-    cart = get_or_create_cart(request.user)
+    cart = get_or_create_cart(user)
     validate_cart_is_active(cart)
 
     if CartItem.objects.filter(cart=cart, document=document).exists():

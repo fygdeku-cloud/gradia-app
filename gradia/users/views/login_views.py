@@ -28,8 +28,11 @@ class LoginView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, F
     form_class = UserLoginForm
 
     def get_success_url(self):
+        """Redirige vers `?next=` uniquement s'il s'agit d'une URL interne sûre."""
         next_url = self.request.GET.get("next") or self.request.POST.get("next")
-        return next_url or reverse(settings.LOGIN_REDIRECT_URL)
+        if next_url and self.is_safe_url(next_url):
+            return next_url
+        return reverse(settings.LOGIN_REDIRECT_URL)
 
     def _verification_url(self, token):
         """

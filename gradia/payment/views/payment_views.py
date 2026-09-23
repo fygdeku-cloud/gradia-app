@@ -27,7 +27,7 @@ class PaymentInitiationView(LoginRequiredMixin, View):
         """Affiche le formulaire de choix du moyen de paiement."""
 
         # Récupère la commande via le sélecteur existant.
-        order = get_order_detail(order_id)
+        order = get_order_detail(request.user, order_id)
 
         # Une commande inexistante retourne une 404.
         if order is None:
@@ -54,7 +54,7 @@ class PaymentInitiationView(LoginRequiredMixin, View):
         """Valide le formulaire et redirige vers Stripe Checkout."""
 
         # Récupère la commande via le sélecteur existant.
-        order = get_order_detail(order_id)
+        order = get_order_detail(request.user, order_id)
 
         # Reconstruit le formulaire avec les données envoyées.
         form = PaymentInitiationForm(request.POST)
@@ -72,7 +72,7 @@ class PaymentInitiationView(LoginRequiredMixin, View):
                 
         # Crée l'orchestrateur chargé de sélectionner le provider.
         orchestrator = PaymentOrchestrator()
-        checkout_url = orchestrator.initiate_payment(
+        payment, checkout_url = orchestrator.initiate_payment(
             user=request.user,
             order=order,
             method=form.cleaned_data["method"],

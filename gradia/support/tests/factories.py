@@ -1,0 +1,13 @@
+from __future__ import annotations
+
+import factory
+
+from gradia.support.models import Ticket
+
+
+class TicketFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Ticket
+
+    title = factory.Faker("sentence", nb_words=5)
+    description = factory.Faker("paragraph")

@@ -3,8 +3,8 @@ from __future__ import annotations
 import uuid
 from djmoney.money import Money
 from django.db import transaction
+from django.conf import settings
 from django.core.exceptions import ValidationError
-from config import settings
 from gradia.order.models import Order, OrderItem
 from gradia.cart.models import Cart
 from gradia.utils.enums import OrderStatus, CartStatus

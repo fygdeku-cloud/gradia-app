@@ -8,7 +8,7 @@ from gradia.payment.views.payment_views import (
     PaymentSuccessView,
 )
 
-from gradia.payment.views.webhook_views import WebhookService
+from gradia.payment.views.webhook_views import PaymentWebhookView
 from gradia.payment.views.history_views import PaymentHistoryView
 
 app_name = "payment"
@@ -52,7 +52,7 @@ urlpatterns = [
     # Endpoint public appelé par Stripe.
     path(
         "webhook/",
-        WebhookService.as_view(),
+        PaymentWebhookView.as_view(),
         name="webhook",
     ),
 
