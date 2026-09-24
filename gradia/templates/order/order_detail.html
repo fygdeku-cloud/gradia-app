@@ -1,0 +1,66 @@
+{% extends "dashboard/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ order.order_number }} · Gradia{% endblock title %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl">
+  <div class="mb-6">
+    <a href="{% url 'order:list' %}" class="text-sm text-slate-400 transition hover:text-brand-300">
+      &larr; {% trans 'Retour à mes commandes' %}
+    </a>
+  </div>
+
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+    <div>
+      <h1 class="text-2xl font-extrabold text-white">{{ order.order_number }}</h1>
+      <p class="mt-1 text-sm text-slate-400">
+        {% blocktranslate with created=order.created_at|date:"DATE_FORMAT" %}Passée le {{ created }}{% endblocktranslate %}
+      </p>
+    </div>
+    {% if order.status == "PENDING" %}
+      <a href="{% url 'payment:initiate' order_id=order.pk %}" class="gradia-btn gradia-btn-primary">
+        {% trans 'Payer maintenant' %}
+      </a>
+    {% endif %}
+  </div>
+
+  <section class="gradia-panel overflow-hidden" aria-labelledby="order-items-title">
+    <h2 id="order-items-title" class="sr-only">{% trans 'Articles de la commande' %}</h2>
+    <div class="overflow-x-auto">
+      <table class="gradia-table">
+        <thead>
+          <tr>
+            <th scope="col">{% trans 'Document' %}</th>
+            <th scope="col">{% trans 'Prix unitaire' %}</th>
+            <th scope="col" class="text-right">{% trans 'Total' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in order.items.all %}
+            <tr class="hover:bg-night-800 transition-colors">
+              <td>
+                <a href="{% url 'document:detail' pk=item.document.pk %}" class="font-medium text-white hover:underline">
+                  {{ item.document.title }}
+                </a>
+              </td>
+              <td class="text-sm">{{ item.unit_price }}</td>
+              <td class="text-right text-sm">{{ item.line_total }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="3" class="py-8 text-sm text-slate-400">{% trans 'Cette commande ne contient aucun article.' %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr class="border-t border-night-700">
+            <th scope="row" colspan="2" class="px-5 py-4 text-sm font-semibold text-white">{% trans 'Total' %}</th>
+            <td class="px-5 py-4 text-right font-semibold text-white">{{ order.total_amount }}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock content %}

@@ -1,0 +1,24 @@
+{% load i18n %}
+{# Navigation de pagination générique (page_obj requis).                 #}
+{# Usage : {% include "common/pagination.html" %}                        #}
+<nav class="flex items-center justify-center gap-2" aria-label="{% trans 'Pagination' %}">
+  {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}"
+       class="inline-flex items-center gap-1 rounded-lg border border-night-700 bg-night-900 px-3 py-2 text-sm font-medium text-ink-secondary transition hover:border-brand-400 hover:text-brand-300">
+      <svg class="h-4 w-4" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+      {% trans 'Précédent' %}
+    </a>
+  {% endif %}
+  <span class="px-2 text-sm text-ink-muted">
+    {% blocktranslate with current=page_obj.number total=page_obj.paginator.num_pages trimmed %}
+      Page {{ current }} sur {{ total }}
+    {% endblocktranslate %}
+  </span>
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}"
+       class="inline-flex items-center gap-1 rounded-lg border border-night-700 bg-night-900 px-3 py-2 text-sm font-medium text-ink-secondary transition hover:border-brand-400 hover:text-brand-300">
+      {% trans 'Suivant' %}
+      <svg class="h-4 w-4" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+    </a>
+  {% endif %}
+</nav>

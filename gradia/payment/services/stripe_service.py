@@ -49,7 +49,7 @@ class StripePaymentService:
                 line_items=[
                     {
                         "price_data": {
-                            "currency": payment.amount.currency.lower(),
+                            "currency": payment.amount.currency.code.lower(),
                             "product_data": {
                                 "name": f"Commande {payment.order.order_number}",
                             },
@@ -105,7 +105,7 @@ class StripePaymentService:
             )
         
         # Vérifie la devise attendue.
-        expected_currency = expected_amount.currency.lower()
+        expected_currency = expected_amount.currency.code.lower()
     
         # Vérifie la devise envoyée par Stripe.
         if session.currency != expected_currency:

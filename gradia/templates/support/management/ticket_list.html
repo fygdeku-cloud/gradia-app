@@ -1,0 +1,91 @@
+{% extends "dashboard/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Gestion des tickets' %} · Gradia{% endblock title %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-extrabold text-white">{% trans 'Gestion des tickets' %}</h1>
+  <p class="mt-1 text-sm text-slate-400">
+    {% trans 'Tous les tickets ouverts par les étudiants.' %}
+  </p>
+</div>
+
+<section class="gradia-panel overflow-hidden" aria-labelledby="manage-tickets-title">
+  <h2 id="manage-tickets-title" class="sr-only">{% trans 'Liste des tickets à traiter' %}</h2>
+
+  {% if tickets %}
+    <div class="overflow-x-auto">
+      <table class="gradia-table">
+        <thead>
+          <tr>
+            <th scope="col">{% trans 'Ticket' %}</th>
+            <th scope="col">{% trans 'Étudiant' %}</th>
+            <th scope="col">{% trans 'Statut' %}</th>
+            <th scope="col">{% trans 'Priorité' %}</th>
+            <th scope="col">{% trans 'Dernière activité' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in tickets %}
+            <tr class="hover:bg-night-800 transition-colors">
+              <td class="max-w-md">
+                <span class="block font-medium text-white">{{ ticket.title }}</span>
+                <span class="block text-xs text-slate-400">
+                  {% blocktranslate with ticket_id=ticket.pk|stringformat:"s"|slice:":8" %}#{{ ticket_id }}{% endblocktranslate %}
+                </span>
+              </td>
+              <td class="text-sm text-slate-300">{{ ticket.student.name|default:ticket.student.email }}</td>
+              <td>
+                {% if ticket.status == "in_progress" %}
+                  {% trans 'En cours' as status_label %}
+                  {% include "common/badge.html" with badge_text=status_label badge_variant="turquoise" %}
+                {% elif ticket.status == "resolved" %}
+                  {% trans 'Résolu' as status_label %}
+                  {% include "common/badge.html" with badge_text=status_label badge_variant="emerald" badge_icon="check" %}
+                {% elif ticket.status == "closed" %}
+                  {% trans 'Clôturé' as status_label %}
+                  {% include "common/badge.html" with badge_text=status_label badge_variant="slate" %}
+                {% else %}
+                  {% trans 'Ouvert' as status_label %}
+                  {% include "common/badge.html" with badge_text=status_label badge_variant="indigo" %}
+                {% endif %}
+              </td>
+              <td>
+                {% if ticket.priority == "low" %}
+                  {% trans 'Basse' as priority_label %}
+                  {% include "common/badge.html" with badge_text=priority_label badge_variant="slate" %}
+                {% elif ticket.priority == "high" %}
+                  {% trans 'Haute' as priority_label %}
+                  {% include "common/badge.html" with badge_text=priority_label badge_variant="amber" %}
+                {% elif ticket.priority == "urgent" %}
+                  {% trans 'Urgente' as priority_label %}
+                  {% include "common/badge.html" with badge_text=priority_label badge_variant="purple" %}
+                {% else %}
+                  {% trans 'Moyenne' as priority_label %}
+                  {% include "common/badge.html" with badge_text=priority_label badge_variant="brand" %}
+                {% endif %}
+              </td>
+              <td class="whitespace-nowrap text-sm text-slate-400">
+                {{ ticket.updated_at|date:"DATE_FORMAT" }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="py-12">
+      {% trans "Aucun ticket à traiter." as empty_title %}
+      {% trans "Les demandes des étudiants apparaîtront ici." as empty_description %}
+      {% include "common/empty_state.html" with title=empty_title description=empty_description %}
+    </div>
+  {% endif %}
+</section>
+
+{% if is_paginated %}
+  <div class="mt-6">
+    {% include "common/pagination.html" %}
+  </div>
+{% endif %}
+{% endblock content %}

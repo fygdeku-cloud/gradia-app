@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from urllib.parse import quote
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
@@ -38,8 +40,15 @@ class LoginView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, F
         """
         URL Gradia de vérification OTP, équivalente au `users:verify_otp`
         de la référence (transport du purpose par query string).
+
+        Le paramètre `next` est transmis à la page de vérification afin
+        qu'après authentification l'utilisateur retrouve la page demandée.
         """
-        return f"{reverse('users:verify_email')}?purpose={OtpPurpose.LOGIN}&token={token}"
+        url = f"{reverse('users:verify_email')}?purpose={OtpPurpose.LOGIN}&token={token}"
+        next_url = self.request.GET.get("next") or self.request.POST.get("next")
+        if next_url and self.is_safe_url(next_url):
+            url += f"&next={quote(next_url)}"
+        return url
 
     def form_valid(self, form):
         user = form.get_user()

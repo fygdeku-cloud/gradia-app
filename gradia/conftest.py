@@ -18,3 +18,18 @@ def _media_storage(settings, tmpdir) -> None:
 @pytest.fixture
 def user(db) -> User:
     return UserFactory.create()
+
+
+@pytest.fixture
+def student(db) -> User:
+    return UserFactory.create(is_student=True)
+
+
+@pytest.fixture
+def other_user(db) -> User:
+    return UserFactory.create(is_student=True)
+
+
+@pytest.fixture
+def support_staff(db) -> User:
+    return UserFactory.create(is_staff=True, is_student=False)

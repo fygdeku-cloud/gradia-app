@@ -1,0 +1,52 @@
+{% extends "dashboard/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Historique des paiements' %} · Gradia{% endblock title %}
+
+{% block content %}
+<div class="mb-6">
+  <h1 class="text-2xl font-extrabold text-white">{% trans 'Historique des paiements' %}</h1>
+  <p class="mt-1 text-sm text-slate-400">
+    {% trans 'Toutes les transactions liées à vos commandes.' %}
+  </p>
+</div>
+
+<section class="gradia-panel overflow-hidden" aria-labelledby="payments-title">
+  <h2 id="payments-title" class="sr-only">{% trans 'Liste des paiements' %}</h2>
+
+  {% if payments %}
+    <div class="overflow-x-auto">
+      <table class="gradia-table">
+        <thead>
+          <tr>
+            <th scope="col">{% trans 'Référence' %}</th>
+            <th scope="col">{% trans 'Commande' %}</th>
+            <th scope="col">{% trans 'Montant' %}</th>
+            <th scope="col">{% trans 'Statut' %}</th>
+            <th scope="col">{% trans 'Date' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for payment in payments %}
+            <tr class="hover:bg-night-800 transition-colors">
+              <td class="font-mono text-sm">{{ payment.pk|stringformat:"s"|slice:":8" }}</td>
+              <td class="text-sm">{{ payment.order.order_number }}</td>
+              <td class="text-sm">{{ payment.amount }}</td>
+              <td>
+                {% include "common/badge.html" with badge_text=payment.get_status_display badge_variant="slate" %}
+              </td>
+              <td class="whitespace-nowrap text-sm text-slate-400">{{ payment.created_at|date:"DATE_FORMAT" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="py-12">
+      {% trans "Aucun paiement enregistré." as empty_title %}
+      {% trans "Le détail de vos transactions apparaîtra ici." as empty_description %}
+      {% include "common/empty_state.html" with title=empty_title description=empty_description %}
+    </div>
+  {% endif %}
+</section>
+{% endblock content %}

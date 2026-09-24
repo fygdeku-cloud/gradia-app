@@ -30,6 +30,7 @@
     <form method="post" action="{% url 'users:verify_email' %}" class="mt-6" novalidate>
       {% csrf_token %}
       <input type="hidden" name="purpose" value="{{ request.GET.purpose|default:'signup' }}" />
+      {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}" />{% endif %}
       {% if form.token.value %}{{ form.token }}{% else %}<input type="hidden" name="token" value="{{ request.GET.token|default:'' }}" />{% endif %}
       {% include "common/otp_field.html" with otp_field=form.code %}
       <div class="mt-5">

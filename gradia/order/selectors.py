@@ -5,6 +5,10 @@ def get_user_orders(user) -> QuerySet[Order]:
     """Retourne les commandes appartenant à l'utilisateur."""
     return Order.objects.filter(student=user)
 
-def get_order_detail(user, order_id: int) -> Order:
-    """Retourne une commande spécifique pour l'utilisateur."""
-    return Order.objects.filter(student=user, pk=order_id).prefetch_related("items__document").get()
+def get_order_detail(user, order_id) -> Order | None:
+    """Retourne une commande spécifique pour l'utilisateur, ou ``None``."""
+    return (
+        Order.objects.filter(student=user, pk=order_id)
+        .prefetch_related("items__document")
+        .first()
+    )

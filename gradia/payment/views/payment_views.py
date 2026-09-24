@@ -56,6 +56,10 @@ class PaymentInitiationView(LoginRequiredMixin, View):
         # Récupère la commande via le sélecteur existant.
         order = get_order_detail(request.user, order_id)
 
+        # Une commande inexistante retourne une 404.
+        if order is None:
+            raise Http404
+
         # Reconstruit le formulaire avec les données envoyées.
         form = PaymentInitiationForm(request.POST)
 

@@ -14,7 +14,7 @@ class AddToCartForm(forms.Form):
     ``save`` method, called from the view after the form is valid.
     """
 
-    document_id = forms.IntegerField(widget=forms.HiddenInput)
+    document_id = forms.UUIDField(widget=forms.HiddenInput)
 
     def __init__(self, *args, user=None, **kwargs):
         self.user = user

@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import Http404
 from django.views.generic import ListView, DetailView
 
 from gradia.order.selectors import get_user_orders, get_order_detail
@@ -18,4 +19,7 @@ class OrderDetailView(LoginRequiredMixin, StudentRequiredMixin, DetailView):
     context_object_name = "order"
 
     def get_object(self, queryset=None):
-        return get_order_detail(self.request.user, self.kwargs["pk"])
+        order = get_order_detail(self.request.user, self.kwargs["pk"])
+        if order is None:
+            raise Http404
+        return order

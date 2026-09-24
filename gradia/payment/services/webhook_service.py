@@ -1,25 +1,26 @@
 from __future__ import annotations
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.views import View
 
 from gradia.payment.models import Payment, PaymentWebhookEvent
 from gradia.payment.services.stripe_service import StripePaymentService
 from gradia.payment.services.transaction_service import TransactionService
-from gradia.utils.enums import PaymentProvider, PaymentStatus
+from gradia.utils.enums import (
+    PaymentProvider,
+    PaymentStatus,
+    ProcessingStatus,
+)
 
 
-class WebhookService(LoginRequiredMixin, View):
+class WebhookService:
     """Orchestre le traitement des événements envoyés par Stripe."""
 
     def __init__(self) -> None:
         self.stripe = StripePaymentService()
 
-    @transaction.atomic
     def process_event(
         self,
         *,
@@ -34,79 +35,75 @@ class WebhookService(LoginRequiredMixin, View):
         event_id = event["id"]
         event_type = event["type"]
 
-        # Récupère ou crée le journal de l'événement.
-        webhook_event, created = PaymentWebhookEvent.objects.get_or_create(
-            provider=PaymentProvider.STRIPE,
-            event_id=event_id,
-            defaults={
-                "event_type": event_type,
-                "payload": payload,
-                "signature": signature,
-                "remote_address": remote_address,
-            },
-        )
+        with transaction.atomic():
+            # Récupère ou crée le journal de l'événement.
+            webhook_event, created = PaymentWebhookEvent.objects.get_or_create(
+                provider=PaymentProvider.STRIPE,
+                event_id=event_id,
+                defaults={
+                    "event_type": event_type,
+                    "payload": payload,
+                    "signature": signature,
+                    "remote_address": remote_address,
+                },
+            )
 
-        # Si l'événement a déjà été traité, on ne le traite jamais une
-        # seconde fois.
-        if (
-            not created
-            and webhook_event.processing_status
-            == PaymentWebhookEvent.ProcessingStatus.PROCESSED
-        ):
-            return webhook_event
+            # Si l'événement a déjà été traité, on ne le traite jamais une
+            # seconde fois.
+            if (
+                not created
+                and webhook_event.processing_status
+                == ProcessingStatus.PROCESSED
+            ):
+                return webhook_event
 
-        # Met l'événement en cours de traitement.
-        webhook_event.processing_status = (
-            PaymentWebhookEvent.ProcessingStatus.PROCESSING
-        )
-        webhook_event.error_message = ""
-        webhook_event.save(
-            update_fields=[
-                "processing_status",
-                "error_message",
-                "updated_at",
-            ]
-        )
+            # Met l'événement en cours de traitement.
+            webhook_event.processing_status = (
+                ProcessingStatus.PROCESSING
+            )
+            webhook_event.error_message = ""
+            webhook_event.save(
+                update_fields=[
+                    "processing_status",
+                    "error_message",
+                    "updated_at",
+                ]
+            )
 
         try:
             # Sélectionne explicitement le handler correspondant à
             # l'événement Stripe.
             self._dispatch(event)
-
-            # Le traitement est terminé.
-            webhook_event.processing_status = (
-                PaymentWebhookEvent.ProcessingStatus.PROCESSED
-            )
-            webhook_event.processed_at = timezone.now()
-
-            webhook_event.save(
-                update_fields=[
-                    "processing_status",
-                    "processed_at",
-                    "updated_at",
-                ]
-            )
-
-            return webhook_event
-
         except Exception as exc:
-            # Conserve l'erreur pour permettre son diagnostic.
-            webhook_event.processing_status = (
-                PaymentWebhookEvent.ProcessingStatus.FAILED
+            # Conserve l'erreur pour permettre son diagnostic. Cette mise à
+            # jour est réalisée hors de la transaction d'enregistrement afin
+            # que l'état FAILED ne soit pas annulé par le rollback.
+            PaymentWebhookEvent.objects.filter(
+                provider=PaymentProvider.STRIPE,
+                event_id=event_id,
+            ).update(
+                processing_status=ProcessingStatus.FAILED,
+                error_message=str(exc),
+                processed_at=timezone.now(),
+                updated_at=timezone.now(),
             )
-            webhook_event.error_message = str(exc)
-            webhook_event.processed_at = timezone.now()
-
-            webhook_event.save(
-                update_fields=[
-                    "processing_status",
-                    "error_message",
-                    "processed_at",
-                    "updated_at",
-                ]
-            )
-
             raise
+
+        # Le traitement est terminé.
+        webhook_event.processing_status = (
+            ProcessingStatus.PROCESSED
+        )
+        webhook_event.processed_at = timezone.now()
+
+        webhook_event.save(
+            update_fields=[
+                "processing_status",
+                "processed_at",
+                "updated_at",
+            ]
+        )
+
+        return webhook_event
 
     def _dispatch(self, event: dict) -> None:
         """Sélectionne le handler correspondant au type d'événement."""

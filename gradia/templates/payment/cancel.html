@@ -1,0 +1,23 @@
+{% extends "dashboard/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Paiement annulé' %} · Gradia{% endblock title %}
+
+{% block content %}
+<div class="mx-auto max-w-xl py-10">
+  <div class="gradia-panel flex flex-col items-center p-8 text-center">
+    <h1 class="text-xl font-extrabold text-white">{% trans 'Paiement non confirmé' %}</h1>
+    <p class="mt-2 text-sm text-slate-400">
+      {% trans 'Votre paiement n’a pas pu être confirmé. Vous pouvez réessayer à tout moment.' %}
+    </p>
+    <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+      <a href="{% url 'payment:initiate' order_id=payment.order.pk %}" class="gradia-btn gradia-btn-primary">
+        {% trans 'Réessayer le paiement' %}
+      </a>
+      <a href="{% url 'order:list' %}" class="gradia-btn gradia-btn-ghost">
+        {% trans 'Voir mes commandes' %}
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,68 @@
+{% extends "dashboard/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Mes commandes' %} · Gradia{% endblock title %}
+
+{% block content %}
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+  <div>
+    <h1 class="text-2xl font-extrabold text-white">{% trans 'Mes commandes' %}</h1>
+    <p class="mt-1 text-sm text-slate-400">
+      {% trans 'Retrouvez les commandes passées et leur statut de paiement.' %}
+    </p>
+  </div>
+</div>
+
+<section class="gradia-panel overflow-hidden" aria-labelledby="orders-title">
+  <h2 id="orders-title" class="sr-only">{% trans 'Liste des commandes' %}</h2>
+
+  {% if orders %}
+    <div class="overflow-x-auto">
+      <table class="gradia-table">
+        <thead>
+          <tr>
+            <th scope="col">{% trans 'Commande' %}</th>
+            <th scope="col">{% trans 'Total' %}</th>
+            <th scope="col">{% trans 'Statut' %}</th>
+            <th scope="col">{% trans 'Date' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+            <tr class="hover:bg-night-800 transition-colors">
+              <td>
+                <a href="{% url 'order:detail' pk=order.pk %}" class="font-medium text-white hover:underline">
+                  {{ order.order_number }}
+                </a>
+              </td>
+              <td class="text-sm">{{ order.total_amount }}</td>
+              <td>
+                {% if order.status == "SUCCESS" %}
+                  {% trans 'Réussie' as status_label %}
+                  {% include "common/badge.html" with badge_text=status_label badge_variant="emerald" badge_icon="check" %}
+                {% elif order.status == "FAILED" %}
+                  {% trans 'Échouée' as status_label %}
+                  {% include "common/badge.html" with badge_text=status_label badge_variant="amber" %}
+                {% elif order.status == "CANCELLED" %}
+                  {% trans 'Annulée' as status_label %}
+                  {% include "common/badge.html" with badge_text=status_label badge_variant="slate" %}
+                {% else %}
+                  {% trans 'En attente' as status_label %}
+                  {% include "common/badge.html" with badge_text=status_label badge_variant="indigo" %}
+                {% endif %}
+              </td>
+              <td class="whitespace-nowrap text-sm text-slate-400">{{ order.created_at|date:"DATE_FORMAT" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="py-12">
+      {% trans "Aucune commande pour le moment." as empty_title %}
+      {% trans "Vos commandes apparaîtront ici après un premier achat." as empty_description %}
+      {% include "common/empty_state.html" with title=empty_title description=empty_description %}
+    </div>
+  {% endif %}
+</section>
+{% endblock content %}

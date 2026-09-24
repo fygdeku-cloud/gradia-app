@@ -6,4 +6,8 @@ class StudentRequiredMixin(UserPassesTestMixin):
         return self.request.user.is_authenticated and getattr(self.request.user, 'is_student', False)
 
     def handle_no_permission(self):
-        raise PermissionDenied
+        # Un utilisateur identifié non-étudiant est refusé.
+        # Un utilisateur anonyme est redirigé vers la connexion.
+        if self.request.user.is_authenticated:
+            raise PermissionDenied
+        return super().handle_no_permission()

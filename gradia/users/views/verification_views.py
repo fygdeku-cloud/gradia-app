@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.db import transaction
@@ -54,6 +55,18 @@ class EmailVerificationView(RedirectToNextOrReferrerMixin, FormView):
             return redirect("users:login")
 
         return super().dispatch(request, *args, **kwargs)
+
+    def get_redirect_url(self):
+        """
+        Après vérification OTP, on redirige vers `?next=` s'il est sûr ou
+        vers LOGIN_REDIRECT_URL. Le référent n'est pas utilisé ici : il
+        pointe vers la page de vérification elle-même, ce qui renverrait
+        l'utilisateur sur la même page (comportement de boucle).
+        """
+        next_url = self.request.GET.get("next") or self.request.POST.get("next")
+        if next_url and self.is_safe_url(next_url):
+            return next_url
+        return reverse(settings.LOGIN_REDIRECT_URL)
 
     def get_initial(self):
         return {"token": self.token}

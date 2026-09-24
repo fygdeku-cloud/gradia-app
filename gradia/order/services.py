@@ -25,8 +25,11 @@ def create_order_from_cart(user, cart: Cart) -> Order:
     if not items.exists():
         raise ValidationError("Le panier est vide.")
 
-    # Calculer le total
-    total_amount = sum((item.unit_price.amount for item in items), Money(0, settings.DEFAULT_CURRENCY))
+    # Calculer le total (somme de valeurs Money homogènes)
+    total_amount = sum(
+        (item.unit_price for item in items),
+        Money(0, settings.DEFAULT_CURRENCY),
+    )
 
     with transaction.atomic():
         # Créer la commande

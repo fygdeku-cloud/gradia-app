@@ -6,7 +6,9 @@ from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView
 
+from gradia.document.models import Document
 from gradia.document.selectors import (
+    annotate_with_paid_status,
     get_document_detail,
     get_published_document_detail,
 )
@@ -31,6 +33,17 @@ class DocumentDetailView(DetailView):
             document = get_document_detail(self.kwargs.get("pk"))
         if document is None:
             raise Http404(_("Aucun document ne correspond à cette adresse."))
+
+        # Annote le document avec l'état « payé » pour l'affichage
+        # (attribut ``has_paid`` attendu par document_detail.html).
+        annotated = (
+            annotate_with_paid_status(
+                Document.objects.filter(pk=document.pk),
+                self.request.user,
+            )
+        ).first()
+        if annotated is not None:
+            document = annotated
         return document
 
     def get_context_data(self, **kwargs):

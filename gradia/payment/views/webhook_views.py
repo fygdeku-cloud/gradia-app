@@ -5,15 +5,16 @@ import json
 import stripe
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse
+from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 
 from gradia.payment.services.webhook_service import WebhookService
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class PaymentWebhookView(View):
 
-    @csrf_exempt
     def post(self, request: HttpRequest) -> HttpResponse:
         # Récupère le payload brut envoyé par Stripe.
         payload = request.body

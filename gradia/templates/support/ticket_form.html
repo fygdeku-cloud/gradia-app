@@ -1,0 +1,39 @@
+{% extends "dashboard/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Nouveau ticket' %} · Gradia{% endblock title %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl">
+  <div class="mb-6">
+    <a href="{% url 'support:list' %}" class="text-sm text-slate-400 transition hover:text-brand-300">
+      &larr; {% trans 'Retour à mes tickets' %}
+    </a>
+    <h1 class="mt-3 text-2xl font-extrabold text-white">{% trans 'Créer un ticket de support' %}</h1>
+    <p class="mt-1 text-sm text-slate-400">
+      {% trans 'Décrivez votre problème : notre équipe vous répondra sur ce ticket.' %}
+    </p>
+  </div>
+
+  <div class="gradia-panel p-6 sm:p-8">
+    <form method="post" class="space-y-2" novalidate>
+      {% csrf_token %}
+      {% include "common/form_errors.html" %}
+
+      {% include "common/form_field.html" with field=form.title %}
+      {% include "common/form_field.html" with field=form.description %}
+      {% include "common/form_field.html" with field=form.priority %}
+      {% include "common/form_field.html" with field=form.message %}
+
+      <div class="flex flex-col gap-3 pt-4 sm:flex-row">
+        <button type="submit" class="gradia-btn gradia-btn-primary">
+          {% trans 'Envoyer le ticket' %}
+        </button>
+        <a href="{% url 'support:list' %}" class="gradia-btn gradia-btn-ghost">
+          {% trans 'Annuler' %}
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

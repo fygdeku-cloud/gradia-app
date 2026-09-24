@@ -1,0 +1,83 @@
+{% extends "dashboard/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ ticket.title }} · Gradia{% endblock title %}
+
+{% block content %}
+<div class="mx-auto max-w-4xl">
+  <div class="mb-6">
+    <a href="{% url 'support:list' %}" class="text-sm text-slate-400 transition hover:text-brand-300">
+      &larr; {% trans 'Retour à mes tickets' %}
+    </a>
+  </div>
+
+  <div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+    <div>
+      <div class="flex flex-wrap items-center gap-2">
+        {% if ticket.status == "in_progress" %}
+          {% trans 'En cours' as status_label %}
+          {% include "common/badge.html" with badge_text=status_label badge_variant="turquoise" %}
+        {% elif ticket.status == "resolved" %}
+          {% trans 'Résolu' as status_label %}
+          {% include "common/badge.html" with badge_text=status_label badge_variant="emerald" badge_icon="check" %}
+        {% elif ticket.status == "closed" %}
+          {% trans 'Clôturé' as status_label %}
+          {% include "common/badge.html" with badge_text=status_label badge_variant="slate" %}
+        {% else %}
+          {% trans 'Ouvert' as status_label %}
+          {% include "common/badge.html" with badge_text=status_label badge_variant="indigo" %}
+        {% endif %}
+        {% if ticket.priority == "low" %}
+          {% trans 'Priorité basse' as priority_label %}
+          {% include "common/badge.html" with badge_text=priority_label badge_variant="slate" %}
+        {% elif ticket.priority == "high" %}
+          {% trans 'Priorité haute' as priority_label %}
+          {% include "common/badge.html" with badge_text=priority_label badge_variant="amber" %}
+        {% elif ticket.priority == "urgent" %}
+          {% trans 'Urgente' as priority_label %}
+          {% include "common/badge.html" with badge_text=priority_label badge_variant="purple" %}
+        {% else %}
+          {% trans 'Priorité moyenne' as priority_label %}
+          {% include "common/badge.html" with badge_text=priority_label badge_variant="brand" %}
+        {% endif %}
+      </div>
+      <h1 class="mt-3 text-2xl font-extrabold text-white">{{ ticket.title }}</h1>
+    </div>
+    <p class="text-sm text-slate-400">
+      {% blocktranslate with created=ticket.created_at|date:"DATE_FORMAT" %}Créé le {{ created }}{% endblocktranslate %}
+    </p>
+  </div>
+
+  <section class="gradia-panel mb-6 p-6" aria-labelledby="description-title">
+    <h2 id="description-title" class="sr-only">{% trans 'Description' %}</h2>
+    {% if ticket.description %}
+      <p class="whitespace-pre-line text-sm leading-relaxed text-slate-200">{{ ticket.description }}</p>
+    {% else %}
+      <p class="text-sm text-slate-400">{% trans 'Aucune description fournie.' %}</p>
+    {% endif %}
+  </section>
+
+  <section class="gradia-panel gap-4 p-6" aria-labelledby="messages-title">
+    <h2 id="messages-title" class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">
+      {% trans 'Conversation' %}
+    </h2>
+
+    {% for message in ticket.get_messages %}
+      <article class="flex gap-3 border-b border-night-800 py-4 last:border-0">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-night-700 text-sm font-semibold text-white">
+          {{ message.sender.name|slice:":1"|upper|default:"?" }}
+        </div>
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <p class="text-sm font-semibold text-white">{{ message.sender.name|default:message.sender.email }}</p>
+            <p class="text-xs text-slate-400">{{ message.created_at|date:"DATE_FORMAT" }} {{ message.created_at|time:"TIME_FORMAT" }}</p>
+          </div>
+          <p class="mt-1 whitespace-pre-line text-sm leading-relaxed text-slate-200">{{ message.message }}</p>
+        </div>
+      </article>
+    {% empty %}
+      <p class="text-sm text-slate-400">{% trans 'Aucun message dans cette conversation.' %}</p>
+    {% endfor %}
+  </section>
+</div>
+{% endblock content %}
