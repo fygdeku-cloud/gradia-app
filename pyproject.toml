@@ -34,7 +34,7 @@ dependencies = [
   "phonenumbers>=9.0.38",
   "pillow==12.3.0",
   "psycopg[c]==3.3.4",
-  "python-slugify==8.0.4",
+  "python-slugify==9.1.1",
   "redis==8.1.0",
   "uvicorn-worker==0.4.0",
   "uvicorn[standard]==0.52.3",
