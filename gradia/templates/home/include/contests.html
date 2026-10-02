@@ -7,31 +7,42 @@
       <p class="mt-2 text-lg text-ink-secondary">{% blocktrans %}Explorez les concours disponibles, leurs sessions et préparez‑vous efficacement.{% endblocktrans %}</p>
     </div>
 
-    {% if home_contests %}
-      {% with home_contests|first as featured %}
-        <div class="gradia-contest-featured mb-10">
-          {% include "contest/include/contest_card.html" with contest=featured %}
+    {% if is_student %}
+      {% if home_contests %}
+        {% with home_contests|first as featured %}
+          <div class="gradia-contest-featured mb-10">
+            {% include "contest/include/contest_card.html" with contest=featured %}
+          </div>
+        {% endwith %}
+
+        {% if home_contests|length > 1 %}
+          <ul class="gradia-contest-list">
+            {% for contest in home_contests|slice:"1:" %}
+              <li class="gradia-contest-card">
+                {% include "contest/include/contest_card.html" with contest=contest %}
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <div class="mt-10 text-center">
+          <a href="{% url 'contest:list' %}" class="gradia-btn gradia-btn-outline-brand">
+            {% trans 'Voir tous les concours' %}
+          </a>
         </div>
-      {% endwith %}
-
-      {% if home_contests|length > 1 %}
-        <ul class="gradia-contest-list">
-          {% for contest in home_contests|slice:"1:" %}
-            <li class="gradia-contest-card">
-              {% include "contest/include/contest_card.html" with contest=contest %}
-            </li>
-          {% endfor %}
-        </ul>
+      {% else %}
+        <div class="mt-8">
+          {% include "common/empty_state.html" with title=_("Aucun concours disponible") description=_("Le catalogue sera bientôt disponible.") %}
+        </div>
       {% endif %}
-
-      <div class="mt-10 text-center">
-        <a href="{% url 'contest:list' %}" class="gradia-btn gradia-btn-outline-brand">
-          {% trans 'Voir tous les concours' %}
-        </a>
-      </div>
     {% else %}
-      <div class="mt-8">
-        {% include "common/empty_state.html" with title=_("Aucun concours disponible") description=_("Le catalogue sera bientôt disponible.") %}
+      {# Catalogue réservé aux étudiants inscrits : on invite à se connecter. #}
+      <div class="mt-8 text-center">
+        <p class="text-lg text-ink-secondary">{% blocktrans %}Le catalogue des concours est réservé aux étudiants inscrits.{% endblocktrans %}</p>
+        <div class="mt-6 flex flex-wrap justify-center gap-4">
+          <a href="{% url 'users:login' %}?next={% url 'contest:list' %}" class="gradia-btn gradia-btn-primary">{% trans 'Se connecter' %}</a>
+          <a href="{% url 'users:register' %}" class="gradia-btn gradia-btn-outline-brand">{% trans 'Créer un compte étudiant' %}</a>
+        </div>
       </div>
     {% endif %}
   </div>

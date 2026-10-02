@@ -2,6 +2,7 @@ from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView
 
+from gradia.contest.permissions import StudentRequiredMixin
 from gradia.contest.selectors import (
     get_establishment_contests,
     get_establishment_detail,
@@ -9,8 +10,8 @@ from gradia.contest.selectors import (
 )
 
 
-class EstablishmentListView(ListView):
-    """Catalogue public des établissements/organismes."""
+class EstablishmentListView(StudentRequiredMixin, ListView):
+    """Catalogue des établissements/organismes, réservé aux étudiants inscrits."""
 
     template_name = "contest/establishment_list.html"
     context_object_name = "establishments"
@@ -19,8 +20,8 @@ class EstablishmentListView(ListView):
         return get_establishments()
 
 
-class EstablishmentDetailView(DetailView):
-    """Détail public d'un établissement et de ses concours."""
+class EstablishmentDetailView(StudentRequiredMixin, DetailView):
+    """Détail d'un établissement et de ses concours."""
 
     template_name = "contest/establishment_detail.html"
     context_object_name = "establishment"

@@ -2,6 +2,7 @@ from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView
 
+from gradia.contest.permissions import StudentRequiredMixin
 from gradia.contest.selectors import (
     get_categories,
     get_category_contests,
@@ -9,8 +10,8 @@ from gradia.contest.selectors import (
 )
 
 
-class CategoryListView(ListView):
-    """Catalogue public des catégories de concours."""
+class CategoryListView(StudentRequiredMixin, ListView):
+    """Catalogue des catégories de concours, réservé aux étudiants inscrits."""
 
     template_name = "contest/category_list.html"
     context_object_name = "categories"
@@ -19,8 +20,8 @@ class CategoryListView(ListView):
         return get_categories()
 
 
-class CategoryDetailView(DetailView):
-    """Détail public d'une catégorie et de ses concours."""
+class CategoryDetailView(StudentRequiredMixin, DetailView):
+    """Détail d'une catégorie et de ses concours."""
 
     template_name = "contest/category_detail.html"
     context_object_name = "category"

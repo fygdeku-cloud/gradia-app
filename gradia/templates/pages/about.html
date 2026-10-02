@@ -86,10 +86,12 @@
          class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/30">
         {% trans 'Créer mon compte' %}
       </a>
-      <a href="{% url 'contest:list' %}"
-         class="inline-flex items-center justify-center rounded-xl border border-night-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-night-800 focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/20">
-        {% trans 'Voir les concours' %}
-      </a>
+{% if is_student %}
+        <a href="{% url 'contest:list' %}"
+           class="inline-flex items-center justify-center rounded-xl border border-night-600 px-6 py-3 text-sm font-semibold text-white transition hover:border-night-800 focus:outline-none focus-visible:ring-4 focus-visible:ring-night-500/20">
+          {% trans 'Voir les concours' %}
+        </a>
+      {% endif %}
     </div>
   </div>
 </section>

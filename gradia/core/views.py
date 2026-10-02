@@ -9,6 +9,19 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
+        # Les concours sont réservés aux étudiants inscrits : aucune donnée de
+        # concours (ni titre, ni session) n'est exposée aux visiteurs anonymes ou
+        # aux utilisateurs non étudiants.
+        is_student = user.is_authenticated and getattr(user, "is_student", False)
+
+        context["is_student"] = is_student
+        context["home_contests"] = []
+        context["home_sessions"] = []
+
+        if not is_student:
+            return context
+
         context["home_contests"] = list(
             Contest.objects.select_related(
                 "establishment",

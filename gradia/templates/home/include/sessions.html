@@ -9,14 +9,25 @@
           {% trans 'Sessions disponibles' %}
         </h2>
       </div>
-      <a href="{% url 'contest:list' %}"
-         class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-300 transition hover:text-brand-200">
-        {% trans 'Tout voir' %}
-        <svg class="h-4 w-4" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
-      </a>
+      {% if is_student %}
+        <a href="{% url 'contest:list' %}"
+           class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-300 transition hover:text-brand-200">
+          {% trans 'Tout voir' %}
+          <svg class="h-4 w-4" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+        </a>
+      {% endif %}
     </div>
 
-    {% if home_sessions %}
+    {% if not is_student %}
+      {# Sessions réservées aux étudiants inscrits. #}
+      <div class="mt-8">
+        <p class="text-lg text-ink-secondary">{% blocktrans %}Les sessions de concours sont réservées aux étudiants inscrits.{% endblocktrans %}</p>
+        <div class="mt-6 flex flex-wrap gap-4">
+          <a href="{% url 'users:login' %}?next={% url 'contest:list' %}" class="gradia-btn gradia-btn-primary">{% trans 'Se connecter' %}</a>
+          <a href="{% url 'users:register' %}" class="gradia-btn gradia-btn-outline-brand">{% trans 'Créer un compte étudiant' %}</a>
+        </div>
+      </div>
+    {% elif home_sessions %}
       <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {% for session in home_sessions %}
           <a href="{% url 'contest:session_detail' contest_slug=session.contest.slug year=session.year %}"

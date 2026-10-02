@@ -22,11 +22,13 @@
         <a href="{% url 'users:register' %}" class="gradia-btn gradia-btn-primary gradia-btn-lg">
           {% trans 'Commencer maintenant' %}
         </a>
-        <a href="{% url 'contest:list' %}" class="gradia-btn gradia-btn-outline-white gradia-btn-lg">
-          {% trans 'Explorer les concours' %}
-        </a>
+        {% if is_student %}
+          <a href="{% url 'contest:list' %}" class="gradia-btn gradia-btn-outline-white gradia-btn-lg">
+            {% trans 'Explorer les concours' %}
+          </a>
+        {% endif %}
       </div>
-      {% if home_sessions %}
+      {% if is_student and home_sessions %}
         <p class="text-sm text-ink-muted">
           {% blocktranslate count total=home_sessions|length trimmed %}
             {{ total }} session disponible cette année

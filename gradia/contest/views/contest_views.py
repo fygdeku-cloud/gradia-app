@@ -2,6 +2,7 @@ from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView
 
+from gradia.contest.permissions import StudentRequiredMixin
 from gradia.contest.selectors import (
     get_contest_detail,
     get_contests,
@@ -10,8 +11,8 @@ from gradia.contest.selectors import (
 )
 
 
-class ContestListView(ListView):
-    """Catalogue public des concours."""
+class ContestListView(StudentRequiredMixin, ListView):
+    """Catalogue des concours, réservé aux étudiants inscrits."""
 
     template_name = "contest/contest_list.html"
     context_object_name = "contests"
@@ -20,8 +21,8 @@ class ContestListView(ListView):
         return get_contests()
 
 
-class ContestDetailView(DetailView):
-    """Détail public d'un concours et de ses sessions."""
+class ContestDetailView(StudentRequiredMixin, DetailView):
+    """Détail d'un concours et de ses sessions."""
 
     template_name = "contest/contest_detail.html"
     context_object_name = "contest"
@@ -39,8 +40,8 @@ class ContestDetailView(DetailView):
         return contest
 
 
-class SessionDetailView(DetailView):
-    """Détail public d'une session de concours (année donnée)."""
+class SessionDetailView(StudentRequiredMixin, DetailView):
+    """Détail d'une session de concours (année donnée)."""
 
     template_name = "contest/session_detail.html"
     context_object_name = "session"
