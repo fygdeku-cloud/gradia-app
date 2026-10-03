@@ -2,11 +2,10 @@
 {# Carte de concours réutilisable (thème sombre). Usage : {% include "contest/include/contest_card.html" with contest=contest %} #}
 <article class="gradia-card gradia-card-hover group flex h-full flex-col overflow-hidden">
   <div class="flex items-center justify-between gap-2 border-b border-night-800 bg-night-850 px-5 py-3">
-    <a href="{% url 'contest:category_detail' slug=contest.category.slug %}"
-       class="contest-card-category">
+    <span class="contest-card-category">
       <span class="h-1.5 w-1.5 rounded-full bg-brand-400" aria-hidden="true"></span>
       {{ contest.category.title }}
-    </a>
+    </span>
     <span class="truncate text-xs text-ink-muted">{{ contest.establishment.title }}</span>
   </div>
 

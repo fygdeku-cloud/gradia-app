@@ -42,6 +42,14 @@ class Establishment(BaseModel, TitleDescriptionModel):
 
 
 class ContestCategory(BaseModel, TitleDescriptionModel):
+    """
+    Classement d'un concours (ex. « Concours général », « Concoursostic »).
+
+    Le modèle est conservé car il qualifie chaque `Contest`, mais il n'est plus
+    exposé comme onglet de navigation ni comme page de catalogue : aucun
+    parcours ni URL ne lui est dédié.
+    """
+
     slug = models.SlugField(max_length=255, unique=True, blank=True)
 
     class Meta:
@@ -63,12 +71,6 @@ class ContestCategory(BaseModel, TitleDescriptionModel):
 
     def get_contests(self):
         return self.contests.all()
-
-    def get_absolute_url(self):
-        return reverse(
-            "contest:category_detail",
-            kwargs={"slug": self.slug},
-        )
 
 
 class Contest(BaseModel, TitleDescriptionModel):

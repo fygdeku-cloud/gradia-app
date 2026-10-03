@@ -33,7 +33,29 @@ class User(AbstractUser, BaseModel):
     
     def __str__(self):
         return self.email
-    
+
+    @property
+    def is_privileged(self):
+        """Comptes administrateurs exemptés de la vérification d'e-mail."""
+        return self.is_superuser or self.is_staff
+
+    @property
+    def requires_email_verification(self):
+        """
+        La vérification d'e-mail ne s'applique jamais au superutilisateur
+        (ni au staff) : ces comptes sont automatiquement validés.
+        """
+        if self.is_privileged:
+            return False
+        return not self.email_verified
+
+    def auto_validate_email(self):
+        """Marque l'e-mail comme vérifié sans passer par l'OTP (comptes privilégiés)."""
+        if self.email_verified:
+            return
+        self.email_verified = True
+        self.save(update_fields=["email_verified"])
+
 
 class StudentProfile(BaseModel):
     # Champs requis pour le profil d'un etudiant

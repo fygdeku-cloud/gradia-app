@@ -24,6 +24,8 @@ class LoginView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, F
       `?next=` / `LOGIN_REDIRECT_URL` (adaptation de SigninView).
     - Utilisateur non vérifié : création d'un OTP LOGIN puis redirection
       vers la page de vérification OTP (`users:verify_email`).
+    - Superutilisateur / staff : la vérification e-mail est contournée et le
+      compte est automatiquement validé (`User.requires_email_verification`).
     """
 
     template_name = "users/login.html"
@@ -52,7 +54,7 @@ class LoginView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, F
 
     def form_valid(self, form):
         user = form.get_user()
-        if not user.email_verified:
+        if user.requires_email_verification:
             try:
                 otp, token = OtpService.create(user, OtpPurpose.LOGIN)
                 self.request.session["pending_login_token"] = token
@@ -66,6 +68,10 @@ class LoginView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, F
 
             messages.info(self.request, _("Un code de vérification vous a été envoyé."))
             return redirect(self._verification_url(token))
+
+        # Superutilisateur / staff : l'étape de vérification e-mail est
+        # contournée et le compte est validé automatiquement.
+        user.auto_validate_email()
 
         login(self.request, user)
         messages.success(self.request, _("Connexion réussie."))

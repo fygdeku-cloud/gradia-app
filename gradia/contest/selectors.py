@@ -2,7 +2,6 @@ from django.db.models import Count
 
 from gradia.contest.models import (
     Contest,
-    ContestCategory,
     ContestSession,
     Establishment,
 )
@@ -24,34 +23,6 @@ def get_contest_detail(slug):
         .prefetch_related("sessions")
         .filter(slug=slug)
         .first()
-    )
-
-
-def get_categories():
-    """Liste des catégories avec le nombre de concours associés."""
-    return (
-        ContestCategory.objects.annotate(contest_count=Count("contests"))
-        .order_by("title")
-    )
-
-
-def get_category_detail(slug):
-    """Détail d'une catégorie (None si aucune correspondance)."""
-    return (
-        ContestCategory.objects.annotate(
-            contest_count=Count("contests")
-        )
-        .filter(slug=slug)
-        .first()
-    )
-
-
-def get_category_contests(category):
-    """Concours d'une catégorie avec établissement et sessions."""
-    return (
-        category.contests.select_related("establishment")
-        .prefetch_related("sessions")
-        .order_by("title")
     )
 
 

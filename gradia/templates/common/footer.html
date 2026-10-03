@@ -18,7 +18,6 @@
           <li><a href="{% url 'home' %}" class="transition hover:text-brand-300">{% trans 'Accueil' %}</a></li>
           {% if request.user.is_authenticated and request.user.is_student %}
             <li><a href="{% url 'contest:list' %}" class="transition hover:text-brand-300">{% trans 'Concours' %}</a></li>
-            <li><a href="{% url 'contest:category_list' %}" class="transition hover:text-brand-300">{% trans 'Catégories' %}</a></li>
           {% endif %}
           <li><a href="{% url 'document:list' %}" class="transition hover:text-brand-300">{% trans 'Documents' %}</a></li>
         </ul>

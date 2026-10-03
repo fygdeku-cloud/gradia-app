@@ -11,7 +11,6 @@
         <a href="{% url 'home' %}" class="gradia-nav-link{% if request.resolver_match.url_name == 'home' %} active{% endif %}">{% trans 'Accueil' %}</a>
         {% if request.user.is_authenticated and request.user.is_student %}
           <a href="{% url 'contest:list' %}" class="gradia-nav-link{% if request.resolver_match.url_name == 'contest:list' %} active{% endif %}">{% trans 'Concours' %}</a>
-          <a href="{% url 'contest:category_list' %}" class="gradia-nav-link{% if request.resolver_match.url_name == 'contest:category_list' %} active{% endif %}">{% trans 'Catégories' %}</a>
         {% endif %}
         <a href="{% url 'about' %}" class="gradia-nav-link{% if request.resolver_match.url_name == 'about' %} active{% endif %}">{% trans 'À propos' %}</a>
       </div>
@@ -40,7 +39,6 @@
       <a href="{% url 'home' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans 'Accueil' %}</a>
       {% if request.user.is_authenticated and request.user.is_student %}
         <a href="{% url 'contest:list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans 'Concours' %}</a>
-        <a href="{% url 'contest:category_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans 'Catégories' %}</a>
       {% endif %}
       <a href="{% url 'about' %}" class="block px-3 py-2 rounded-md text-base font-medium text-text hover:bg-surface-muted">{% trans 'À propos' %}</a>
       {% if request.user.is_authenticated %}

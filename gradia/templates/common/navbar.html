@@ -21,11 +21,6 @@
         <a href="{% url 'document:list' %}" class="gradia-nav-link{% if request.resolver_match.namespace == 'document' and request.resolver_match.url_name == 'list' %} active{% endif %}">
           {% trans 'Documents' %}
         </a>
-        {% if request.user.is_authenticated and request.user.is_student %}
-          <a href="{% url 'contest:category_list' %}" class="gradia-nav-link{% if request.resolver_match.namespace == 'contest' and request.resolver_match.url_name == 'category_list' %} active{% endif %}">
-            {% trans 'Catégories' %}
-          </a>
-        {% endif %}
       </div>
     </div>
 
@@ -80,7 +75,6 @@
       </a>
       {% if request.user.is_authenticated and request.user.is_student %}
         <a href="{% url 'contest:list' %}" class="mobile-link">{% trans 'Concours' %}</a>
-        <a href="{% url 'contest:category_list' %}" class="mobile-link">{% trans 'Catégories' %}</a>
       {% endif %}
       <a href="{% url 'document:list' %}" class="mobile-link">{% trans 'Documents' %}</a>
 

@@ -1,8 +1,6 @@
 from django.urls import path
 
 from gradia.contest.views import (
-    CategoryDetailView,
-    CategoryListView,
     ContestDetailView,
     ContestListView,
     EstablishmentDetailView,
@@ -14,16 +12,6 @@ app_name = "contest"
 
 urlpatterns = [
     path("", ContestListView.as_view(), name="list"),
-    path(
-        "categorie/",
-        CategoryListView.as_view(),
-        name="category_list",
-    ),
-    path(
-        "categorie/<slug:slug>/",
-        CategoryDetailView.as_view(),
-        name="category_detail",
-    ),
     path(
         "etablissement/",
         EstablishmentListView.as_view(),
