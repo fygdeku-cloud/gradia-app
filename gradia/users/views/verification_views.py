@@ -109,10 +109,6 @@ class ResendVerificationView(RedirectToNextOrReferrerMixin, View):
 
     http_method_names = ["post"]
 
-    def get(self, request, *args, **kwargs):
-        """La page « Renvoyer le code » est un formulaire POST, pas une page."""
-        return redirect("users:verify_email")
-
     def _page_url(
         self,
         token: str,

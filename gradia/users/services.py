@@ -84,7 +84,9 @@ class OtpService:
         un seul renvoi immédiat est autorisé, le suivant est bloqué.
         """
         if OtpUtils.is_on_cooldown(user.pk, purpose, scope=RESEND_SCOPE):
-            raise OtpRateLimitError(_("Veuillez patienter avant de demander un nouveau code."))
+            raise OtpRateLimitError(
+                _("Veuillez patienter avant de demander un nouveau code.")
+            )
 
         with transaction.atomic():
             transaction.on_commit(
