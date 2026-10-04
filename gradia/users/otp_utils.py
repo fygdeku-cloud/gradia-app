@@ -10,6 +10,10 @@ from django.core.signing import BadSignature, SignatureExpired, TimestampSigner
 
 otp_cache = caches["otp"]
 
+# Portées du cooldown OTP (cf. `OtpUtils.get_cooldown_key`).
+SEND_SCOPE = "send"
+RESEND_SCOPE = "resend"
+
 
 class OtpUtils:
     """
@@ -58,18 +62,28 @@ class OtpUtils:
     def get_cooldown_key(
         user_id: int,
         purpose: str,
+        scope: str = SEND_SCOPE,
     ) -> str:
         """
         Génère la clé de cache utilisée pour le cooldown OTP.
+
+        Le `scope` sépare deux limitations indépendantes :
+        - `send`   : délai entre deux envois d'un code pour un même usage ;
+        - `resend` : délai entre deux renvois demandés par l'utilisateur.
+
+        Les deux partagent la même durée (`OTP_COOLDOWN_SECONDS`) mais sont
+        comptées séparément, afin qu'un renvoi demandé explicitement ne soit
+        pas bloqué par l'envoi initial tout en restant limité lui-même.
         """
 
-        return f"otp:cooldown:{purpose}:{user_id}"
+        return f"otp:cooldown:{scope}:{purpose}:{user_id}"
 
     @classmethod
     def start_cooldown(
         cls,
         user_id: int,
         purpose: str,
+        scope: str = SEND_SCOPE,
     ) -> None:
         """
         Active le cooldown après une demande d'OTP.
@@ -78,6 +92,7 @@ class OtpUtils:
         key = cls.get_cooldown_key(
             user_id=user_id,
             purpose=purpose,
+            scope=scope,
         )
 
         otp_cache.set(
@@ -91,6 +106,7 @@ class OtpUtils:
         cls,
         user_id: int,
         purpose: str,
+        scope: str = SEND_SCOPE,
     ) -> bool:
         """
         Vérifie si l'utilisateur est encore soumis
@@ -100,6 +116,7 @@ class OtpUtils:
         key = cls.get_cooldown_key(
             user_id=user_id,
             purpose=purpose,
+            scope=scope,
         )
 
         return otp_cache.get(key) is not None
@@ -109,6 +126,7 @@ class OtpUtils:
         cls,
         user_id: int,
         purpose: str,
+        scope: str = SEND_SCOPE,
     ) -> None:
         """
         Supprime le cooldown d'un utilisateur.
@@ -117,6 +135,7 @@ class OtpUtils:
         key = cls.get_cooldown_key(
             user_id=user_id,
             purpose=purpose,
+            scope=scope,
         )
 
         otp_cache.delete(key)

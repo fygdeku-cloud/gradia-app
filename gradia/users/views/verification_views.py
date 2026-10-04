@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from urllib.parse import urlencode
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
@@ -97,32 +99,69 @@ class EmailVerificationView(RedirectToNextOrReferrerMixin, FormView):
 class ResendVerificationView(RedirectToNextOrReferrerMixin, View):
     """
     Renvoi d'un nouveau code OTP (équivalent de ResendOtpView).
+
     Uniquement en POST ; le template email est choisi selon le purpose.
+    Le `purpose` et le `token` sont fournis par le formulaire « Renvoyer le
+    code » des pages de vérification, et `next` est reconduit pour que la
+    vérification suivante redirige toujours vers la page initialement
+    demandée.
     """
 
     http_method_names = ["post"]
 
+    def get(self, request, *args, **kwargs):
+        """La page « Renvoyer le code » est un formulaire POST, pas une page."""
+        return redirect("users:verify_email")
+
+    def _page_url(
+        self,
+        token: str,
+        purpose: str,
+        next_url: str = "",
+    ) -> str:
+        """URL de la page de vérification correspondant au `purpose`."""
+        base = (
+            reverse("users:password_reset_otp")
+            if purpose == OtpPurpose.PASSWORD_RESET
+            else reverse("users:verify_email")
+        )
+
+        query = {"token": token, "purpose": purpose}
+        if next_url:
+            query["next"] = next_url
+
+        return f"{base}?{urlencode(query)}"
+
     def post(self, request, *args, **kwargs):
-        purpose = request.POST.get("purpose", OtpPurpose.SIGNUP)
-        token = request.POST.get("token")
+        purpose = request.POST.get("purpose") or OtpPurpose.SIGNUP
+        token = (request.POST.get("token") or "").strip()
+
+        next_url = request.POST.get("next") or ""
+        if next_url and not self.is_safe_url(next_url):
+            next_url = ""
+
+        if not token:
+            messages.error(
+                request,
+                _("Le lien de vérification est invalide ou a expiré."),
+            )
+            return redirect("users:login")
 
         try:
             with transaction.atomic():
-                otp = OtpVerifyService._resolve_otp(token, purpose)
-                new_otp, new_token = OtpService.create(otp.user, purpose)
+                previous = OtpVerifyService._resolve_otp(token, purpose)
+                new_otp, new_token = OtpService.resend(previous.user, purpose)
                 template = (
                     "emails/users/password_reset_otp.html"
                     if purpose == OtpPurpose.PASSWORD_RESET
                     else "emails/users/email_verification.html"
                 )
-                OtpEmailService.send_otp(otp.user, new_otp, template=template)
+                OtpEmailService.send_otp(previous.user, new_otp, template=template)
         except (OtpVerificationError, OtpRateLimitError, ValueError) as error:
+            # OtpEmailError hérite de ValueError : un échec d'envoi SMTP est
+            # donc remonté à l'utilisateur au lieu d'être avalé.
             messages.error(request, error)
-            return redirect(
-                f"{reverse('users:verify_email')}?token={token}&purpose={purpose}"
-            )
+            return redirect(self._page_url(token, purpose, next_url))
 
         messages.success(request, _("Un nouveau code vous a été envoyé."))
-        return redirect(
-            f"{reverse('users:verify_email')}?token={new_token}&purpose={purpose}"
-        )
+        return redirect(self._page_url(new_token, purpose, next_url))

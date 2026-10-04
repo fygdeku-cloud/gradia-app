@@ -244,3 +244,138 @@ class TestResendVerificationView:
         )
         assert response.status_code == 302
         assert "verify-email" in response["Location"]
+
+    def test_resend_succeeds_with_cooldown_armed(
+        self, db, deterministic_otp, django_capture_on_commit_callbacks
+    ):
+        """
+        Régression : le cooldown armé par l'envoi initial ne doit pas
+        empêcher le renvoi demandé explicitement par l'utilisateur.
+
+        `django_capture_on_commit_callbacks` rejoue les callbacks `on_commit`
+        comme le fait `ATOMIC_REQUESTS=True` en production : sans cela le
+        cooldown n'est jamais armé en test et le bug reste invisible.
+        """
+        from django.core import mail
+
+        user = UserFactory.create(email_verified=False)
+        client = Client()
+
+        with django_capture_on_commit_callbacks(execute=True):
+            location = client.post(
+                reverse("users:login"),
+                {"email": user.email, "password": PASSWORD},
+            )["Location"]
+
+        token = _qs(location)["token"][0]
+        assert OtpUtils.is_on_cooldown(user.pk, OtpPurpose.LOGIN)
+        mail.outbox.clear()
+
+        with django_capture_on_commit_callbacks(execute=True):
+            response = client.post(
+                reverse("users:resend_verification"),
+                {"purpose": OtpPurpose.LOGIN, "token": token},
+            )
+
+        assert response.status_code == 302
+        assert len(mail.outbox) == 1
+        new_token = _qs(response["Location"])["token"][0]
+        assert new_token != token
+
+        # Le cooldown doit être ré-armé : un second renvoi immédiat est bloqué.
+        assert OtpUtils.is_on_cooldown(user.pk, OtpPurpose.LOGIN)
+        mail.outbox.clear()
+        client.post(
+            reverse("users:resend_verification"),
+            {"purpose": OtpPurpose.LOGIN, "token": new_token},
+        )
+        assert len(mail.outbox) == 0
+
+    def test_resend_preserves_next(self, db, deterministic_otp):
+        from django.core import mail
+
+        user = UserFactory.create(email_verified=False)
+        client = Client()
+        location = client.post(
+            reverse("users:login") + "?next=/cart/",
+            {"email": user.email, "password": PASSWORD},
+        )["Location"]
+        token = _qs(location)["token"][0]
+
+        OtpUtils.clear_cooldown(user.pk, OtpPurpose.LOGIN)
+        mail.outbox.clear()
+
+        response = client.post(
+            reverse("users:resend_verification"),
+            {"purpose": OtpPurpose.LOGIN, "token": token, "next": "/cart/"},
+        )
+        params = _qs(response["Location"])
+        assert params["next"] == ["/cart/"]
+        assert params["token"][0]
+
+    def test_resend_ignores_unsafe_next(self, db, deterministic_otp):
+        user = UserFactory.create(email_verified=False)
+        client = Client()
+        location = client.post(
+            reverse("users:login"),
+            {"email": user.email, "password": PASSWORD},
+        )["Location"]
+        token = _qs(location)["token"][0]
+
+        OtpUtils.clear_cooldown(user.pk, OtpPurpose.LOGIN)
+
+        response = client.post(
+            reverse("users:resend_verification"),
+            {
+                "purpose": OtpPurpose.LOGIN,
+                "token": token,
+                "next": "https://evil.example.com/",
+            },
+        )
+        assert "next" not in _qs(response["Location"])
+
+    def test_resend_password_reset_targets_its_own_page(self, db, deterministic_otp):
+        from django.core import mail
+
+        user = UserFactory.create()
+        client = Client()
+        location = client.post(
+            reverse("users:password_reset"),
+            {"email": user.email},
+        )["Location"]
+        token = _qs(location)["token"][0]
+
+        OtpUtils.clear_cooldown(user.pk, OtpPurpose.PASSWORD_RESET)
+        mail.outbox.clear()
+
+        response = client.post(
+            reverse("users:resend_verification"),
+            {"purpose": OtpPurpose.PASSWORD_RESET, "token": token},
+        )
+        assert response.status_code == 302
+        assert reverse("users:password_reset_otp") in response["Location"]
+        assert len(mail.outbox) == 1
+
+    def test_resend_without_token_redirects_to_login(self, db):
+        response = Client().post(
+            reverse("users:resend_verification"),
+            {"purpose": OtpPurpose.LOGIN},
+        )
+        assert response.status_code == 302
+        assert response["Location"] == reverse("users:login")
+
+    def test_resend_page_carries_token_and_next(self, db, deterministic_otp):
+        """Le formulaire « Renvoyer le code » doit poster le token et le next."""
+        user = UserFactory.create(email_verified=False)
+        client = Client()
+        location = client.post(
+            reverse("users:login") + "?next=/cart/",
+            {"email": user.email, "password": PASSWORD},
+        )["Location"]
+
+        html = client.get(location).content.decode()
+        token = _qs(location)["token"][0]
+
+        resend_form = html.split("resend-verification", 1)[1]
+        assert f'name="token" value="{token}"' in resend_form
+        assert 'name="next" value="/cart/"' in resend_form

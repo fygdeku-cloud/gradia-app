@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .models import Otp
-from .otp_utils import OtpUtils
+from .otp_utils import RESEND_SCOPE, OtpUtils
 from gradia.utils.email import EmailUtil
 from gradia.utils.enums import OtpPurpose
 
@@ -31,7 +31,14 @@ class OtpService:
     """
 
     @staticmethod
-    def create(user, purpose: str) -> tuple[Otp, str]:
+    def create(user, purpose: str, *, is_resend: bool = False) -> tuple[Otp, str]:
+        """
+        Crée un OTP et son token signé.
+
+        `is_resend` est réservé à `OtpService.resend` : il neutralise le
+        cooldown `send`, qui a été armé par l'envoi initial du code que
+        l'utilisateur demande précisément de remplacer.
+        """
         if purpose not in {
             OtpPurpose.SIGNUP,
             OtpPurpose.LOGIN,
@@ -39,7 +46,7 @@ class OtpService:
         }:
             raise ValueError(_("Purpose OTP invalide."))
 
-        if OtpUtils.is_on_cooldown(user.pk, purpose):
+        if not is_resend and OtpUtils.is_on_cooldown(user.pk, purpose):
             raise OtpRateLimitError(_("Veuillez patienter avant de demander un nouveau code."))
 
         validity_minutes = getattr(settings, "OTP_VALID_MINUTES", 10)
@@ -62,6 +69,28 @@ class OtpService:
         otp._raw_code = raw_code
         token = OtpUtils.create_token(otp.pk, user.pk, purpose)
         return otp, token
+
+    @staticmethod
+    def resend(user, purpose: str) -> tuple[Otp, str]:
+        """
+        Renvoie un code OTP neuf pour une opération déjà engagée.
+
+        Le cooldown `send` (armé par l'envoi initial) est volontairement
+        ignoré : sans cela le bouton « Renvoyer le code » resterait inopérant
+        pendant OTP_COOLDOWN_SECONDS, précisément quand l'utilisateur en a
+        besoin (code non reçu, expiré, supprimé des spam).
+
+        La limitation anti-spam est conservée via le cooldown `resend` :
+        un seul renvoi immédiat est autorisé, le suivant est bloqué.
+        """
+        if OtpUtils.is_on_cooldown(user.pk, purpose, scope=RESEND_SCOPE):
+            raise OtpRateLimitError(_("Veuillez patienter avant de demander un nouveau code."))
+
+        with transaction.atomic():
+            transaction.on_commit(
+                lambda: OtpUtils.start_cooldown(user.pk, purpose, scope=RESEND_SCOPE),
+            )
+            return OtpService.create(user, purpose, is_resend=True)
 
 
 class OtpEmailService:
