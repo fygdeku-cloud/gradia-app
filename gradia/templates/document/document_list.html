@@ -8,10 +8,10 @@
 {% endblock extra_css %}
 
 {% block content %}
-{# ============================================================
+{% comment %}
    Bibliothèque des documents — liste publique avec recherche.
    Contexte : documents (annotés has_paid), query, pagination.
-   ============================================================ #}
+{% endcomment %}
 <section class="document-hero text-ink">
   <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
     <nav class="flex flex-wrap items-center gap-2 text-sm text-ink-muted" aria-label="{% trans 'Fil d’Ariane' %}">

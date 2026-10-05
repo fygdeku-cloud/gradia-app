@@ -9,12 +9,12 @@
 {% endblock extra_css %}
 
 {% block content %}
-{# ============================================================
+{% comment %}
    Détail d'un document.
    Contexte : document, can_view_correction, can_download_subject,
    can_manage (droits réels fournis par DocumentAccessService).
    Aucun accès n'est simulé : affichage des états issus du backend.
-   ============================================================ #}
+{% endcomment %}
 <section class="document-hero text-ink">
   <div class="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
     <nav class="flex flex-wrap items-center gap-2 text-sm text-ink-muted" aria-label="{% trans 'Fil d’Ariane' %}">

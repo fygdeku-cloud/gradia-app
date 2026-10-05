@@ -1,11 +1,11 @@
 {% load i18n %}
-{# ============================================================
+{% comment %}
    Base commune des emails Gradia (structure imposée).
    Les templates emails réellement utilisés par le backend restent
    inchangés (emails/users/*); ceux-ci constituent la bibliothèque
    conforme de la structure templates/emails/.
    Contexte attendu : user, site_name, site_url (ajoutés par EmailUtil).
-   ============================================================ #}
+{% endcomment %}
 {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
