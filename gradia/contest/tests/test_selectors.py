@@ -1,14 +1,10 @@
 import pytest
 from gradia.contest.models import (
     Contest,
-    ContestCategory,
     ContestSession,
     Establishment,
 )
 from gradia.contest.selectors import (
-    get_categories,
-    get_category_contests,
-    get_category_detail,
     get_contest_detail,
     get_contests,
     get_establishment_contests,
@@ -18,7 +14,6 @@ from gradia.contest.selectors import (
     get_session_documents,
 )
 from gradia.document.tests.factories import (
-    ContestCategoryFactory,
     ContestFactory,
     ContestSessionFactory,
     DocumentFactory,
@@ -40,24 +35,6 @@ class TestContestSelectors:
         c1 = ContestFactory(title="ENSP Concours")
         assert get_contest_detail(c1.slug) == c1
         assert get_contest_detail("nonexistent-slug") is None
-
-    def test_get_categories_and_detail(self):
-        cat1 = ContestCategoryFactory(title="Scientifique")
-        ContestFactory(category=cat1)
-        ContestFactory(category=cat1)
-        categories = list(get_categories())
-        assert len(categories) == 1
-        assert categories[0].contest_count == 2
-        assert get_category_detail(cat1.slug) == cat1
-        assert get_category_detail("nonexistent") is None
-
-    def test_get_category_contests(self):
-        cat = ContestCategoryFactory()
-        c1 = ContestFactory(category=cat, title="C1")
-        c2 = ContestFactory(category=cat, title="C2")
-        other_c = ContestFactory(title="Other")
-        contests = list(get_category_contests(cat))
-        assert contests == [c1, c2]
 
     def test_get_establishments_and_detail(self):
         est = EstablishmentFactory(title="Université de Yaoundé")

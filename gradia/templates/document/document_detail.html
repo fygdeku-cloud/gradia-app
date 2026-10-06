@@ -67,9 +67,7 @@
             <dt class="text-xs font-semibold uppercase tracking-wide text-ink-muted">{% trans 'Catégorie' %}</dt>
             <dd class="mt-1 text-sm font-medium text-ink">
               {% if document.contest_session %}
-                <a href="{% url 'contest:category_detail' slug=document.contest_session.contest.category.slug %}" class="text-brand-300 transition hover:text-brand-200">
-                  {{ document.contest_session.contest.category.title }}
-                </a>
+                <span class="text-brand-300">{{ document.contest_session.contest.category.title }}</span>
               {% endif %}
             </dd>
           </div>

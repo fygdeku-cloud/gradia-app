@@ -10,4 +10,7 @@ class UserSerializer(serializers.ModelSerializer[User]):
 
         extra_kwargs = {
             "pk": {"read_only": True},
+            "is_student": {"read_only": True},
+            "is_admin": {"read_only": True},
+            "email_verified": {"read_only": True},
         }

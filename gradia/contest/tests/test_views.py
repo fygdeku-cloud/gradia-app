@@ -1,7 +1,6 @@
 import pytest
 from django.urls import reverse
 from gradia.document.tests.factories import (
-    ContestCategoryFactory,
     ContestFactory,
     ContestSessionFactory,
     DocumentFactory,
@@ -36,27 +35,6 @@ class TestContestViews:
 
     def test_contest_detail_view_404(self, student_client):
         url = reverse("contest:detail", kwargs={"slug": "unknown-slug"})
-        response = student_client.get(url)
-        assert response.status_code == 404
-
-    def test_category_list_view(self, student_client):
-        cat = ContestCategoryFactory(title="Scientifique")
-        url = reverse("contest:category_list")
-        response = student_client.get(url)
-        assert response.status_code == 200
-        assert "Scientifique" in response.content.decode()
-
-    def test_category_detail_view(self, student_client):
-        cat = ContestCategoryFactory(title="Ingénierie")
-        contest = ContestFactory(category=cat, title="Concours Ingé")
-        url = reverse("contest:category_detail", kwargs={"slug": cat.slug})
-        response = student_client.get(url)
-        assert response.status_code == 200
-        assert "Ingénierie" in response.content.decode()
-        assert "Concours Ingé" in response.content.decode()
-
-    def test_category_detail_view_404(self, student_client):
-        url = reverse("contest:category_detail", kwargs={"slug": "inexistant"})
         response = student_client.get(url)
         assert response.status_code == 404
 

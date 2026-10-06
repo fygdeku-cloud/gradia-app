@@ -65,9 +65,13 @@ class DocumentService:
     @transaction.atomic
     def delete(*, document: Document) -> None:
         """Supprime un document et ses fichiers associés."""
-        document.subject_file.delete(save=False)
-        document.correction_file.delete(save=False)
+        storage = document.subject_file.field.storage
+        subject_name = document.subject_file.name
+        correction_name = document.correction_file.name
         document.delete()
+        for file_name in (subject_name, correction_name):
+            if file_name:
+                storage.delete(file_name)
 
     @staticmethod
     @transaction.atomic

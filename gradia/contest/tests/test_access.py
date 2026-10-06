@@ -18,8 +18,6 @@ def contest_urls():
     """Toutes les URLs du namespace `contest` qui doivent être protégées."""
     return [
         reverse("contest:list"),
-        reverse("contest:category_list"),
-        reverse("contest:category_detail", kwargs={"slug": "slug-test"}),
         reverse("contest:establishment_list"),
         reverse("contest:establishment_detail", kwargs={"slug": "slug-test"}),
         reverse("contest:detail", kwargs={"slug": "slug-test"}),

@@ -44,7 +44,7 @@ def _validate_file_signature(uploaded_file, suffix):
     initial_position = uploaded_file.tell() or 0
     try:
         uploaded_file.seek(0)
-        header = uploaded_file.read(4)
+        header = uploaded_file.read(max(map(len, _MAGIC_SIGNATURES)))
         uploaded_file.seek(initial_position)
     except (OSError, AttributeError) as exc:
         raise ValidationError(

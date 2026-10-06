@@ -3,8 +3,9 @@ Vues de création, modification et suppression de documents (gestion).
 """
 
 from django.contrib import messages
-from django.shortcuts import redirect
 from django.core.exceptions import ValidationError
+from django.db.models.deletion import ProtectedError
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
@@ -69,8 +70,15 @@ class DocumentDeleteView(DocumentManageMixin, DeleteView):
     success_url = reverse_lazy("document:list")
 
     def form_valid(self, form):
-        DocumentService.delete(document=self.object)
-                
+        try:
+            DocumentService.delete(document=self.object)
+        except ProtectedError:
+            messages.error(
+                self.request,
+                _("Ce document est référencé par un panier ou une commande et ne peut pas être supprimé."),
+            )
+            return redirect(self.object.get_absolute_url())
+
         messages.success(self.request, _("Document supprimé."))
         return redirect(self.get_success_url())
     

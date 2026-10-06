@@ -24,7 +24,6 @@
     </p>
 
     <div class="mt-6 flex flex-wrap gap-3 text-sm">
-      <a href="{% url 'contest:category_list' %}" class="rounded-full border border-night-700 bg-night-800 px-4 py-2 font-medium text-ink-secondary transition hover:bg-night-700 hover:text-white">{% trans 'Parcourir par catégorie' %}</a>
       <a href="{% url 'contest:establishment_list' %}" class="rounded-full border border-night-700 bg-night-800 px-4 py-2 font-medium text-ink-secondary transition hover:bg-night-700 hover:text-white">{% trans 'Parcourir par établissement' %}</a>
     </div>
   </div>
@@ -33,7 +32,6 @@
 {% comment %}Bibliothèque des concours groupés par catégorie.{% endcomment %}
 <section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
   {% if contests %}
-    {% regroup contests by category as category_groups %}
     <div class="mb-8 flex flex-wrap items-center justify-between gap-3">
       <h2 class="gradia-section-title">{% trans 'Bibliothèque des concours' %}</h2>
       <span class="text-sm text-ink-muted">
@@ -45,10 +43,11 @@
       </span>
     </div>
 
-    {% for group in category_groups %}
-      {% include "contest/include/category_section.html" with category=group.grouper contests=group.list %}
-      {% if not forloop.last %}<hr class="my-10 border-night-800" aria-hidden="true" />{% endif %}
-    {% endfor %}
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {% for contest in contests %}
+        {% include "contest/include/contest_card.html" with contest=contest %}
+      {% endfor %}
+    </div>
   {% else %}
     {% include "common/empty_state.html" with title=_("Aucun concours disponible") description=_("Le catalogue des concours sera bientôt disponible.") %}
   {% endif %}

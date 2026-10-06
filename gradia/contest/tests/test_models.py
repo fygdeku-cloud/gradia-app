@@ -39,7 +39,6 @@ class TestContestCategoryModel:
         assert str(cat) == "Ingénierie"
         assert cat.slug is not None
         assert "ingenierie" in cat.slug
-        assert cat.get_absolute_url() == f"/contest/categorie/{cat.slug}/"
 
     def test_category_get_contests(self):
         cat = ContestCategoryFactory()

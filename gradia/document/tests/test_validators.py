@@ -9,6 +9,29 @@ from gradia.document.validators import (
 )
 
 
+class _FileLike:
+    """Objet fichier minimal : un UploadedFile assainit toujours son nom."""
+
+    content_type = "application/pdf"
+
+    def __init__(self, name, content):
+        self.name = name
+        self.content = content
+        self.size = len(content)
+        self._pos = 0
+
+    def tell(self):
+        return self._pos
+
+    def seek(self, pos):
+        self._pos = pos
+
+    def read(self, size=-1):
+        start = self._pos
+        self._pos = len(self.content) if size == -1 else min(start + size, len(self.content))
+        return self.content[start:self._pos]
+
+
 class TestDocumentValidators:
     def test_validate_none_or_empty_passes_or_handles(self):
         validate_document_file(None)
@@ -21,8 +44,7 @@ class TestDocumentValidators:
             validate_document_file(file)
 
     def test_validate_oversized_file(self, monkeypatch):
-        from gradia.utils import enums
-        monkeypatch.setattr(enums, "MAX_DOCUMENT_SIZE", 10)
+        monkeypatch.setattr("gradia.document.validators.MAX_DOCUMENT_SIZE", 10)
         file = SimpleUploadedFile("document.pdf", b"%PDF-1.4\n123456789012345", content_type="application/pdf")
         with pytest.raises(ValidationError, match="must not exceed"):
             validate_document_file(file)
@@ -33,7 +55,7 @@ class TestDocumentValidators:
             validate_document_file(file)
 
     def test_validate_path_traversal_filename(self):
-        file = SimpleUploadedFile("../document.pdf", b"%PDF-1.4\ncontent", content_type="application/pdf")
+        file = _FileLike(name="../document.pdf", content=b"%PDF-1.4\ncontent")
         with pytest.raises(ValidationError, match="file name is invalid"):
             validate_document_file(file)
 

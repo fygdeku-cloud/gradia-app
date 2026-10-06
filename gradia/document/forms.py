@@ -85,6 +85,8 @@ class DocumentUpdateForm(forms.ModelForm):
             "context",
             "contest_session",
             "price",
+            "subject_file",
+            "correction_file",
             "is_published",
         ]
         labels = {
@@ -104,7 +106,3 @@ class DocumentUpdateForm(forms.ModelForm):
         if price < 0:
             raise forms.ValidationError(_("Le prix ne peut pas être négatif."))
         return price
-
-    def save(self, commit=True):
-    
-        return super().save(commit=commit)

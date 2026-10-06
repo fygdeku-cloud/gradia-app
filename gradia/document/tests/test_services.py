@@ -2,6 +2,7 @@ import io
 import pytest
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db.models.deletion import ProtectedError
 from django.http import FileResponse
 from gradia.document.forms import DocumentCreateForm, DocumentUpdateForm
 from gradia.document.models import Document, DocumentAccessLog
@@ -53,6 +54,88 @@ class TestDocumentService:
         doc_id = doc.pk
         DocumentService.delete(document=doc)
         assert not Document.objects.filter(pk=doc_id).exists()
+
+    def test_update_replaces_files(self, student):
+        doc = DocumentFactory(title="Ancien titre")
+        session = ContestSessionFactory()
+        new_subject = SimpleUploadedFile(
+            "nouveau-sujet.pdf",
+            b"%PDF-1.4\nsubject",
+            content_type="application/pdf",
+        )
+        new_correction = SimpleUploadedFile(
+            "nouveau-corrige.pdf",
+            b"%PDF-1.4\ncorrection",
+            content_type="application/pdf",
+        )
+        form = DocumentUpdateForm(
+            data={
+                "title": "Nouveau titre",
+                "description": doc.description,
+                "context": doc.context,
+                "contest_session": session.pk,
+                "price": doc.price,
+                "is_published": "on",
+            },
+            files={"subject_file": new_subject, "correction_file": new_correction},
+        )
+        assert form.is_valid(), form.errors
+
+        updated = DocumentService.update(document=doc, form=form)
+        updated.refresh_from_db()
+
+        assert updated.title == "Nouveau titre"
+        assert updated.subject_file.name.endswith("nouveau-sujet.pdf")
+        assert updated.correction_file.name.endswith("nouveau-corrige.pdf")
+
+    def test_update_keeps_files_when_not_reuploaded(self):
+        doc = DocumentFactory()
+        session = ContestSessionFactory()
+        subject_name = doc.subject_file.name
+        correction_name = doc.correction_file.name
+        form = DocumentUpdateForm(
+            data={
+                "title": doc.title,
+                "description": doc.description,
+                "context": doc.context,
+                "contest_session": session.pk,
+                "price": doc.price,
+                "is_published": "on",
+            },
+        )
+        assert form.is_valid(), form.errors
+
+        updated = DocumentService.update(document=doc, form=form)
+        updated.refresh_from_db()
+
+        assert updated.subject_file.name == subject_name
+        assert updated.correction_file.name == correction_name
+
+    def test_delete_blocked_when_referenced_by_order_keeps_files(self, student):
+        doc = DocumentFactory()
+        subject_name = doc.subject_file.name
+        correction_name = doc.correction_file.name
+        storage = doc.subject_file.field.storage
+        order = Order.objects.create(
+            student=student,
+            order_number="ORD-BLOCKED",
+            total_amount=doc.price,
+            status=OrderStatus.PENDING,
+        )
+        OrderItem.objects.create(
+            order=order,
+            document=doc,
+            unit_price=doc.price,
+            quantity=1,
+            line_total=doc.price,
+        )
+
+        with pytest.raises(ProtectedError):
+            DocumentService.delete(document=doc)
+
+        assert Document.objects.filter(pk=doc.pk).exists()
+        assert storage.exists(subject_name)
+        assert storage.exists(correction_name)
 
 
 @pytest.mark.django_db

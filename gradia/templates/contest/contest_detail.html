@@ -23,8 +23,7 @@
     </nav>
 
     <div class="mt-6 flex flex-wrap items-center gap-2 text-xs">
-      <a href="{% url 'contest:category_detail' slug=contest.category.slug %}"
-         class="rounded-full bg-brand-500/10 px-3 py-1 font-semibold text-brand-300 transition hover:bg-brand-500/20">{{ contest.category.title }}</a>
+      <span class="rounded-full bg-brand-500/10 px-3 py-1 font-semibold text-brand-300">{{ contest.category.title }}</span>
       <a href="{% url 'contest:establishment_detail' slug=contest.establishment.slug %}"
          class="rounded-full border border-night-700 bg-night-800 px-3 py-1 font-medium text-ink-secondary transition hover:bg-night-700">{{ contest.establishment.title }}</a>
     </div>
@@ -83,7 +82,7 @@
           <div class="flex items-center justify-between gap-3">
             <dt class="text-ink-muted">{% trans 'Catégorie' %}</dt>
             <dd>
-              <a href="{% url 'contest:category_detail' slug=contest.category.slug %}" class="font-semibold text-brand-400 transition hover:text-brand-300">{{ contest.category.title }}</a>
+              <span class="font-semibold text-brand-400">{{ contest.category.title }}</span>
             </dd>
           </div>
           <div class="flex items-center justify-between gap-3">
