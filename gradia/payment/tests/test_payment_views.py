@@ -40,6 +40,10 @@ class TestPaymentInitiationView:
         assert response.status_code == 200
         assert "form" in response.context
         assert response.context["order"] == order
+        assert response.context["order"].total_amount == order.total_amount
+        assert b"R\xc3\xa9sum\xc3\xa9 de la commande" in response.content
+        assert b"Paiement de votre commande" in response.content
+        assert b"M\xc3\xa9thode de paiement" in response.content
 
     def test_missing_order_404(self, client, student):
         client.force_login(student)
@@ -172,6 +176,8 @@ class TestPaymentProcessingView:
             reverse("payment:processing", kwargs={"payment_id": payment.pk})
         )
         assert response.status_code == 200
+        assert b"data-payment-status-url" in response.content
+        assert b"window.setTimeout(pollStatus" in response.content
         payment.refresh_from_db()
         assert payment.status == PaymentStatus.PENDING
 

@@ -1,28 +1,82 @@
 {% extends "dashboard/base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Paiement réussi' %} · Gradia{% endblock title %}
+{% block title %}{% trans 'Paiement confirmé' %} · Gradia{% endblock title %}
 
 {% block content %}
-<div class="mx-auto max-w-xl py-10">
-  <div class="gradia-panel flex flex-col items-center p-8 text-center">
-    <span class="gradia-empty-icon mb-4" aria-hidden="true">
-      <svg class="h-6 w-6" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-      </svg>
-    </span>
-    <h1 class="text-xl font-extrabold text-white">{% trans 'Paiement confirmé' %}</h1>
-    <p class="mt-2 text-sm text-slate-400">
-      {% trans 'Votre commande a bien été réglée. Vous pouvez désormais accéder à vos documents.' %}
-    </p>
-    <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-      <a href="{% url 'document:list' %}" class="gradia-btn gradia-btn-primary">
-        {% trans 'Voir les documents' %}
-      </a>
+<div class="mx-auto max-w-4xl py-10">
+  <section class="gradia-panel overflow-hidden" aria-labelledby="success-title">
+    <div class="relative overflow-hidden border-b border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-night-900 px-6 py-8 text-center sm:px-10">
+      <span class="gradia-empty-icon mb-4" aria-hidden="true">
+        <svg class="h-8 w-8 text-emerald-300" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </span>
+      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-300">{% trans 'Confirmation enregistrée' %}</p>
+      <h1 id="success-title" class="mt-2 text-2xl font-extrabold text-white sm:text-3xl">{% trans 'Paiement confirmé' %}</h1>
+      <p class="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-300">
+        {% blocktranslate with order_number=payment.order.order_number %}La commande {{ order_number }} a bien été réglée. Le statut a été vérifié par Gradia.{% endblocktranslate %}
+      </p>
+    </div>
+
+    <div class="grid gap-6 p-5 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)]">
+      <div>
+        <h2 class="text-lg font-bold text-white">{% trans 'Détails du paiement' %}</h2>
+        <dl class="mt-5 grid gap-4 sm:grid-cols-2">
+          <div class="rounded-xl border border-night-700 bg-night-900/60 p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-500">{% trans 'Commande' %}</dt>
+            <dd class="mt-1 font-mono text-sm font-semibold text-white">{{ payment.order.order_number }}</dd>
+          </div>
+          <div class="rounded-xl border border-night-700 bg-night-900/60 p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-500">{% trans 'Montant' %}</dt>
+            <dd class="mt-1 text-sm font-semibold text-white">{{ payment.amount }}</dd>
+          </div>
+          <div class="rounded-xl border border-night-700 bg-night-900/60 p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-500">{% trans 'Méthode' %}</dt>
+            <dd class="mt-1 text-sm font-semibold text-white">{{ payment.get_method_display }}</dd>
+          </div>
+          <div class="rounded-xl border border-night-700 bg-night-900/60 p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-500">{% trans 'Fournisseur' %}</dt>
+            <dd class="mt-1 text-sm font-semibold text-white">{{ payment.get_provider_display }}</dd>
+          </div>
+          <div class="rounded-xl border border-night-700 bg-night-900/60 p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-500">{% trans 'Référence de paiement' %}</dt>
+            <dd class="mt-1 break-all font-mono text-sm font-semibold text-white">{% if payment.provider_transaction_id %}{{ payment.provider_transaction_id }}{% else %}{{ payment.provider_reference }}{% endif %}</dd>
+          </div>
+          <div class="rounded-xl border border-night-700 bg-night-900/60 p-4">
+            <dt class="text-xs uppercase tracking-wide text-slate-500">{% trans 'Date de confirmation' %}</dt>
+            <dd class="mt-1 text-sm font-semibold text-white">{% if payment.processed_at %}{{ payment.processed_at|date:"DATE_FORMAT" }}{% else %}{% trans 'Non renseignée' %}{% endif %}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <aside class="rounded-2xl border border-night-700 bg-night-900/50 p-5">
+        <h2 class="text-lg font-bold text-white">{% trans 'Prochaine étape' %}</h2>
+        <ol class="mt-5 space-y-4">
+          <li class="flex gap-3">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-bold text-emerald-300">1</span>
+            <span class="text-sm leading-6 text-slate-300">{% trans 'La commande est enregistrée comme réussie.' %}</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-xs font-bold text-brand-300">2</span>
+            <span class="text-sm leading-6 text-slate-300">{% trans 'Vous pouvez consulter votre commande.' %}</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-night-500 text-xs font-bold text-slate-200">3</span>
+            <span class="text-sm leading-6 text-slate-300">{% trans 'Vous pouvez accéder aux documents liés à la commande.' %}</span>
+          </li>
+        </ol>
+      </aside>
+    </div>
+
+    <div class="flex flex-col gap-3 border-t border-night-700 bg-night-900/50 px-5 py-5 sm:flex-row sm:justify-end sm:px-8">
       <a href="{% url 'order:detail' pk=payment.order.pk %}" class="gradia-btn gradia-btn-ghost">
-        {% trans 'Voir la commande' %}
+        {% trans 'Voir ma commande' %}
+      </a>
+      <a href="{% url 'document:list' %}" class="gradia-btn gradia-btn-primary">
+        {% trans 'Voir mes documents' %}
       </a>
     </div>
-  </div>
+  </section>
 </div>
 {% endblock content %}

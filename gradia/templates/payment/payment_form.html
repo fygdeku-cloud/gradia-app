@@ -1,37 +1,179 @@
-{% extends "dashboard/base.html" %}
-{% load i18n %}
+{% extends "dashboard/base.html" %} {% load i18n %} {% block title %}{% trans
+'Paiement de la commande' %} · Gradia{% endblock title %} {% block content %}
+<div class="mx-auto max-w-5xl">
+  <nav
+    aria-label="{% trans 'Fil d’Ariane' %}"
+    class="mb-5 flex flex-wrap items-center gap-2 text-sm text-slate-400"
+  >
+    <a href="{% url 'order:list' %}" class="transition hover:text-brand-300"
+      >{% trans 'Mes commandes' %}</a
+    >
+    <span aria-hidden="true">/</span>
+    <a
+      href="{% url 'order:detail' pk=order.pk %}"
+      class="transition hover:text-brand-300"
+      >{{ order.order_number }}</a
+    >
+    <span aria-hidden="true">/</span>
+    <span class="text-slate-300">{% trans 'Paiement' %}</span>
+  </nav>
 
-{% block title %}{% trans 'Paiement' %} · Gradia{% endblock title %}
-
-{% block content %}
-<div class="mx-auto max-w-2xl">
-  <div class="mb-6">
-    <a href="{% url 'order:detail' pk=order.pk %}" class="text-sm text-slate-400 transition hover:text-brand-300">
-      &larr; {% trans 'Retour à la commande' %}
-    </a>
-    <h1 class="mt-3 text-2xl font-extrabold text-white">{% trans 'Payer ma commande' %}</h1>
-    <p class="mt-1 text-sm text-slate-400">
-      {{ order.order_number }} — {% trans 'Total à payer' %} : <span class="font-semibold text-white">{{ order.total_amount }}</span>
-    </p>
+  <div
+    class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end"
+  >
+    <div>
+      <p
+        class="text-sm font-semibold uppercase tracking-[0.16em] text-brand-300"
+      >
+        {% trans 'Paiement sécurisé' %}
+      </p>
+      <h1 class="mt-2 text-3xl font-extrabold text-white">
+        {% trans 'Paiement de votre commande' %}
+      </h1>
+      <p class="mt-2 text-sm text-slate-400">
+        {% blocktranslate with order_number=order.order_number %}Vous allez
+        régler la commande {{ order_number }}.{% endblocktranslate %}
+      </p>
+    </div>
+    <span class="gradia-badge gradia-badge--emerald"
+      >{% trans 'Données serveur validées' %}</span
+    >
   </div>
 
-  <div class="gradia-panel p-6 sm:p-8">
-    <form method="post" class="space-y-2" novalidate>
-      {% csrf_token %}
-      {% include "common/form_errors.html" %}
-
-      {% include "common/form_field.html" with field=form.method %}
-      {% include "common/form_field.html" with field=form.provider %}
-
-      <div class="flex flex-col gap-3 pt-4 sm:flex-row">
-        <button type="submit" class="gradia-btn gradia-btn-primary">
-          {% trans 'Payer' %}
-        </button>
-        <a href="{% url 'order:detail' pk=order.pk %}" class="gradia-btn gradia-btn-ghost">
-          {% trans 'Annuler' %}
-        </a>
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+    <section
+      class="gradia-panel p-5 sm:p-7"
+      aria-labelledby="payment-method-title"
+    >
+      <div class="mb-6 flex items-center justify-between gap-4">
+        <div>
+          <h2 id="payment-method-title" class="text-lg font-bold text-white">
+            {% trans 'Méthode de paiement' %}
+          </h2>
+          <p class="mt-1 text-sm text-slate-400">
+            {% trans 'Choisissez la méthode disponible pour votre compte.' %}
+          </p>
+        </div>
+        <span
+          class="hidden h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 text-brand-300 sm:flex"
+          aria-hidden="true"
+        >
+          <svg
+            class="h-5 w-5"
+            fill="none"
+            stroke="currentcolor"
+            stroke-width="1.7"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M4 7.5h16M7 4v7m10-7v7M5 11h14a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6a1 1 0 011-1z"
+            />
+          </svg>
+        </span>
       </div>
-    </form>
+
+      <form method="post" data-payment-form class="space-y-5">
+        {% csrf_token %} {% include "common/form_errors.html" %} {% include
+        "common/form_field.html" with field=form.method %} {% include
+        "common/form_field.html" with field=form.provider %}
+
+        <div class="rounded-xl border border-brand-600/30 bg-brand-500/5 p-4">
+          <div class="flex items-start gap-3">
+            <svg
+              class="mt-0.5 h-5 w-5 shrink-0 text-brand-300"
+              fill="none"
+              stroke="currentcolor"
+              stroke-width="1.7"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
+            <p class="text-sm leading-6 text-slate-300">
+              {% trans 'Le montant et la devise sont déterminés par Gradia
+              depuis votre commande. Aucun montant ne peut être modifié depuis
+              le navigateur.' %}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3 pt-2 sm:flex-row">
+          <button
+            type="submit"
+            data-payment-submit
+            class="gradia-btn gradia-btn-primary gradia-btn-block sm:flex-1"
+          >
+            {% trans 'Continuer le paiement' %}
+          </button>
+          <a
+            href="{% url 'order:detail' pk=order.pk %}"
+            class="gradia-btn gradia-btn-ghost gradia-btn-block sm:w-auto"
+          >
+            {% trans 'Retour à la commande' %}
+          </a>
+        </div>
+      </form>
+    </section>
+
+    <aside
+      class="gradia-panel overflow-hidden"
+      aria-labelledby="payment-summary-title"
+    >
+      <div class="border-b border-night-700 px-5 py-4 sm:px-6">
+        <h2 id="payment-summary-title" class="text-lg font-bold text-white">
+          {% trans 'Résumé de la commande' %}
+        </h2>
+        <p class="mt-1 text-sm text-slate-400">{{ order.order_number }}</p>
+      </div>
+      <div class="max-h-80 overflow-y-auto px-5 py-5 sm:px-6">
+        {% if order.items.all %}
+        <ul class="space-y-3">
+          {% for item in order.items.all %}
+          <li
+            class="flex items-start justify-between gap-4 border-b border-night-700 pb-3 last:border-b-0"
+          >
+            <span class="min-w-0 text-sm text-slate-300"
+              >{{ item.document.title }}</span
+            >
+            <span class="shrink-0 text-sm font-semibold text-white"
+              >{{ item.line_total }}</span
+            >
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-sm text-slate-400">
+          {% trans 'Cette commande ne contient aucun article.' %}
+        </p>
+        {% endif %}
+      </div>
+      <div class="border-t border-night-700 bg-night-900 px-5 py-5 sm:px-6">
+        <div class="flex items-end justify-between gap-4">
+          <span class="text-sm font-medium text-slate-300"
+            >{% trans 'Total à payer' %}</span
+          >
+          <span class="text-2xl font-extrabold text-white"
+            >{{ order.total_amount }}</span
+          >
+        </div>
+        <p class="mt-2 text-right text-xs text-slate-500">
+          {% trans 'Devise déterminée par le serveur' %}
+        </p>
+      </div>
+    </aside>
   </div>
 </div>
-{% endblock content %}
+{% endblock content %} {% block extra_js %}
+<script>
+  document
+    .querySelector("[data-payment-form]")
+    ?.addEventListener("submit", (event) => {
+      const button = event.currentTarget.querySelector("[data-payment-submit]");
+      if (!button) return;
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+      button.textContent = '{% trans "Ouverture du paiement…" %}';
+    });
+</script>
+{% endblock extra_js %}

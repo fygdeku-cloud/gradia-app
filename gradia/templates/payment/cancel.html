@@ -1,23 +1,87 @@
-{% extends "dashboard/base.html" %}
-{% load i18n %}
+{% extends "dashboard/base.html" %} {% load i18n %} {% block title %}{% trans
+'Paiement annulé' %} · Gradia{% endblock title %} {% block content %}
+<div class="mx-auto max-w-2xl py-10">
+  <section class="gradia-panel overflow-hidden" aria-labelledby="cancel-title">
+    <div
+      class="border-b border-amber-500/20 bg-amber-500/5 px-6 py-8 text-center sm:px-10"
+    >
+      <span class="gradia-empty-icon mb-4" aria-hidden="true">
+        <svg
+          class="h-8 w-8 text-amber-300"
+          fill="none"
+          stroke="currentcolor"
+          stroke-width="1.7"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M8 8l8 8M16 8l-8 8M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </span>
+      <p
+        class="text-sm font-semibold uppercase tracking-[0.16em] text-amber-300"
+      >
+        {% trans 'Paiement non confirmé' %}
+      </p>
+      <h1
+        id="cancel-title"
+        class="mt-2 text-2xl font-extrabold text-white sm:text-3xl"
+      >
+        {% trans 'Paiement annulé' %}
+      </h1>
+      <p class="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-300">
+        {% trans 'Le paiement n’a pas été confirmé. Aucune transaction réussie
+        n’a été enregistrée pour cette commande.' %}
+      </p>
+    </div>
 
-{% block title %}{% trans 'Paiement annulé' %} · Gradia{% endblock title %}
+    <div class="grid gap-4 p-5 sm:grid-cols-2 sm:p-8">
+      <div class="rounded-xl border border-night-700 bg-night-900/60 p-4">
+        <p class="text-xs uppercase tracking-wide text-slate-500">
+          {% trans 'Commande' %}
+        </p>
+        <p class="mt-1 font-mono text-sm font-semibold text-white">
+          {{ payment.order.order_number }}
+        </p>
+      </div>
+      <div class="rounded-xl border border-night-700 bg-night-900/60 p-4">
+        <p class="text-xs uppercase tracking-wide text-slate-500">
+          {% trans 'État du paiement' %}
+        </p>
+        <p class="mt-1 text-sm font-semibold text-white">
+          {{ payment.get_status_display }}
+        </p>
+      </div>
+      <div
+        class="rounded-xl border border-night-700 bg-night-900/60 p-4 sm:col-span-2"
+      >
+        <p class="text-xs uppercase tracking-wide text-slate-500">
+          {% trans 'Montant' %}
+        </p>
+        <p class="mt-1 text-lg font-bold text-white">{{ payment.amount }}</p>
+      </div>
+    </div>
 
-{% block content %}
-<div class="mx-auto max-w-xl py-10">
-  <div class="gradia-panel flex flex-col items-center p-8 text-center">
-    <h1 class="text-xl font-extrabold text-white">{% trans 'Paiement non confirmé' %}</h1>
-    <p class="mt-2 text-sm text-slate-400">
-      {% trans 'Votre paiement n’a pas pu être confirmé. Vous pouvez réessayer à tout moment.' %}
-    </p>
-    <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-      <a href="{% url 'payment:initiate' order_id=payment.order.pk %}" class="gradia-btn gradia-btn-primary">
+    <div
+      class="flex flex-col gap-3 border-t border-night-700 bg-night-900/50 px-5 py-5 sm:flex-row sm:justify-end sm:px-8"
+    >
+      {% if payment.order.status == "PENDING" %}
+      <a
+        href="{% url 'payment:initiate' order_id=payment.order.pk %}"
+        class="gradia-btn gradia-btn-primary"
+      >
         {% trans 'Réessayer le paiement' %}
       </a>
-      <a href="{% url 'order:list' %}" class="gradia-btn gradia-btn-ghost">
-        {% trans 'Voir mes commandes' %}
+      {% endif %}
+      <a
+        href="{% url 'order:detail' pk=payment.order.pk %}"
+        class="gradia-btn gradia-btn-ghost"
+      >
+        {% trans 'Retour à la commande' %}
       </a>
     </div>
-  </div>
+  </section>
 </div>
 {% endblock content %}
