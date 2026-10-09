@@ -125,17 +125,21 @@ affichage des états issus du backend. {% endcomment %}
               {% trans 'Statut' %}
             </dt>
             <dd class="mt-1">
-              {% if document.price <= 0 %} {% trans 'Gratuit' as free_label %}
-              {% include "common/badge.html" with badge_text=free_label
-              badge_variant="emerald" badge_icon="check" %} {% elif
-              document.has_paid %} {% trans 'Payé' as paid_label %} {% include
-              "common/badge.html" with badge_text=paid_label
-              badge_variant="brand" badge_icon="check" %} {% else %} {% trans
-              'Payant' as paid_label %} {% include "common/badge.html" with
-              badge_text=paid_label badge_variant="amber" %} {% endif %} {% if
-              document.has_correction %} {% trans 'Corrigé disponible' as
-              corr_label %} {% include "common/badge.html" with
-              badge_text=corr_label badge_variant="slate" %} {% endif %}
+              {% if document.price <= 0 %}
+                {% trans 'Gratuit' as free_label %}
+                {% include "common/badge.html" with badge_text=free_label badge_variant="emerald" badge_icon="check" %}
+              {% elif document.has_paid %}
+                {% trans 'Payé' as paid_label %}
+                {% include "common/badge.html" with badge_text=paid_label badge_variant="brand" badge_icon="check" %}
+              {% else %}
+                {% trans 'Payant' as paid_label %}
+                {% include "common/badge.html" with badge_text=paid_label badge_variant="amber" %}
+              {% endif %}
+
+              {% if document.has_correction %}
+                {% trans 'Corrigé disponible' as corr_label %}
+                {% include "common/badge.html" with badge_text=corr_label badge_variant="slate" %}
+              {% endif %}
             </dd>
           </div>
         </dl>
@@ -205,69 +209,79 @@ affichage des états issus du backend. {% endcomment %}
 
         <div class="mt-6 space-y-3">
           {% if can_manage %}
-          <a
-            href="{% url 'document:management_list' %}"
-            class="gradia-btn gradia-btn-ghost gradia-btn-block"
-          >
-            {% trans "Gérer les documents" %}
-          </a>
-          {% endif %} {% if document.price <= 0 or can_download_subject %} {% if
-          document.subject_file %}
-          <a
-            href="{% url 'document:download_subject' pk=document.pk %}"
-            class="gradia-btn gradia-btn-primary gradia-btn-block"
-          >
-            {% trans 'Télécharger le sujet' %}
-          </a>
-          {% endif %} {% if document.has_correction and can_view_correction %}
-          <a
-            href="{% url 'document:view_correction' pk=document.pk %}"
-            target="_blank"
-            rel="noopener"
-            class="gradia-btn gradia-btn-outline-brand gradia-btn-block"
-          >
-            {% trans 'Consulter le corrigé' %}
-          </a>
-          {% endif %} {% else %} {% if GRADIA_CART_ENABLED %}
-          <form
-            method="post"
-            action="{% url 'cart:add' %}"
-            data-buy-now-form
-            data-add-url="{% url 'cart:add' %}"
-            data-checkout-url="{% url 'order:checkout' %}"
-            data-payment-url-template="{% url 'payment:initiate' order_id='00000000-0000-0000-0000-000000000000' %}"
-            class="space-y-3"
-          >
-            {% csrf_token %}
-            <input type="hidden" name="document_id" value="{{ document.pk }}" />
-            <button
-              type="submit"
-              data-buy-now-submit
-              class="gradia-btn gradia-btn-primary gradia-btn-block"
-            >
-              {% trans 'Acheter maintenant' %}
-            </button>
-          </form>
-
-          <form method="post" action="{% url 'cart:add' %}" class="mt-3">
-            {% csrf_token %}
-            <input type="hidden" name="document_id" value="{{ document.pk }}" />
-            <button
-              type="submit"
+            <a
+              href="{% url 'document:management_list' %}"
               class="gradia-btn gradia-btn-ghost gradia-btn-block"
             >
-              {% trans 'Ajouter au panier' %}
-            </button>
-          </form>
+              {% trans "Gérer les documents" %}
+            </a>
+          {% endif %}
+
+          {% if document.price <= 0 or can_download_subject %}
+            {% if document.subject_file %}
+              <a
+                href="{% url 'document:download_subject' pk=document.pk %}"
+                class="gradia-btn gradia-btn-primary gradia-btn-block"
+              >
+                {% trans 'Télécharger le sujet' %}
+              </a>
+            {% endif %}
+
+            {% if document.has_correction and can_view_correction %}
+              <a
+                href="{% url 'document:view_correction' pk=document.pk %}"
+                target="_blank"
+                rel="noopener"
+                class="gradia-btn gradia-btn-outline-brand gradia-btn-block"
+              >
+                {% trans 'Consulter le corrigé' %}
+              </a>
+            {% endif %}
           {% else %}
-          <div
-            class="rounded-xl border border-amber-600/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200"
-            role="status"
-          >
-            {% trans "Ce document est payant. Le paiement en ligne sera bientôt
-            disponible pour y accéder." %}
-          </div>
-          {% endif %} {% endif %}
+            {% if GRADIA_CART_ENABLED %}
+              <form
+                method="post"
+                action="{% url 'cart:add' %}"
+                data-buy-now-form
+                data-add-url="{% url 'cart:add' %}"
+                data-checkout-url="{% url 'order:checkout' %}"
+                data-payment-url-template="{% url 'payment:initiate' order_id='00000000-0000-0000-0000-000000000000' %}"
+                class="space-y-3"
+              >
+                {% csrf_token %}
+                <input type="hidden" name="document_id" value="{{ document.pk }}" />
+                <button
+                  type="submit"
+                  data-buy-now-submit
+                  class="gradia-btn gradia-btn-primary gradia-btn-block"
+                >
+                  {% trans 'Acheter maintenant' %}
+                </button>
+              </form>
+
+              <form
+                method="post"
+                action="{% url 'cart:add' %}"
+                class="mt-3"
+              >
+                {% csrf_token %}
+                <input type="hidden" name="document_id" value="{{ document.pk }}" />
+                <button
+                  type="submit"
+                  class="gradia-btn gradia-btn-ghost gradia-btn-block"
+                >
+                  {% trans 'Ajouter au panier' %}
+                </button>
+              </form>
+            {% else %}
+              <div
+                class="rounded-xl border border-amber-600/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200"
+                role="status"
+              >
+                {% trans "Ce document est payant. Le paiement en ligne sera bientôt disponible pour y accéder." %}
+              </div>
+            {% endif %}
+          {% endif %}
         </div>
 
         {% if not request.user.is_authenticated and document.price > 0 %}

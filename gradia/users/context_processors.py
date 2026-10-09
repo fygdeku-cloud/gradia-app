@@ -16,10 +16,9 @@ def gradia_settings(request):
         # Devise par défaut (régionalisation) : toujours affichée depuis le
         # backend, jamais hardcodée dans les templates.
         "GRADIA_CURRENCY": getattr(settings, "DEFAULT_CURRENCY", ""),
-        # Le module Cart/Order n'est PAS encore branché (vues stub, aucune URL).
-        # Ce flag frontend centralise l'activation : passer à True uniquement
-        # lorsque les routes cart/order seront enregistrées dans config/urls.py.
-        "GRADIA_CART_ENABLED": False,
+        # Le module Cart/Order est désormais branché sur les routes réelles du
+        # backend. Ce flag frontend active les parcours achat et paiement.
+        "GRADIA_CART_ENABLED": True,
         # True uniquement pour un utilisateur authentifié ET inscrit comme
         # étudiant ; condition d'accès à toutes les vues `contest`.
         "is_student": is_student,
