@@ -56,8 +56,29 @@ class DocumentService:
         """
         if not form.is_valid():
             raise ValidationError(_("Le formulaire de modification est invalide."))
+
         try:
-            return form.save()
+            instance = form.save(commit=False)
+
+            subject_file = form.cleaned_data.get("subject_file")
+            correction_file = form.cleaned_data.get("correction_file")
+
+            if subject_file is None:
+                instance.subject_file = document.subject_file
+            else:
+                if document.subject_file and document.subject_file.name:
+                    document.subject_file.field.storage.delete(document.subject_file.name)
+                instance.subject_file = subject_file
+
+            if correction_file is None:
+                instance.correction_file = document.correction_file
+            else:
+                if document.correction_file and document.correction_file.name:
+                    document.correction_file.field.storage.delete(document.correction_file.name)
+                instance.correction_file = correction_file
+
+            instance.save()
+            return instance
         except Exception as exc:  # noqa: BLE001
             raise ValidationError(_("Impossible de modifier le document.")) from exc
 

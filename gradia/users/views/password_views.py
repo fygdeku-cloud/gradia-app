@@ -14,6 +14,7 @@ from ..forms import (
 )
 from ..models import User
 from ..services import (
+    OtpEmailError,
     OtpEmailService,
     OtpRateLimitError,
     OtpService,
@@ -57,6 +58,9 @@ class PasswordResetRequestView(FormView):
                         "vous recevrez les instructions nécessaires."
                     ),
                 )
+            except OtpEmailError as error:
+                messages.error(self.request, str(error))
+                return redirect("users:password_reset")
 
         messages.success(
             self.request,

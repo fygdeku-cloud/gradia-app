@@ -10,7 +10,7 @@ from django.views.generic import FormView
 from ..forms import UserSignupForm
 from ..models import StudentProfile, User
 from ..mixins import RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin
-from ..services import OtpEmailService, OtpRateLimitError, OtpService
+from ..services import OtpEmailError, OtpEmailService, OtpRateLimitError, OtpService
 from gradia.utils.enums import OtpPurpose
 
 class RegisterView(
@@ -43,6 +43,9 @@ class RegisterView(
             return self.form_invalid(form)
         except OtpRateLimitError as error:
             messages.warning(self.request, error)
+            return self.form_invalid(form)
+        except OtpEmailError as error:
+            messages.error(self.request, str(error))
             return self.form_invalid(form)
         self.request.session["pending_signup_token"] = token
         messages.success(self.request, _("Votre compte a été créé. Entrez le code reçu par e-mail pour l'activer."))

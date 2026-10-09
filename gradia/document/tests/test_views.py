@@ -33,6 +33,16 @@ class TestDocumentListView:
         assert response.status_code == 200
         assert response.context["document"].has_paid is False
 
+    def test_detail_has_direct_purchase_cta(self, client, student, document):
+        client.force_login(student)
+
+        response = client.get(reverse("document:detail", kwargs={"pk": document.pk}))
+
+        assert response.status_code == 200
+        assert 'data-buy-now-form' in response.content.decode()
+        assert reverse("cart:add") in response.content.decode()
+        assert reverse("order:checkout") in response.content.decode()
+
     def test_unpublished_document_hidden_from_anonymous(self, client):
         doc = DocumentFactory(is_published=False)
 

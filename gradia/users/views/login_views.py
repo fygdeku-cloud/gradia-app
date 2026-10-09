@@ -12,7 +12,7 @@ from django.views.generic import FormView
 
 from ..forms import UserLoginForm
 from ..mixins import RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin
-from ..services import OtpService, OtpEmailService, OtpRateLimitError
+from ..services import OtpEmailError, OtpService, OtpEmailService, OtpRateLimitError
 from gradia.utils.enums import OtpPurpose
 
 
@@ -65,6 +65,9 @@ class LoginView(RedirectAuthenticatedUserMixin, RedirectToNextOrReferrerMixin, F
                 messages.warning(self.request, error)
                 pending_token = self.request.session.get("pending_login_token", "")
                 return redirect(self._verification_url(pending_token))
+            except OtpEmailError as error:
+                messages.error(self.request, str(error))
+                return redirect("users:login")
 
             messages.info(self.request, _("Un code de vérification vous a été envoyé."))
             return redirect(self._verification_url(token))

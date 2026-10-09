@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from gradia.users.models import StudentProfile
 from gradia.users.otp_utils import OtpUtils
-from gradia.users.services import OtpService
+from gradia.users.services import OtpEmailError, OtpService
 from gradia.users.tests.factories import UserFactory
 from gradia.utils.enums import OtpPurpose
 
@@ -120,6 +120,31 @@ class TestRegisterView:
             },
         )
         assert response.status_code == 200
+
+    def test_register_handles_email_send_failure(self, db, monkeypatch):
+        from gradia.users.models import User
+
+        def fail_send(*args, **kwargs):
+            raise OtpEmailError("Le code n'a pas pu être envoyé.")
+
+        monkeypatch.setattr(
+            "gradia.users.views.register_views.OtpEmailService.send_otp",
+            fail_send,
+        )
+
+        response = Client().post(
+            reverse("users:register"),
+            {
+                "email": "newbie@example.com",
+                "name": "Nouvel Étudiant",
+                "password1": PASSWORD,
+                "password2": PASSWORD,
+            },
+        )
+
+        assert response.status_code == 200
+        assert any(m.level_tag == "error" for m in list(response.context["messages"]))
+        assert not User.objects.filter(email="newbie@example.com").exists()
 
 
 class TestEmailVerificationView:
