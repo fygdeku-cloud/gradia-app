@@ -2,7 +2,8 @@
 {% if messages %}
 <div id="gradia-message-stack"
      class="pointer-events-none fixed inset-x-0 top-24 z-50 flex flex-col items-center gap-3 px-4 sm:items-end sm:pr-6"
-     aria-live="polite">
+     aria-live="polite"
+     aria-atomic="false">
   {% for message in messages %}
     {% if message.tags == 'success' %}
       <div data-gradia-message="4500" role="status"
