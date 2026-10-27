@@ -1,0 +1,5 @@
+/* Point d'entrée Tailwind. Le design system Gradia (tokens, composants)
+   reste dans gradia/static/css et est chargé après ce fichier. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

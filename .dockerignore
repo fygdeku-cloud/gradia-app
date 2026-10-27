@@ -11,4 +11,5 @@ venv
 .git
 .envs/
 .venv/
+node_modules/
 **/__pycache__/

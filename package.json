@@ -1,0 +1,16 @@
+{
+  "name": "gradia-frontend",
+  "private": true,
+  "description": "Build local de Tailwind CSS et Flowbite pour les templates Django.",
+  "scripts": {
+    "build:css": "tailwindcss -i ./frontend/input.css -o ./gradia/static/css/vendor/tailwind.css --minify",
+    "copy:flowbite": "mkdir -p gradia/static/js/vendor && cp node_modules/flowbite/dist/flowbite.min.js gradia/static/js/vendor/flowbite.min.js",
+    "build": "npm run copy:flowbite && npm run build:css"
+  },
+  "devDependencies": {
+    "autoprefixer": "10.4.21",
+    "flowbite": "2.3.0",
+    "postcss": "8.5.6",
+    "tailwindcss": "3.4.17"
+  }
+}
