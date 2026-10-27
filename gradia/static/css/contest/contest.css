@@ -13,6 +13,13 @@
   border-bottom: 1px solid var(--gradia-border);
 }
 
+.contest-hero nav a,
+.contest-hero nav span {
+  min-height: 2rem;
+  display: inline-flex;
+  align-items: center;
+}
+
 /* Bibliothèque : hauteur homogène et transitions douces des cards */
 .contest-grid {
   align-items: stretch;

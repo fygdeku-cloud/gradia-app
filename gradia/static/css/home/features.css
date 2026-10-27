@@ -32,10 +32,25 @@
     box-shadow 0.25s var(--gradia-easing);
 }
 
+.gradia-feature-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gradia-brand-400), transparent);
+  opacity: 0;
+  transition: opacity 0.25s var(--gradia-easing);
+}
+
 .gradia-feature-card:hover {
   transform: translateY(-3px);
   border-color: var(--gradia-border-strong);
   box-shadow: var(--gradia-shadow-lg);
+}
+
+.gradia-feature-card:hover::before,
+.gradia-feature-card:focus-within::before {
+  opacity: 1;
 }
 
 .gradia-feature-card .icon {

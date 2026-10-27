@@ -45,8 +45,12 @@
         <img src="{% static 'images/home/hero/student-study.jpg' %}"
              alt="{% trans "Deux étudiants européens en train de réviser les épreuves de l'examen" %}"
              loading="eager"
+             fetchpriority="high"
              decoding="async"
+             width="1200"
+             height="800"
              class="h-72 w-full rounded-xl object-cover sm:h-96" />
+        <div class="pointer-events-none absolute inset-2 rounded-xl bg-gradient-to-t from-night-950/45 via-transparent to-brand-300/10" aria-hidden="true"></div>
       </div>
       <div class="gradia-hero-float mt-5 max-w-sm sm:absolute sm:bottom-6 sm:-left-4">
         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-500/15 text-brand-300">

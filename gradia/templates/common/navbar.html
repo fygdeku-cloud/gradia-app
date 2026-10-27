@@ -10,15 +10,15 @@
       </a>
 
       <div class="hidden items-center gap-1 md:flex">
-        <a href="{% url 'home' %}" class="gradia-nav-link{% if request.resolver_match.url_name == 'home' and not request.resolver_match.namespace %} active{% endif %}">
+        <a href="{% url 'home' %}" class="gradia-nav-link{% if request.resolver_match.url_name == 'home' and not request.resolver_match.namespace %} active{% endif %}"{% if request.resolver_match.url_name == 'home' and not request.resolver_match.namespace %} aria-current="page"{% endif %}>
           {% trans 'Accueil' %}
         </a>
         {% if request.user.is_authenticated and request.user.is_student %}
-          <a href="{% url 'contest:list' %}" class="gradia-nav-link{% if request.resolver_match.namespace == 'contest' and request.resolver_match.url_name == 'list' %} active{% endif %}">
+          <a href="{% url 'contest:list' %}" class="gradia-nav-link{% if request.resolver_match.namespace == 'contest' and request.resolver_match.url_name == 'list' %} active{% endif %}"{% if request.resolver_match.namespace == 'contest' and request.resolver_match.url_name == 'list' %} aria-current="page"{% endif %}>
             {% trans 'Concours' %}
           </a>
         {% endif %}
-        <a href="{% url 'document:list' %}" class="gradia-nav-link{% if request.resolver_match.namespace == 'document' and request.resolver_match.url_name == 'list' %} active{% endif %}">
+        <a href="{% url 'document:list' %}" class="gradia-nav-link{% if request.resolver_match.namespace == 'document' and request.resolver_match.url_name == 'list' %} active{% endif %}"{% if request.resolver_match.namespace == 'document' and request.resolver_match.url_name == 'list' %} aria-current="page"{% endif %}>
           {% trans 'Documents' %}
         </a>
       </div>
@@ -68,15 +68,15 @@
     </div>
   </nav>
 {# Menu mobile (Flowbite collapse) #}
-  <div class="gradia-mobile-menu md:hidden" id="mobile-menu">
+  <div class="gradia-mobile-menu hidden md:hidden" id="mobile-menu">
     <div class="space-y-1 px-3 py-3">
-      <a href="{% url 'home' %}" class="mobile-link{% if request.resolver_match.url_name == 'home' %} mobile-active{% endif %}">
+      <a href="{% url 'home' %}" class="mobile-link{% if request.resolver_match.url_name == 'home' %} mobile-active{% endif %}"{% if request.resolver_match.url_name == 'home' %} aria-current="page"{% endif %}>
         {% trans 'Accueil' %}
       </a>
       {% if request.user.is_authenticated and request.user.is_student %}
-        <a href="{% url 'contest:list' %}" class="mobile-link">{% trans 'Concours' %}</a>
+        <a href="{% url 'contest:list' %}" class="mobile-link{% if request.resolver_match.namespace == 'contest' %} mobile-active{% endif %}"{% if request.resolver_match.namespace == 'contest' %} aria-current="page"{% endif %}>{% trans 'Concours' %}</a>
       {% endif %}
-      <a href="{% url 'document:list' %}" class="mobile-link">{% trans 'Documents' %}</a>
+      <a href="{% url 'document:list' %}" class="mobile-link{% if request.resolver_match.namespace == 'document' %} mobile-active{% endif %}"{% if request.resolver_match.namespace == 'document' %} aria-current="page"{% endif %}>{% trans 'Documents' %}</a>
 
       {% if request.user.is_authenticated %}
         {% if GRADIA_CART_ENABLED and request.user.is_student %}

@@ -114,6 +114,12 @@
   background-color: var(--gradia-accent-soft);
 }
 
+.gradia-mobile-menu form {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
 /* Cibles tactiles suffisantes */
 .gradia-mobile-menu a.mobile-link {
   min-height: 44px;
