@@ -4,8 +4,9 @@
   "description": "Build local de Tailwind CSS et Flowbite pour les templates Django.",
   "scripts": {
     "build:css": "node ./node_modules/tailwindcss/lib/cli/index.js -i ./frontend/input.css -o ./gradia/static/css/vendor/tailwind.css --minify",
+    "copy:fonts": "mkdir -p gradia/static/fonts && cp node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-400-normal.woff2 node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-500-normal.woff2 node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-600-normal.woff2 node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-700-normal.woff2 node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-800-normal.woff2 gradia/static/fonts/",
     "copy:flowbite": "mkdir -p gradia/static/js/vendor && cp node_modules/flowbite/dist/flowbite.min.js gradia/static/js/vendor/flowbite.min.js",
-    "build": "npm run copy:flowbite && npm run build:css"
+    "build": "npm run copy:fonts && npm run copy:flowbite && npm run build:css"
   },
   "devDependencies": {
     "autoprefixer": "10.4.21",
