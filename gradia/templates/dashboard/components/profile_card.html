@@ -8,7 +8,7 @@
       {% include "common/avatar.html" with avatar_user=card_user avatar_size="h-20 w-20 text-2xl" %}
       <div class="flex-1">
         <h1 id="profile-title" class="text-2xl font-extrabold tracking-tight text-white">{{ card_user.name|default:card_user.email }}</h1>
-        <p class="text-sm text-slate-400">{{ card_user.email }}</p>
+        <p class="text-sm text-ink-secondary">{{ card_user.email }}</p>
         <div class="mt-2 flex flex-wrap items-center gap-2">
           {% if card_user.is_superuser %}
             {% trans 'Superutilisateur' as role_label %}
@@ -37,23 +37,23 @@
       </div>
     </div>
 
-    <dl class="mt-6 grid grid-cols-1 gap-4 border-t border-slate-200 pt-5 sm:grid-cols-2">
+    <dl class="mt-6 grid grid-cols-1 gap-4 border-t border-night-700 pt-5 sm:grid-cols-2">
       <div>
-        <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">{% trans 'Nom complet' %}</dt>
-        <dd class="mt-1 text-sm font-medium text-slate-700">{{ card_user.name|default:"—" }}</dd>
+        <dt class="text-xs font-medium uppercase tracking-wide text-ink-muted">{% trans 'Nom complet' %}</dt>
+        <dd class="mt-1 text-sm font-medium text-ink-secondary">{{ card_user.name|default:"—" }}</dd>
       </div>
       <div>
-        <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">{% trans 'Membre depuis' %}</dt>
-        <dd class="mt-1 text-sm font-medium text-slate-700">{{ card_user.date_joined|date:"DATE_FORMAT" }}</dd>
+        <dt class="text-xs font-medium uppercase tracking-wide text-ink-muted">{% trans 'Membre depuis' %}</dt>
+        <dd class="mt-1 text-sm font-medium text-ink-secondary">{{ card_user.date_joined|date:"DATE_FORMAT" }}</dd>
       </div>
       {% if card_profile %}
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">{% trans 'Téléphone' %}</dt>
-          <dd class="mt-1 text-sm font-medium text-slate-700">{{ card_profile.phone_number|default:"—" }}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-ink-muted">{% trans 'Téléphone' %}</dt>
+          <dd class="mt-1 text-sm font-medium text-ink-secondary">{{ card_profile.phone_number|default:"—" }}</dd>
         </div>
         <div>
-          <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">{% trans 'Établissement' %}</dt>
-          <dd class="mt-1 text-sm font-medium text-slate-700">{{ card_profile.school|default:"—" }}</dd>
+          <dt class="text-xs font-medium uppercase tracking-wide text-ink-muted">{% trans 'Établissement' %}</dt>
+          <dd class="mt-1 text-sm font-medium text-ink-secondary">{{ card_profile.school|default:"—" }}</dd>
         </div>
       {% endif %}
     </dl>

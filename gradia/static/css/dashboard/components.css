@@ -5,8 +5,8 @@
 .gradia-panel {
   border-radius: 1rem;
   border: 1px solid var(--gradia-border);
-  background-color: var(--gradia-surface);
-  box-shadow: 0 4px 20px -8px rgba(18, 35, 63, 0.14);
+  background: linear-gradient(145deg, var(--gradia-surface), var(--gradia-night-850));
+  box-shadow: var(--gradia-shadow-md);
 }
 
 .gradia-panel-body {
@@ -18,6 +18,12 @@
   border: 1px solid var(--gradia-border);
   background-color: var(--gradia-surface-2);
   padding: 1rem;
+  transition: border-color var(--gradia-duration-fast) var(--gradia-easing), transform var(--gradia-duration-fast) var(--gradia-easing);
+}
+
+.gradia-stat-card:hover {
+  border-color: var(--gradia-border-strong);
+  transform: translateY(-2px);
 }
 
 .gradia-stat-card dt {
@@ -25,7 +31,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748b;
+  color: var(--gradia-text-muted);
 }
 
 .gradia-stat-card dd {
@@ -61,7 +67,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748b;
+  color: var(--gradia-text-muted);
   background-color: var(--gradia-surface-2);
   border-bottom: 1px solid var(--gradia-border);
 }

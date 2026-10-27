@@ -1,15 +1,15 @@
 {% load static i18n %}
 {# Drawer mobile (Flowbite drawer) — même navigation que la sidebar desktop. #}
 <div id="dashboard-drawer" data-drawer-backdrop="true" data-drawer-body-scrolling="true"
-    class="fixed inset-y-0 left-0 z-50 w-72 -translate-x-full transform overflow-y-auto border-r border-slate-200 bg-white transition-transform duration-300 lg:hidden"
+    class="fixed inset-y-0 left-0 z-50 w-72 -translate-x-full transform overflow-y-auto border-r border-night-800 bg-night-900 transition-transform duration-300 lg:hidden"
      tabindex="-1" aria-label="{% trans 'Menu du tableau de bord' %}">
-  <div class="flex h-16 items-center justify-between border-b border-slate-200 px-5">
-    <a href="{% url 'home' %}" class="flex items-center gap-2.5 text-slate-900">
-      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 text-lg font-extrabold text-white">G</span>
+  <div class="flex h-16 items-center justify-between border-b border-night-800 px-5">
+    <a href="{% url 'home' %}" class="flex items-center gap-2.5 text-ink">
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-300 to-brand-500 text-lg font-extrabold text-night-900">G</span>
       <span class="text-xl font-extrabold tracking-tight">Gradia</span>
     </a>
     <button type="button" data-drawer-hide="dashboard-drawer"
-            class="rounded-lg p-2 text-slate-400 transition hover:bg-night-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+            class="rounded-lg p-2 text-ink-muted transition hover:bg-night-800 hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
             aria-label="{% trans 'Fermer le menu' %}">
       <svg class="h-5 w-5" fill="none" stroke="currentcolor" viewBox="0 0 24 24" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
     </button>

@@ -15,7 +15,7 @@
       <section class="gradia-panel" aria-labelledby="admin-stats-title">
         <div class="gradia-panel-body">
           <h2 id="admin-stats-title" class="gradia-card-title">{% trans "Vue d'administration" %}</h2>
-          <p class="mt-1 text-sm text-slate-400">{% trans 'Aperçu réservé aux administrateurs.' %}</p>
+          <p class="mt-1 text-sm text-ink-muted">{% trans 'Aperçu réservé aux administrateurs.' %}</p>
 
           <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {% trans 'Étudiants inscrits' as stat_title %}
@@ -44,7 +44,7 @@
       <section class="gradia-panel" aria-labelledby="student-docs-title">
         <div class="gradia-panel-body">
           <h2 id="student-docs-title" class="gradia-card-title">{% trans 'Mes documents consultés' %}</h2>
-          <p class="mt-1 text-sm text-slate-400">{% trans 'Les annales et ressources que vous avez consultées apparaîtront ici.' %}</p>
+          <p class="mt-1 text-sm text-ink-muted">{% trans 'Les annales et ressources que vous avez consultées apparaîtront ici.' %}</p>
           <div class="mt-4">
             {% include "dashboard/components/recent_documents.html" with documents=recent_documents %}
           </div>

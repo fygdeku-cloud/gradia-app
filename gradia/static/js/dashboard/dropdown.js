@@ -1,7 +1,7 @@
 /* ============================================================
    Gradia — Dashboard : menus déroulants utilisateur
    Les dropdowns Flowbite (data-dropdown-toggle) sont déjà gérés
-   par flowbite.min.js (CDN). Ce fichier est volontairement léger :
+   par l’asset local flowbite.min.js. Ce fichier est volontairement léger :
    il garantit que le menu est fermable avec la touche Échap
    et améliore l'accessibilité clavier.
    ============================================================ */
