@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from djmoney.forms import MoneyField
+from djmoney.models.fields import MoneyField
 
 from gradia.core.models import BaseModel
 from gradia.utils.enums import CartStatus

@@ -31,6 +31,9 @@ urlpatterns = [
     path("contest/", include("gradia.contest.urls", namespace="contest")),
     # Documents catalogue (sujets et corrigés des concours
     path("documents/", include("gradia.document.urls", namespace="document")),
+    # Student commerce
+    path("cart/", include("gradia.cart.urls", namespace="cart")),
+    path("orders/", include("gradia.order.urls", namespace="order")),
     # Your stuff: custom urls includes go here
     # ...
     # Media files

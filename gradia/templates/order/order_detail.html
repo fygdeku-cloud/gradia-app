@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% blocktrans with number=order.order_number %}Commande {{ number }}{% endblocktrans %} · Gradia{% endblock title %}
+{% block content %}
+  <section class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+    <nav class="text-sm text-ink-muted"
+         aria-label="{% trans 'Fil d’Ariane' %}">
+      <a href="{% url 'cart:detail' %}" class="hover:text-ink">{% trans 'Mon panier' %}</a>
+      <span aria-hidden="true">/ </span><span aria-current="page" class="text-ink">{% trans 'Commande' %}</span>
+    </nav>
+    <header class="mt-5">
+      <p class="text-sm font-semibold uppercase tracking-[0.16em] text-brand-300">{% trans 'Récapitulatif' %}</p>
+      <h1 class="mt-2 break-all text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">{% blocktrans with number=order.order_number %}Commande {{ number }}{% endblocktrans %}</h1>
+      <p class="mt-2 text-sm text-ink-muted">{% trans 'La commande et son montant ont été enregistrés par Gradia.' %}</p>
+    </header>
+    <div class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div class="space-y-3">
+        {% for item in order.items.all %}
+          <article class="rounded-2xl border border-night-700 bg-night-900 p-5 sm:flex sm:items-center sm:justify-between sm:gap-4">
+            <div class="min-w-0">
+              <p class="text-xs text-ink-muted">{{ item.document.contest_session.contest.title }} · {{ item.document.contest_session.year }}</p>
+              <h2 class="mt-1 break-words font-bold text-ink"><a href="{% url 'document:detail' pk=item.document.pk %}"
+   class="hover:text-brand-300">{{ item.document.title }}</a></h2>
+            </div>
+            <p class="mt-3 shrink-0 font-bold text-ink sm:mt-0">{{ item.line_total.amount }} <span class="text-xs text-ink-muted">{{ item.line_total.currency }}</span></p>
+          </article>
+        {% endfor %}
+      </div>
+      <aside class="h-fit rounded-2xl border border-night-700 bg-night-900 p-5 sm:p-6">
+        <h2 class="text-lg font-bold text-ink">{% trans 'Total de la commande' %}</h2>
+        <p class="mt-3 break-words text-3xl font-extrabold text-brand-300">{{ order.total_amount.amount }} <span class="text-sm">{{ order.total_amount.currency }}</span></p>
+        <dl class="mt-5 space-y-2 border-t border-night-700 pt-4 text-sm">
+          <div class="flex justify-between gap-3"><dt class="text-ink-muted">{% trans 'Statut' %}</dt><dd class="font-semibold text-ink">{{ order.get_status_display }}</dd></div>
+          <div class="flex justify-between gap-3"><dt class="text-ink-muted">{% trans 'Créée le' %}</dt><dd class="text-right text-ink">{{ order.created_at|date:"DATETIME_FORMAT" }}</dd></div>
+        </dl>
+        {% if order.status == 'SUCCESS' %}
+          <p class="mt-5 rounded-xl border border-emerald-700/40 bg-emerald-500/10 p-3 text-sm text-emerald-200"
+             role="status">{% trans 'Paiement confirmé. Les accès aux documents autorisés sont disponibles depuis leurs fiches.' %}</p>
+        {% else %}
+          <p class="mt-5 rounded-xl border border-amber-700/40 bg-amber-500/10 p-3 text-sm text-amber-200"
+             role="status">{% trans 'Le paiement de cette commande n’est pas confirmé. Les documents payants restent verrouillés.' %}</p>
+        {% endif %}
+        <a href="{% url 'document:list' %}"
+           class="mt-5 inline-flex w-full justify-center rounded-xl border border-night-700 px-4 py-3 text-sm font-semibold text-ink-secondary transition hover:border-brand-400 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">{% trans 'Retour aux documents' %}</a>
+      </aside>
+    </div>
+  </section>
+{% endblock content %}
