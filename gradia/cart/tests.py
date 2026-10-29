@@ -12,9 +12,14 @@ from gradia.contest.models import ContestSession
 from gradia.contest.models import Establishment
 from gradia.document.models import Document
 from gradia.order.models import Order
+from gradia.payment.models import Payment
 from gradia.users.models import User
 from gradia.utils.enums import CartStatus
 from gradia.utils.enums import OrderStatus
+from gradia.utils.enums import PaymentMethod
+from gradia.utils.enums import PaymentProvider
+from gradia.utils.enums import PaymentStatus
+from gradia.utils.enums import PaymentType
 
 
 class CartCheckoutJourneyTests(TestCase):
@@ -87,3 +92,30 @@ class CartCheckoutJourneyTests(TestCase):
         response = self.client.get(reverse("order:detail", kwargs={"pk": order.pk}))
 
         assert response.status_code == HTTPStatus.NOT_FOUND
+
+    def test_paid_order_shows_only_document_actions_allowed_by_access_service(self):
+        self.client.post(reverse("cart:add", kwargs={"pk": self.document.pk}))
+        self.client.post(reverse("order:checkout"))
+        order = Order.objects.get(student=self.student)
+        order.status = OrderStatus.SUCCESS
+        order.save(update_fields=["status", "updated_at"])
+        Payment.objects.create(
+            order=order,
+            transaction_type=PaymentType.CHARGE,
+            status=PaymentStatus.SUCCESS,
+            amount=order.total_amount,
+            method=PaymentMethod.CARD,
+            provider=PaymentProvider.STRIPE,
+        )
+        self.document.subject_file = "subjects/math.pdf"
+        self.document.correction_file = "corrections/math.pdf"
+        self.document.save(
+            update_fields=["subject_file", "correction_file", "updated_at"],
+        )
+
+        response = self.client.get(reverse("order:detail", kwargs={"pk": order.pk}))
+
+        assert response.status_code == HTTPStatus.OK
+        self.assertContains(response, "Télécharger le sujet")
+        self.assertContains(response, "Consulter le corrigé")
+        self.assertNotContains(response, "Télécharger le corrigé")

@@ -17,12 +17,29 @@
     </header>
     <div class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <div class="space-y-3">
-        {% for item in order.items.all %}
+        {% for item in order_items %}
           <article class="rounded-2xl border border-night-700 bg-night-900 p-5 sm:flex sm:items-center sm:justify-between sm:gap-4">
             <div class="min-w-0">
               <p class="text-xs text-ink-muted">{{ item.document.contest_session.contest.title }} · {{ item.document.contest_session.year }}</p>
-              <h2 class="mt-1 break-words font-bold text-ink"><a href="{% url 'document:detail' pk=item.document.pk %}"
-   class="hover:text-brand-300">{{ item.document.title }}</a></h2>
+              <h2 class="mt-1 break-words font-bold text-ink">
+                <a href="{% url 'document:detail' pk=item.document.pk %}"
+                   class="hover:text-brand-300">{{ item.document.title }}</a>
+              </h2>
+              <div class="mt-3 flex flex-wrap gap-2">
+                {% if item.can_download_subject %}
+                  <a href="{% url 'document:download_subject' pk=item.document.pk %}"
+                     class="inline-flex min-h-10 items-center rounded-lg bg-brand-400 px-3 py-2 text-xs font-bold text-night-950 transition hover:bg-brand-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">{% trans 'Télécharger le sujet' %}</a>
+                {% endif %}
+                {% if item.can_view_correction %}
+                  <a href="{% url 'document:view_correction' pk=item.document.pk %}"
+                     target="_blank"
+                     rel="noopener"
+                     class="inline-flex min-h-10 items-center rounded-lg border border-brand-500/40 px-3 py-2 text-xs font-semibold text-brand-300 transition hover:bg-brand-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400">{% trans 'Consulter le corrigé' %}</a>
+                {% endif %}
+                {% if not item.can_download_subject and not item.can_view_correction %}
+                  <p class="text-xs text-ink-muted">{% trans 'Les fichiers payants seront accessibles après confirmation du paiement.' %}</p>
+                {% endif %}
+              </div>
             </div>
             <p class="mt-3 shrink-0 font-bold text-ink sm:mt-0">{{ item.line_total.amount }} <span class="text-xs text-ink-muted">{{ item.line_total.currency }}</span></p>
           </article>

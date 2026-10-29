@@ -7,6 +7,7 @@ from django.views import View
 from django.views.generic import DetailView
 
 from gradia.cart.services import get_or_create_cart
+from gradia.document.services import DocumentAccessService
 from gradia.order.models import Order
 from gradia.order.services import create_order_from_cart
 
@@ -38,6 +39,24 @@ class OrderDetailView(LoginRequiredMixin, StudentRequiredMixin, DetailView):
     def get_queryset(self):
         return (
             Order.objects.filter(student=self.request.user)
-            .prefetch_related("items__document__contest_session__contest")
+            .prefetch_related(
+                "items__document__contest_session__contest",
+                "items__document__contest_session__contest__category",
+            )
             .order_by("-created_at")
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order_items = list(self.object.items.all())
+        for item in order_items:
+            item.can_download_subject = DocumentAccessService.can_download_subject(
+                self.request.user,
+                item.document,
+            )
+            item.can_view_correction = DocumentAccessService.can_view_correction(
+                self.request.user,
+                item.document,
+            )
+        context["order_items"] = order_items
+        return context
