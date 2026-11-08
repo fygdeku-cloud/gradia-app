@@ -285,3 +285,6 @@ gradia/media/
 *.postgres
 .django
 .postgres
+
+# Private uploaded exam files (already tracked files remain tracked)
+protected_media/
