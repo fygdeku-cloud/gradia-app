@@ -275,6 +275,8 @@ gradia/media/
 .pytest_cache/
 .ipython/
 .env
+.env.*
+!.env.example
 .envs/*
 .envs/.local/
 

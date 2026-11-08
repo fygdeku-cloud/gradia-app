@@ -36,6 +36,7 @@ dependencies = [
   "psycopg[c]==3.3.4",
   "python-slugify==8.0.4",
   "redis==8.1.0",
+  "stripe==15.6.1",
   "uvicorn-worker==0.4.0",
   "uvicorn[standard]==0.52.3",
   "whitenoise==6.12.0",
